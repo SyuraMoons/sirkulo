@@ -10,6 +10,7 @@ export * from './auth.dto';
 export * from './listing.dto';
 export * from './cart.dto';
 export * from './order.dto';
+export * from './upload.dto';
 
 // Import enums for use in interfaces
 import { UserRole, WasteType } from './enums';

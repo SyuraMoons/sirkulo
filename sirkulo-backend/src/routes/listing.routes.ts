@@ -4,6 +4,7 @@ import { authenticateToken, requireActiveMode } from '../middlewares/auth.middle
 import { validateDto } from '../middlewares/validation.middleware';
 import { CreateListingDto, UpdateListingDto } from '../types/listing.dto';
 import { UserRole } from '../types';
+import { upload } from '../config/upload';
 
 /**
  * Routes for waste listings management
@@ -115,5 +116,73 @@ router.patch('/:id/status', authenticateToken, requireActiveMode(UserRole.BUSINE
  * @param {number} id - Listing ID
  */
 router.delete('/:id', authenticateToken, requireActiveMode(UserRole.BUSINESS), listingController.deleteListing);
+
+// Image management routes
+/**
+ * @route GET /api/listings/:listingId/images
+ * @desc Get all images for a listing
+ * @access Public
+ * @param {number} listingId - Listing ID
+ */
+router.get('/:listingId/images', listingController.getListingImages);
+
+/**
+ * @route POST /api/listings/:listingId/images
+ * @desc Upload images for a listing
+ * @access Private (Owner only)
+ * @param {number} listingId - Listing ID
+ * @body {file[]} images - Image files to upload
+ * @body {string[]} captions - Optional captions for images (JSON array)
+ * @body {string[]} altTexts - Optional alt texts for images (JSON array)
+ */
+router.post(
+  '/:listingId/images',
+  authenticateToken,
+  requireActiveMode(UserRole.BUSINESS),
+  upload.array('images', 10),
+  listingController.uploadListingImages
+);
+
+/**
+ * @route DELETE /api/listings/:listingId/images/:imageId
+ * @desc Delete a specific image from listing
+ * @access Private (Owner only)
+ * @param {number} listingId - Listing ID
+ * @param {number} imageId - Image ID
+ */
+router.delete(
+  '/:listingId/images/:imageId',
+  authenticateToken,
+  requireActiveMode(UserRole.BUSINESS),
+  listingController.deleteListingImage
+);
+
+/**
+ * @route PATCH /api/listings/:listingId/images/order
+ * @desc Update the display order of listing images
+ * @access Private (Owner only)
+ * @param {number} listingId - Listing ID
+ * @body {array} imageOrders - Array of {imageId, displayOrder} objects
+ */
+router.patch(
+  '/:listingId/images/order',
+  authenticateToken,
+  requireActiveMode(UserRole.BUSINESS),
+  listingController.updateListingImageOrder
+);
+
+/**
+ * @route PUT /api/listings/:listingId/images
+ * @desc Replace all listing images (legacy method)
+ * @access Private (Owner only)
+ * @param {number} listingId - Listing ID
+ * @body {string[]} imageUrls - Array of image URLs
+ */
+router.put(
+  '/:listingId/images',
+  authenticateToken,
+  requireActiveMode(UserRole.BUSINESS),
+  listingController.replaceListingImages
+);
 
 export default router;

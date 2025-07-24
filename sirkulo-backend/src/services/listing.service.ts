@@ -74,6 +74,7 @@ export class ListingService {
     const queryBuilder = this.listingRepository
       .createQueryBuilder('listing')
       .leftJoinAndSelect('listing.business', 'business')
+      .leftJoinAndSelect('listing.imageEntities', 'imageEntities')
       .where('listing.isActive = :isActive', { isActive: true })
       .andWhere('listing.status = :status', { status });
 
@@ -187,7 +188,7 @@ export class ListingService {
   async getListingById(id: number, userId?: number): Promise<Listing | null> {
     const listing = await this.listingRepository.findOne({
       where: { id, isActive: true },
-      relations: ['business'],
+      relations: ['business', 'imageEntities'],
     });
 
     if (listing && userId) {
@@ -248,7 +249,7 @@ export class ListingService {
 
     const [listings, total] = await this.listingRepository.findAndCount({
       where: { businessId },
-      relations: ['business'],
+      relations: ['business', 'imageEntities'],
       order: { createdAt: 'DESC' },
       skip: offset,
       take: limit,
@@ -333,5 +334,99 @@ export class ListingService {
       totalQuantity: parseFloat(stats.totalQuantity) || 0,
       averagePrice: parseFloat(stats.averagePrice) || 0,
     };
+  }
+
+  /**
+   * Get images for a specific listing (including legacy images array)
+   */
+  async getListingImages(listingId: number): Promise<{
+    imageEntities: any[];
+    legacyImages: string[];
+    allImages: string[];
+  }> {
+    const listing = await this.listingRepository.findOne({
+      where: { id: listingId, isActive: true },
+      relations: ['imageEntities']
+    });
+
+    if (!listing) {
+      throw new Error('Listing not found');
+    }
+
+    const imageEntities = listing.imageEntities ? 
+      listing.imageEntities
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map(img => ({
+          id: img.id,
+          url: img.url,
+          thumbnailUrl: img.thumbnailUrl,
+          caption: img.caption,
+          altText: img.altText,
+          displayOrder: img.displayOrder,
+          width: img.width,
+          height: img.height,
+          format: img.format
+        })) : [];
+
+    const legacyImages = listing.images || [];
+    const allImages = listing.getAllImageUrls();
+
+    return {
+      imageEntities,
+      legacyImages,
+      allImages
+    };
+  }
+
+  /**
+   * Add images to listing (update legacy images array)
+   */
+  async addImagesToListing(listingId: number, imageUrls: string[], businessId: number): Promise<Listing> {
+    const listing = await this.listingRepository.findOne({
+      where: { id: listingId, businessId, isActive: true }
+    });
+
+    if (!listing) {
+      throw new Error('Listing not found or access denied');
+    }
+
+    const currentImages = listing.images || [];
+    listing.images = [...currentImages, ...imageUrls];
+
+    return await this.listingRepository.save(listing);
+  }
+
+  /**
+   * Remove images from listing (legacy images array)
+   */
+  async removeImagesFromListing(listingId: number, imageUrls: string[], businessId: number): Promise<Listing> {
+    const listing = await this.listingRepository.findOne({
+      where: { id: listingId, businessId, isActive: true }
+    });
+
+    if (!listing) {
+      throw new Error('Listing not found or access denied');
+    }
+
+    listing.images = (listing.images || []).filter(url => !imageUrls.includes(url));
+
+    return await this.listingRepository.save(listing);
+  }
+
+  /**
+   * Replace all listing images (legacy images array)
+   */
+  async replaceListingImages(listingId: number, imageUrls: string[], businessId: number): Promise<Listing> {
+    const listing = await this.listingRepository.findOne({
+      where: { id: listingId, businessId, isActive: true }
+    });
+
+    if (!listing) {
+      throw new Error('Listing not found or access denied');
+    }
+
+    listing.images = imageUrls;
+
+    return await this.listingRepository.save(listing);
   }
 }

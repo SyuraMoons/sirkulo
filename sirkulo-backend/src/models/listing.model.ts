@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   Index,
 } from 'typeorm';
 import { User } from './user.model';
+import { Image } from './image.model';
 import { WasteType, ListingStatus } from '../types';
 
 /**
@@ -103,11 +105,38 @@ export class Listing {
   @Index()
   businessId: number;
 
+  @OneToMany(() => Image, image => image.listing, { eager: false, cascade: true })
+  imageEntities: Image[];
+
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  /**
+   * Get image URLs from both legacy images array and new Image entities
+   */
+  getAllImageUrls(): string[] {
+    const legacyImages = this.images || [];
+    const entityImages = this.imageEntities ? 
+      this.imageEntities
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map(img => img.url) : [];
+    
+    // Combine and deduplicate
+    return [...new Set([...legacyImages, ...entityImages])];
+  }
+
+  /**
+   * Get thumbnail URLs from Image entities
+   */
+  getThumbnailUrls(): string[] {
+    return this.imageEntities ? 
+      this.imageEntities
+        .sort((a, b) => a.displayOrder - b.displayOrder)
+        .map(img => img.thumbnailUrl) : [];
+  }
 
   /**
    * Get listing summary for list views
@@ -128,7 +157,7 @@ export class Listing {
         state: this.location.state,
         country: this.location.country,
       },
-      images: this.images.slice(0, 1), // Only first image for summary
+      images: this.getAllImageUrls().slice(0, 1), // Only first image for summary
       createdAt: this.createdAt,
       business: this.business ? {
         id: this.business.id,
