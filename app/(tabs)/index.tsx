@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, ScrollView, Text, Image, TextInput, TouchableOpacity } from 'react-native';
-import HomeHeader from '@/feature/home/components/HomeHeader';
-import CraftsSection from '@/feature/home/components/CraftsSection';
+import HomeHeader from '@/src/features/home/HomeHeader';
+import CraftsSection from '@/src/features/home/CraftsSection';
 import { useNavigation } from 'expo-router';
 import Banner from '@/assets/images/Banner.png';
+import { UserMode } from '@/src/constants/chat';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function TabOneScreen() {
-  const [mode, setMode] = useState('Customer');
+  const [mode, setMode] = useState<UserMode>('Customer');
   const navigation = useNavigation();
 
   useEffect(() => {

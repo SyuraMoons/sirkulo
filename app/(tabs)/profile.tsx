@@ -121,7 +121,7 @@ export default function ProfileScreen() {
               <View key={achievement.id} style={styles.achievementItem}>
                 <View style={styles.achievementHeader}>
                   <View style={styles.achievementIcon}>
-                    <FontAwesome name={achievement.icon} size={24} color="#386B5F" />
+                    <FontAwesome name={achievement.icon as any} size={24} color="#386B5F" />
                   </View>
                   <View style={styles.achievementInfo}>
                     <Text style={styles.achievementTitle}>{achievement.title}</Text>

@@ -1,81 +1,51 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Pressable, FlatList, Image, Modal, StyleSheet } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-
-const CATEGORIES = [
-  'All',
-  'Home Furniture',
-  'Gardening',
-  'Animal Feed',
-];
-
-const MOCK_CRAFTS = [
-  {
-    id: '1',
-    name: 'Recycled Plastic Chair',
-    category: 'Home Furniture',
-    rating: 4.6,
-    ratingCount: 2,
-    price: 'IDR 150,000',
-    stock: 23,
-    seller: 'EcoFurni',
-    details: 'plastic',
-    image: require('@/assets/images/icon.png'),
-  },
-  {
-    id: '2',
-    name: 'Rustic Pallet Chair',
-    category: 'Home Furniture',
-    rating: 4.8,
-    ratingCount: 2,
-    price: 'IDR 250,000',
-    stock: 12,
-    seller: 'KayuLama Studio',
-    details: 'Wood',
-    image: require('@/assets/images/icon.png'),
-  },
-  {
-    id: '3',
-    name: 'Eco-Friendly Plant Pot',
-    category: 'Gardening',
-    rating: 4.5,
-    ratingCount: 2,
-    price: 'IDR 50,000',
-    stock: 45,
-    seller: 'TanamBaik',
-    details: 'Plastic',
-    image: require('@/assets/images/icon.png'),
-  },
-  {
-    id: '4',
-    name: 'Earthworm Compost',
-    category: 'Gardening',
-    rating: 4.9,
-    ratingCount: 2,
-    price: 'IDR 30,000 / kg',
-    stock: 60,
-    seller: 'EarthCycle Organics',
-    details: 'Organic',
-    image: require('@/assets/images/icon.png'),
-  },
-  {
-    id: '5',
-    name: 'Maggot Dried Food',
-    category: 'Animal Feed',
-    rating: 4.7,
-    ratingCount: 2,
-    price: 'IDR 40,000 / 250g',
-    stock: 35,
-    seller: 'LarvaFarm',
-    details: 'Organic',
-    image: require('@/assets/images/icon.png'),
-  },
-];
+import { CRAFT_CATEGORIES, MOCK_CRAFTS, CraftItem } from '@/src/constants/crafts';
 
 export default function CraftsSection() {
-  const [category, setCategory] = useState('All');
+  const [category, setCategory] = useState<string>('All');
   const [modalVisible, setModalVisible] = useState(false);
+  const [showAll, setShowAll] = useState(false);
   const filteredCrafts = category === 'All' ? MOCK_CRAFTS : MOCK_CRAFTS.filter(item => item.category === category);
+  
+  // Show only first 3 items when not expanded, all items when expanded
+  const displayedCrafts = showAll ? filteredCrafts : filteredCrafts.slice(0, 3);
+
+  const renderCraftItem = ({ item }: { item: CraftItem }) => (
+    <View style={[styles.card, showAll && styles.cardGrid]}>
+      <View style={styles.cardImageWrapper}>
+        <Image source={item.image} style={styles.cardImage} resizeMode="contain" />
+      </View>
+      <Text style={styles.cardTitle}>{item.name}</Text>
+      <View style={styles.categoryRow}>
+        <Text style={styles.cardSub}>{item.category}</Text>
+        <View style={styles.labelBadge}>
+          <Text style={styles.labelText}>{item.details}</Text>
+        </View>
+      </View>
+      <View style={styles.ratingRow}>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <FontAwesome
+            key={i}
+            name={i < Math.round(item.rating) ? 'star' : 'star-o'}
+            size={16}
+            color="#FFD600"
+            style={{ marginRight: 1 }}
+          />
+        ))}
+        <Text style={styles.ratingCount}>{item.rating.toFixed(1)} ({item.ratingCount})</Text>
+      </View>
+      <Text style={styles.cardInfo}>Stock: {item.stock} | <Text style={{ fontWeight: 'bold' }}>{item.price}</Text></Text>
+      <Text style={styles.cardSeller}>Seller: {item.seller}</Text>
+      <View style={styles.cardFooterRow}>
+        <TouchableOpacity style={styles.addBtn}>
+          <FontAwesome name="shopping-cart" size={16} color="#fff" />
+          <Text style={styles.addBtnText}>Add</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
     <>
@@ -85,51 +55,34 @@ export default function CraftsSection() {
           <Text style={styles.categoryButtonText}>{category}</Text>
           <FontAwesome name="chevron-down" size={16} color="#386B5F" style={{ marginLeft: 4 }} />
         </TouchableOpacity>
-        <Pressable style={styles.seeAllBtn}>
-          <Text style={styles.seeAllText}>See All</Text>
+        <Pressable style={styles.seeAllBtn} onPress={() => setShowAll(!showAll)}>
+          <Text style={styles.seeAllText}>{showAll ? 'Show Less' : 'See All'}</Text>
         </Pressable>
       </View>
-      <FlatList
-        data={filteredCrafts}
-        keyExtractor={item => item.id}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={{ paddingVertical: 8 }}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <View style={styles.cardImageWrapper}>
-              <Image source={item.image} style={styles.cardImage} resizeMode="contain" />
-            </View>
-            <Text style={styles.cardTitle}>{item.name}</Text>
-            <View style={styles.categoryRow}>
-              <Text style={styles.cardSub}>{item.category}</Text>
-              <View style={styles.labelBadge}>
-                <Text style={styles.labelText}>{item.details}</Text>
-              </View>
-            </View>
-            <View style={styles.ratingRow}>
-              {Array.from({ length: 5 }).map((_, i) => (
-                <FontAwesome
-                  key={i}
-                  name={i < Math.round(item.rating) ? 'star' : 'star-o'}
-                  size={16}
-                  color="#FFD600"
-                  style={{ marginRight: 1 }}
-                />
-              ))}
-              <Text style={styles.ratingCount}>{item.rating.toFixed(1)} ({item.ratingCount})</Text>
-            </View>
-            <Text style={styles.cardInfo}>Stock: {item.stock} | <Text style={{ fontWeight: 'bold' }}>{item.price}</Text></Text>
-            <Text style={styles.cardSeller}>Seller: {item.seller}</Text>
-            <View style={styles.cardFooterRow}>
-              <TouchableOpacity style={styles.addBtn}>
-                <FontAwesome name="shopping-cart" size={16} color="#fff" />
-                <Text style={styles.addBtnText}>Add</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-      />
+      
+      {showAll ? (
+        // Grid layout when showing all items
+        <FlatList
+          data={displayedCrafts}
+          keyExtractor={item => item.id}
+          numColumns={2}
+          columnWrapperStyle={styles.gridRow}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 8 }}
+          renderItem={renderCraftItem}
+        />
+      ) : (
+        // Horizontal scroll when showing limited items
+        <FlatList
+          data={displayedCrafts}
+          keyExtractor={item => item.id}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingVertical: 8 }}
+          renderItem={renderCraftItem}
+        />
+      )}
+      
       <Modal
         visible={modalVisible}
         transparent
@@ -138,7 +91,7 @@ export default function CraftsSection() {
       >
         <Pressable style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
           <View style={styles.modalContent}>
-            {CATEGORIES.map(cat => (
+            {CRAFT_CATEGORIES.map(cat => (
               <TouchableOpacity
                 key={cat}
                 style={styles.modalItem}
@@ -192,6 +145,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 15,
   },
+  gridRow: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 4,
+  },
   card: {
     backgroundColor: '#fff',
     borderRadius: 16,
@@ -205,6 +162,11 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderWidth: 1,
     borderColor: '#E6F3EC',
+  },
+  cardGrid: {
+    width: '48%',
+    marginRight: 0,
+    marginBottom: 12,
   },
   cardImageWrapper: {
     backgroundColor: '#F5F6F8',
@@ -315,4 +277,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#386B5F',
   },
-}); 
+});

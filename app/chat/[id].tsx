@@ -39,7 +39,7 @@ export default function ChatScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const [newMessage, setNewMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState(MOCK_MESSAGES[id as string] || []);
+  const [chatMessages, setChatMessages] = useState((MOCK_MESSAGES as any)[id as string] || []);
   const chat = CHATS.find(c => c.id === id);
 
   const sendMessage = () => {
@@ -75,7 +75,7 @@ export default function ChatScreen() {
       </View>
 
       <ScrollView style={styles.messagesList}>
-        {chatMessages.map(message => (
+        {chatMessages.map((message: any) => (
           <View 
             key={message.id}
             style={[
