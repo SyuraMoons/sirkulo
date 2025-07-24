@@ -7,9 +7,9 @@ import {
   RefreshTokenDto, 
   SwitchModeDto, 
   ForgotPasswordDto, 
-  ResetPasswordDto 
+  ResetPasswordDto,
+  AuthenticatedRequest
 } from '../types/auth.dto';
-import { AuthenticatedRequest } from '../middlewares/auth.middleware';
 
 /**
  * Authentication Controller

@@ -1,4 +1,5 @@
 import { IsEmail, IsString, MinLength, IsOptional, IsEnum, IsArray, IsPhoneNumber } from 'class-validator';
+import { Request } from 'express';
 import { UserRole } from '../types';
 
 /**
@@ -122,5 +123,17 @@ export class UpdateProfileDto {
     address: string;
     city: string;
     country: string;
+  };
+}
+
+/**
+ * Extended Request interface for authenticated routes
+ */
+export interface AuthenticatedRequest extends Request {
+  user?: {
+    userId: number;
+    email: string;
+    roles: UserRole[];
+    activeMode: UserRole;
   };
 }

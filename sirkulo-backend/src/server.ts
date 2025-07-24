@@ -8,8 +8,8 @@ import config from './config';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
+import listingRoutes from './routes/listing.routes';
 // import userRoutes from './routes/user.routes';
-// import listingRoutes from './routes/listing.routes';
 
 /**
  * Sirkulo Backend Server
@@ -76,8 +76,8 @@ class Server {
 
     // API routes
     this.app.use('/api/auth', authRoutes);
+    this.app.use('/api/listings', listingRoutes);
     // this.app.use('/api/users', userRoutes);
-    // this.app.use('/api/listings', listingRoutes);
 
     // 404 handler
     this.app.use('*', (req: express.Request, res: express.Response) => {

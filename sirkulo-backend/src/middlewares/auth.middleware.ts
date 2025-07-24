@@ -1,14 +1,8 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { TokenUtil } from '../utils/token.util';
 import { ResponseUtil } from '../utils/response.util';
-import { JwtPayload, UserRole } from '../types';
-
-/**
- * Extended Request interface to include user data
- */
-export interface AuthenticatedRequest extends Request {
-  user?: JwtPayload;
-}
+import { UserRole } from '../types';
+import { AuthenticatedRequest } from '../types/auth.dto';
 
 /**
  * Authentication middleware to verify JWT tokens
