@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useNavigation } from 'expo-router';
 
 const CHATS = [
   {
@@ -29,6 +30,11 @@ const CHATS = [
 
 export default function MessagesScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    navigation.setOptions({ headerShown: false });
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -76,6 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    paddingTop: 45, // Add top padding to account for status bar
   },
   header: {
     padding: 16,
