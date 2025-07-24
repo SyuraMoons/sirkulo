@@ -1,11 +1,6 @@
-export const CRAFT_CATEGORIES = [
-  'All',
-  'Home Furniture',
-  'Gardening',
-  'Animal Feed',
-] as const;
+export const CRAFT_CATEGORIES = ['All', 'Home Furniture', 'Gardening', 'Animal Feed'] as const;
 
-export type CraftCategory = typeof CRAFT_CATEGORIES[number];
+export type CraftCategory = (typeof CRAFT_CATEGORIES)[number];
 
 export interface CraftItem {
   id: string;

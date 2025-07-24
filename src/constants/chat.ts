@@ -1,6 +1,6 @@
 export const USER_MODES = ['Customer', 'Recycler', 'Business'] as const;
 
-export type UserMode = typeof USER_MODES[number];
+export type UserMode = (typeof USER_MODES)[number];
 
 export interface ChatItem {
   id: string;

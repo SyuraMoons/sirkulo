@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, ScrollView, Text, Image, TextInput, TouchableOpacity } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  ScrollView,
+  Text,
+  Image,
+  TextInput,
+  TouchableOpacity,
+} from 'react-native';
 import HomeHeader from '@/src/features/home/HomeHeader';
 import CraftsSection from '@/src/features/home/CraftsSection';
 import { useNavigation } from 'expo-router';
@@ -39,10 +47,14 @@ export default function TabOneScreen() {
         </>
       )}
       {mode === 'Recycler' && (
-        <View style={styles.placeholder}><Text style={styles.placeholderText}>Recycler Home (Coming Soon)</Text></View>
+        <View style={styles.placeholder}>
+          <Text style={styles.placeholderText}>Recycler Home (Coming Soon)</Text>
+        </View>
       )}
       {mode === 'Business' && (
-        <View style={styles.placeholder}><Text style={styles.placeholderText}>Business Home (Coming Soon)</Text></View>
+        <View style={styles.placeholder}>
+          <Text style={styles.placeholderText}>Business Home (Coming Soon)</Text>
+        </View>
       )}
     </ScrollView>
   );

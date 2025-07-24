@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
@@ -41,7 +41,7 @@ export default function MessagesScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Messages</Text>
         <View style={styles.searchContainer}>
-          <TextInput 
+          <TextInput
             style={styles.searchInput}
             placeholder="Search conversations..."
             placeholderTextColor="#999"
@@ -51,7 +51,7 @@ export default function MessagesScreen() {
 
       <ScrollView style={styles.chatList}>
         {CHATS.map(chat => (
-          <TouchableOpacity 
+          <TouchableOpacity
             key={chat.id}
             style={styles.chatItem}
             onPress={() => router.push(`/chat/${chat.id}` as any)}

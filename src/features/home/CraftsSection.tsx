@@ -1,16 +1,34 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Pressable, FlatList, Image, Modal, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  FlatList,
+  Image,
+  Modal,
+  StyleSheet,
+} from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+
 import { CRAFT_CATEGORIES, MOCK_CRAFTS, CraftItem } from '@/src/constants/crafts';
+import { useCart } from '@/src/context/CartContext';
 
 export default function CraftsSection() {
   const [category, setCategory] = useState<string>('All');
   const [modalVisible, setModalVisible] = useState(false);
   const [showAll, setShowAll] = useState(false);
-  const filteredCrafts = category === 'All' ? MOCK_CRAFTS : MOCK_CRAFTS.filter(item => item.category === category);
-  
+  const { addItem, isItemInCart, getItemQuantity } = useCart();
+
+  const filteredCrafts =
+    category === 'All' ? MOCK_CRAFTS : MOCK_CRAFTS.filter(item => item.category === category);
+
   // Show only first 3 items when not expanded, all items when expanded
   const displayedCrafts = showAll ? filteredCrafts : filteredCrafts.slice(0, 3);
+
+  const handleAddToCart = (item: CraftItem) => {
+    addItem(item);
+  };
 
   const renderCraftItem = ({ item }: { item: CraftItem }) => (
     <View style={[styles.card, showAll && styles.cardGrid]}>
@@ -34,14 +52,23 @@ export default function CraftsSection() {
             style={{ marginRight: 1 }}
           />
         ))}
-        <Text style={styles.ratingCount}>{item.rating.toFixed(1)} ({item.ratingCount})</Text>
+        <Text style={styles.ratingCount}>
+          {item.rating.toFixed(1)} ({item.ratingCount})
+        </Text>
       </View>
-      <Text style={styles.cardInfo}>Stock: {item.stock} | <Text style={{ fontWeight: 'bold' }}>{item.price}</Text></Text>
+      <Text style={styles.cardInfo}>
+        Stock: {item.stock} | <Text style={{ fontWeight: 'bold' }}>{item.price}</Text>
+      </Text>
       <Text style={styles.cardSeller}>Seller: {item.seller}</Text>
       <View style={styles.cardFooterRow}>
-        <TouchableOpacity style={styles.addBtn}>
+        <TouchableOpacity
+          style={[styles.addBtn, isItemInCart(item.id) && styles.addBtnInCart]}
+          onPress={() => handleAddToCart(item)}
+        >
           <FontAwesome name="shopping-cart" size={16} color="#fff" />
-          <Text style={styles.addBtnText}>Add</Text>
+          <Text style={styles.addBtnText}>
+            {isItemInCart(item.id) ? `Added (${getItemQuantity(item.id)})` : 'Add'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -59,7 +86,7 @@ export default function CraftsSection() {
           <Text style={styles.seeAllText}>{showAll ? 'Show Less' : 'See All'}</Text>
         </Pressable>
       </View>
-      
+
       {showAll ? (
         // Grid layout when showing all items
         <FlatList
@@ -82,7 +109,7 @@ export default function CraftsSection() {
           renderItem={renderCraftItem}
         />
       )}
-      
+
       <Modal
         visible={modalVisible}
         transparent
@@ -100,7 +127,14 @@ export default function CraftsSection() {
                   setModalVisible(false);
                 }}
               >
-                <Text style={[styles.modalItemText, cat === category && { fontWeight: 'bold', color: '#386B5F' }]}>{cat}</Text>
+                <Text
+                  style={[
+                    styles.modalItemText,
+                    cat === category && { fontWeight: 'bold', color: '#386B5F' },
+                  ]}
+                >
+                  {cat}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -248,6 +282,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
+  },
+  addBtnInCart: {
+    backgroundColor: '#2D5A4F',
   },
   addBtnText: {
     color: '#fff',

@@ -57,11 +57,13 @@ sirkulo/
 ## 🎯 Key Improvements
 
 ### 1. **Feature-Based Organization**
+
 - Components are organized by features rather than types
 - Each feature has its own directory with related components
 - Easy to locate and maintain feature-specific code
 
 ### 2. **Proper Separation of Concerns**
+
 - **Components**: Reusable UI components
 - **Features**: Feature-specific components and logic
 - **Hooks**: Custom React hooks
@@ -71,11 +73,13 @@ sirkulo/
 - **Utils**: Helper functions and utilities
 
 ### 3. **TypeScript Integration**
+
 - Proper type definitions for all data structures
 - Type-safe constants and interfaces
 - Better IntelliSense and error catching
 
 ### 4. **Clean Import Structure**
+
 ```typescript
 // Feature imports
 import { HomeHeader, CraftsSection } from '@/src/features/home';
@@ -91,6 +95,7 @@ import { UserMode } from '@/src/constants/chat';
 ```
 
 ### 5. **Index Files for Clean Exports**
+
 - Each directory has an `index.ts` file for clean imports
 - Reduces import statement complexity
 - Better tree-shaking support
@@ -98,6 +103,7 @@ import { UserMode } from '@/src/constants/chat';
 ## 📋 Data Structure
 
 ### Craft Items
+
 ```typescript
 interface CraftItem {
   id: string;
@@ -114,6 +120,7 @@ interface CraftItem {
 ```
 
 ### Chat Items
+
 ```typescript
 interface ChatItem {
   id: string;
@@ -125,6 +132,7 @@ interface ChatItem {
 ```
 
 ### User Modes
+
 ```typescript
 type UserMode = 'Customer' | 'Recycler' | 'Business';
 ```
@@ -132,6 +140,7 @@ type UserMode = 'Customer' | 'Recycler' | 'Business';
 ## 🔧 Configuration
 
 ### TypeScript Paths
+
 ```json
 {
   "paths": {
@@ -142,6 +151,7 @@ type UserMode = 'Customer' | 'Recycler' | 'Business';
 ```
 
 ### Import Aliases
+
 - `@/` - Root directory
 - `@/src/` - Source directory
 - `@/assets/` - Assets directory
@@ -159,6 +169,7 @@ type UserMode = 'Customer' | 'Recycler' | 'Business';
 ## 📝 Development Guidelines
 
 ### Adding New Features
+
 1. Create a new directory under `src/features/`
 2. Add feature-specific components
 3. Create an `index.ts` file for exports
@@ -166,14 +177,17 @@ type UserMode = 'Customer' | 'Recycler' | 'Business';
 5. Add types to appropriate files
 
 ### Adding New Components
+
 1. Determine if it's a reusable UI component or feature-specific
 2. Place in appropriate directory (`src/components/ui/` or `src/features/`)
 3. Use proper TypeScript typing
 4. Export through index files
 
 ### Adding New Constants
+
 1. Add to appropriate file in `src/constants/`
 2. Include proper TypeScript interfaces
 3. Export through `src/constants/index.ts`
 
-This structure provides a solid foundation for scaling the application while maintaining code quality and developer productivity.
+This structure provides a solid foundation for scaling the application while
+maintaining code quality and developer productivity.

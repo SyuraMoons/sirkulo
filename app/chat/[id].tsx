@@ -68,31 +68,23 @@ export default function ChatScreen() {
         </View>
         <View style={styles.headerInfo}>
           <Text style={styles.headerName}>{chat?.name}</Text>
-          <Text style={styles.headerStatus}>
-            {chat?.online ? 'Online' : 'Offline'}
-          </Text>
+          <Text style={styles.headerStatus}>{chat?.online ? 'Online' : 'Offline'}</Text>
         </View>
       </View>
 
       <ScrollView style={styles.messagesList}>
         {chatMessages.map((message: any) => (
-          <View 
+          <View
             key={message.id}
             style={[
               styles.messageContainer,
-              message.sent ? styles.sentMessage : styles.receivedMessage
+              message.sent ? styles.sentMessage : styles.receivedMessage,
             ]}
           >
-            <Text style={[
-              styles.messageText,
-              !message.sent && styles.receivedMessageText
-            ]}>
+            <Text style={[styles.messageText, !message.sent && styles.receivedMessageText]}>
               {message.text}
             </Text>
-            <Text style={[
-              styles.messageTime,
-              !message.sent && styles.receivedMessageTime
-            ]}>
+            <Text style={[styles.messageTime, !message.sent && styles.receivedMessageTime]}>
               {message.time}
             </Text>
           </View>

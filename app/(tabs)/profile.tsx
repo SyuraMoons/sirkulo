@@ -89,27 +89,33 @@ export default function ProfileScreen() {
 
         {/* Stats Navigation */}
         <View style={styles.statsNav}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.statsTab, activeTab === 'ringkasan' && styles.statsTabActive]}
             onPress={() => setActiveTab('ringkasan')}
           >
-            <Text style={[styles.statsTabText, activeTab === 'ringkasan' && styles.statsTabTextActive]}>
+            <Text
+              style={[styles.statsTabText, activeTab === 'ringkasan' && styles.statsTabTextActive]}
+            >
               Ringkasan
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.statsTab, activeTab === 'purchases' && styles.statsTabActive]}
             onPress={() => setActiveTab('purchases')}
           >
-            <Text style={[styles.statsTabText, activeTab === 'purchases' && styles.statsTabTextActive]}>
+            <Text
+              style={[styles.statsTabText, activeTab === 'purchases' && styles.statsTabTextActive]}
+            >
               Purchases
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[styles.statsTab, activeTab === 'pencapaian' && styles.statsTabActive]}
             onPress={() => setActiveTab('pencapaian')}
           >
-            <Text style={[styles.statsTabText, activeTab === 'pencapaian' && styles.statsTabTextActive]}>
+            <Text
+              style={[styles.statsTabText, activeTab === 'pencapaian' && styles.statsTabTextActive]}
+            >
               Pencapaian
             </Text>
           </TouchableOpacity>
@@ -135,11 +141,11 @@ export default function ProfileScreen() {
                   </Text>
                 </View>
                 <View style={styles.progressBar}>
-                  <View 
+                  <View
                     style={[
                       styles.progressFill,
-                      { width: `${(achievement.progress / achievement.target) * 100}%` }
-                    ]} 
+                      { width: `${(achievement.progress / achievement.target) * 100}%` },
+                    ]}
                   />
                 </View>
               </View>
@@ -152,19 +158,19 @@ export default function ProfileScreen() {
                 <View style={styles.purchaseHeader}>
                   <Text style={styles.purchaseTitle}>{item.title}</Text>
                   {item.price && (
-                    <Text style={styles.purchasePrice}>
-                      Rp{item.price.toLocaleString()}
-                    </Text>
+                    <Text style={styles.purchasePrice}>Rp{item.price.toLocaleString()}</Text>
                   )}
                 </View>
                 <View style={styles.purchaseFooter}>
                   <View style={styles.statusContainer}>
-                    <Text style={[
-                      styles.statusBadge,
-                      item.status === 'Dipublikasi' && styles.statusPublished,
-                      item.status === 'Dikirim' && styles.statusShipped,
-                      item.status === 'Dilihat' && styles.statusViewed,
-                    ]}>
+                    <Text
+                      style={[
+                        styles.statusBadge,
+                        item.status === 'Dipublikasi' && styles.statusPublished,
+                        item.status === 'Dikirim' && styles.statusShipped,
+                        item.status === 'Dilihat' && styles.statusViewed,
+                      ]}
+                    >
                       {item.status}
                     </Text>
                     <Text style={styles.purchaseTime}>{item.time}</Text>
@@ -175,9 +181,7 @@ export default function ProfileScreen() {
                       <FontAwesome name="star" size={16} color="#FFC107" />
                     </View>
                   )}
-                  {item.label && (
-                    <Text style={styles.transparentLabel}>{item.label}</Text>
-                  )}
+                  {item.label && <Text style={styles.transparentLabel}>{item.label}</Text>}
                 </View>
               </View>
             ))}

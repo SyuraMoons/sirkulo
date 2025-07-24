@@ -1,19 +1,27 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Modal, FlatList } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { USER_MODES, UserMode } from '@/src/constants/chat';
 
-export function ModeSwitcher({ mode, setMode }: { mode: UserMode; setMode: (m: UserMode) => void }) {
+export function ModeSwitcher({
+  mode,
+  setMode,
+}: {
+  mode: UserMode;
+  setMode: (m: UserMode) => void;
+}) {
   const [modalVisible, setModalVisible] = React.useState(false);
   const [buttonLayout, setButtonLayout] = React.useState({ x: 0, y: 0, width: 0, height: 0 });
   const buttonRef = React.useRef(null);
-  
+
   const handleButtonPress = () => {
     if (buttonRef.current) {
-      (buttonRef.current as any)?.measureInWindow((x: number, y: number, width: number, height: number) => {
-        setButtonLayout({ x, y, width, height });
-        setModalVisible(true);
-      });
+      (buttonRef.current as any)?.measureInWindow(
+        (x: number, y: number, width: number, height: number) => {
+          setButtonLayout({ x, y, width, height });
+          setModalVisible(true);
+        }
+      );
     } else {
       setModalVisible(true);
     }
@@ -21,11 +29,7 @@ export function ModeSwitcher({ mode, setMode }: { mode: UserMode; setMode: (m: U
 
   return (
     <>
-      <TouchableOpacity 
-        ref={buttonRef}
-        style={styles.modeButton} 
-        onPress={handleButtonPress}
-      >
+      <TouchableOpacity ref={buttonRef} style={styles.modeButton} onPress={handleButtonPress}>
         <Text style={styles.modeText}>{mode}</Text>
         <FontAwesome name="chevron-down" size={16} color="#386B5F" style={{ marginLeft: 4 }} />
       </TouchableOpacity>
@@ -36,11 +40,8 @@ export function ModeSwitcher({ mode, setMode }: { mode: UserMode; setMode: (m: U
         animationType="none"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableOpacity 
-          style={styles.modalOverlay} 
-          onPress={() => setModalVisible(false)}
-        >
-          <View 
+        <TouchableOpacity style={styles.modalOverlay} onPress={() => setModalVisible(false)}>
+          <View
             style={[
               styles.modalContent,
               {
@@ -48,7 +49,7 @@ export function ModeSwitcher({ mode, setMode }: { mode: UserMode; setMode: (m: U
                 top: buttonLayout.y + buttonLayout.height + 8,
                 left: buttonLayout.x,
                 minWidth: buttonLayout.width,
-              }
+              },
             ]}
           >
             {USER_MODES.map(modeOption => (
@@ -60,10 +61,9 @@ export function ModeSwitcher({ mode, setMode }: { mode: UserMode; setMode: (m: U
                   setModalVisible(false);
                 }}
               >
-                <Text style={[
-                  styles.modalItemText,
-                  modeOption === mode && styles.selectedModeText
-                ]}>
+                <Text
+                  style={[styles.modalItemText, modeOption === mode && styles.selectedModeText]}
+                >
                   {modeOption}
                 </Text>
               </TouchableOpacity>

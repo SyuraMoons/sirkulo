@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Pressable, FlatList, Image, Modal, StyleSheet } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Pressable,
+  FlatList,
+  Image,
+  Modal,
+  StyleSheet,
+} from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-const CATEGORIES = [
-  'All',
-  'Food Waste',
-  'Plastic Waste',
-  'Wood Waste',
-
-];
+const CATEGORIES = ['All', 'Food Waste', 'Plastic Waste', 'Wood Waste'];
 
 const MOCK_GARBAGE = [
   {
@@ -40,7 +43,8 @@ const MOCK_GARBAGE = [
 export default function GarbageSection() {
   const [category, setCategory] = useState('All');
   const [modalVisible, setModalVisible] = useState(false);
-  const filteredGarbage = category === 'All' ? MOCK_GARBAGE : MOCK_GARBAGE.filter(item => item.material === category);
+  const filteredGarbage =
+    category === 'All' ? MOCK_GARBAGE : MOCK_GARBAGE.filter(item => item.material === category);
 
   return (
     <>
@@ -78,7 +82,9 @@ export default function GarbageSection() {
               ))}
               <Text style={styles.ratingCount}>{item.ratingCount}</Text>
             </View>
-            <Text style={styles.cardInfo}>{item.quantity} / <Text style={{ fontWeight: 'bold' }}>{item.price}</Text></Text>
+            <Text style={styles.cardInfo}>
+              {item.quantity} / <Text style={{ fontWeight: 'bold' }}>{item.price}</Text>
+            </Text>
             <View style={styles.cardTagsRow}>
               <Text style={styles.cardTag}>{item.type}</Text>
               <Text style={styles.cardTag}>{item.material}</Text>
@@ -114,7 +120,14 @@ export default function GarbageSection() {
                   setModalVisible(false);
                 }}
               >
-                <Text style={[styles.modalItemText, cat === category && { fontWeight: 'bold', color: '#386B5F' }]}>{cat}</Text>
+                <Text
+                  style={[
+                    styles.modalItemText,
+                    cat === category && { fontWeight: 'bold', color: '#386B5F' },
+                  ]}
+                >
+                  {cat}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -270,4 +283,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#386B5F',
   },
-}); 
+});

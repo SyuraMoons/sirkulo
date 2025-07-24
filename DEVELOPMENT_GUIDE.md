@@ -3,17 +3,20 @@
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18+ installed
 - Expo CLI installed globally: `npm install -g @expo/cli`
 - React Native development environment set up
 
 ### Installation
+
 ```bash
 cd sirkulo
 npm install
 ```
 
 ### Development Commands
+
 ```bash
 # Start development server
 npm start
@@ -33,6 +36,7 @@ npm run clean      # Clear Expo cache
 ## 📁 Project Organization
 
 ### Adding New Features
+
 1. **Create feature directory**: `src/features/your-feature/`
 2. **Add components**: Create React components in the feature directory
 3. **Export components**: Add exports to `src/features/your-feature/index.ts`
@@ -40,6 +44,7 @@ npm run clean      # Clear Expo cache
 5. **Update types**: Add TypeScript interfaces as needed
 
 ### Example: Adding a "Notifications" Feature
+
 ```bash
 # Create feature structure
 mkdir src/features/notifications
@@ -71,8 +76,10 @@ export const MOCK_NOTIFICATIONS: Notification[] = [
 ```
 
 ### Component Guidelines
+
 1. **Use TypeScript**: All components should have proper typing
-2. **Export pattern**: Use default exports for components, named exports for utilities
+2. **Export pattern**: Use default exports for components, named exports for
+   utilities
 3. **Props interface**: Define props interface for each component
 4. **Constants**: Extract hardcoded data to constants files
 
@@ -91,6 +98,7 @@ export default function HomeHeader({ title, onMenuPress }: HomeHeaderProps) {
 ## 🎯 Code Standards
 
 ### Import Order
+
 ```typescript
 // 1. React and React Native imports
 import React from 'react';
@@ -108,12 +116,14 @@ import './styles.css';
 ```
 
 ### File Naming
+
 - **Components**: PascalCase (e.g., `HomeHeader.tsx`)
 - **Hooks**: camelCase starting with 'use' (e.g., `useColorScheme.ts`)
 - **Constants**: camelCase (e.g., `crafts.ts`)
 - **Types**: camelCase (e.g., `images.d.ts`)
 
 ### TypeScript Best Practices
+
 1. **Define interfaces** for all data structures
 2. **Use type assertions** sparingly
 3. **Prefer interfaces** over types for object shapes
@@ -122,16 +132,19 @@ import './styles.css';
 ## 🧪 Testing Strategy
 
 ### Unit Tests
+
 - Test individual components in isolation
 - Mock external dependencies
 - Focus on component behavior and props
 
 ### Integration Tests
+
 - Test feature workflows
 - Test navigation between screens
 - Test data flow between components
 
 ### Running Tests
+
 ```bash
 npm test                    # Run all tests in watch mode
 npm test -- --coverage     # Run with coverage report
@@ -141,18 +154,21 @@ npm test -- --watchAll=false  # Run once without watch mode
 ## 📱 Platform-Specific Development
 
 ### Android
+
 ```bash
 npm run android
 # Requires Android Studio and Android SDK
 ```
 
 ### iOS
+
 ```bash
 npm run ios
 # Requires Xcode (macOS only)
 ```
 
 ### Web
+
 ```bash
 npm run web
 # Runs in browser at http://localhost:8081
@@ -163,18 +179,21 @@ npm run web
 ### Common Issues
 
 1. **TypeScript Errors**
+
    ```bash
    npm run type-check
    # Fix any type errors before committing
    ```
 
 2. **Cache Issues**
+
    ```bash
    npm run clean
    npm start
    ```
 
 3. **Dependency Issues**
+
    ```bash
    rm -rf node_modules package-lock.json
    npm install
@@ -208,6 +227,7 @@ npm run web
 ## 🚢 Deployment
 
 ### Building for Production
+
 ```bash
 # Build for web
 npx expo export --platform web
@@ -220,8 +240,10 @@ npx expo build:ios
 ```
 
 ### Environment Configuration
+
 - Development: Uses Expo development server
 - Production: Uses optimized bundles
 - Staging: Can be configured with environment variables
 
-This guide should help maintain code quality and consistency as the project grows!
+This guide should help maintain code quality and consistency as the project
+grows!

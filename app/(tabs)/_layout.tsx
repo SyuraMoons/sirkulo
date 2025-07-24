@@ -1,15 +1,34 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { useColorScheme } from '@/src/hooks/useColorScheme';
-import { useClientOnlyValue } from '@/src/hooks/useClientOnlyValue';
 
-function TabBarIcon(props: { name: React.ComponentProps<typeof FontAwesome>['name']; color: string }) {
+import { useClientOnlyValue } from '@/src/hooks/useClientOnlyValue';
+import { useCart } from '@/src/context/CartContext';
+
+function TabBarIcon(props: {
+  name: React.ComponentProps<typeof FontAwesome>['name'];
+  color: string;
+}) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
+function CartTabBarIcon({ color }: { color: string }) {
+  const { state } = useCart();
+
+  return (
+    <View style={styles.cartIconContainer}>
+      <TabBarIcon name="shopping-cart" color={color} />
+      {state.totalItems > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{state.totalItems > 99 ? '99+' : state.totalItems}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
   return (
     <Tabs
       screenOptions={{
@@ -31,7 +50,7 @@ export default function TabLayout() {
         name="cart"
         options={{
           title: 'Cart',
-          tabBarIcon: ({ color }) => <TabBarIcon name="shopping-cart" color={color} />,
+          tabBarIcon: ({ color }) => <CartTabBarIcon color={color} />,
         }}
       />
       <Tabs.Screen
@@ -51,3 +70,26 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  cartIconContainer: {
+    position: 'relative',
+  },
+  badge: {
+    position: 'absolute',
+    top: -8,
+    right: -12,
+    backgroundColor: '#E74C3C',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+});
