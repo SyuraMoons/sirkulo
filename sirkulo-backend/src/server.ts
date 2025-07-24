@@ -10,6 +10,7 @@ import config from './config';
 import authRoutes from './routes/auth.routes';
 import listingRoutes from './routes/listing.routes';
 import cartRoutes from './routes/cart.routes';
+import { orderRoutes } from './routes/order.routes';
 // import userRoutes from './routes/user.routes';
 
 /**
@@ -79,6 +80,7 @@ class Server {
     this.app.use('/api/auth', authRoutes);
     this.app.use('/api/listings', listingRoutes);
     this.app.use('/api/cart', cartRoutes);
+    this.app.use('/api/orders', orderRoutes);
     // this.app.use('/api/users', userRoutes);
 
     // 404 handler

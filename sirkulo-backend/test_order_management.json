@@ -1,0 +1,298 @@
+{
+  "orderManagementTests": {
+    "description": "Test cases for Sirkulo Order Management System API endpoints",
+    "baseUrl": "http://localhost:3000/api",
+    "authToken": "Bearer your_jwt_token_here",
+    
+    "createOrder": {
+      "url": "/orders",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer your_jwt_token_here",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "shippingAddress": {
+          "fullName": "John Doe",
+          "addressLine1": "Jl. Sudirman No. 123",
+          "addressLine2": "Apt 4B",
+          "city": "Jakarta",
+          "state": "DKI Jakarta",
+          "postalCode": "12345",
+          "country": "Indonesia",
+          "phoneNumber": "+6281234567890"
+        },
+        "paymentMethod": "bank_transfer",
+        "notes": "Please deliver in the morning"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Order created successfully",
+        "data": {
+          "id": 1,
+          "orderNumber": "ORD-2024-001",
+          "status": "PENDING",
+          "paymentStatus": "PENDING",
+          "totalAmount": 150000,
+          "finalAmount": 191500
+        }
+      }
+    },
+
+    "getOrders": {
+      "url": "/orders",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer your_jwt_token_here"
+      },
+      "queryParams": {
+        "page": 1,
+        "limit": 10,
+        "status": "PENDING"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Orders retrieved successfully",
+        "data": {
+          "orders": [],
+          "pagination": {
+            "page": 1,
+            "limit": 10,
+            "total": 0,
+            "totalPages": 0
+          }
+        }
+      }
+    },
+
+    "getOrderById": {
+      "url": "/orders/1",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer your_jwt_token_here"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Order retrieved successfully",
+        "data": {
+          "id": 1,
+          "orderNumber": "ORD-2024-001",
+          "status": "PENDING",
+          "items": []
+        }
+      }
+    },
+
+    "updateOrderStatus": {
+      "url": "/orders/1/status",
+      "method": "PUT",
+      "headers": {
+        "Authorization": "Bearer seller_jwt_token_here",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "status": "CONFIRMED",
+        "trackingNumber": "TRK123456789",
+        "notes": "Order confirmed and preparing for shipment"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Order status updated successfully",
+        "data": {
+          "id": 1,
+          "status": "CONFIRMED",
+          "trackingNumber": "TRK123456789"
+        }
+      }
+    },
+
+    "cancelOrder": {
+      "url": "/orders/1/cancel",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer your_jwt_token_here",
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "reason": "Customer requested cancellation",
+        "refundRequested": true
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Order cancelled successfully",
+        "data": {
+          "id": 1,
+          "status": "CANCELLED",
+          "cancellationReason": "Customer requested cancellation"
+        }
+      }
+    },
+
+    "getOrderStats": {
+      "url": "/orders/stats",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer your_jwt_token_here"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Order statistics retrieved successfully",
+        "data": {
+          "totalOrders": 45,
+          "totalValue": 2500000,
+          "pendingOrders": 3,
+          "completedOrders": 40,
+          "averageOrderValue": 55555,
+          "monthlyStats": {
+            "orders": 12,
+            "revenue": 650000
+          }
+        }
+      }
+    },
+
+    "getBuyerOrders": {
+      "url": "/orders/purchases",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer buyer_jwt_token_here"
+      },
+      "queryParams": {
+        "page": 1,
+        "limit": 10,
+        "status": "DELIVERED"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Purchase orders retrieved successfully",
+        "data": {
+          "orders": [],
+          "pagination": {}
+        }
+      }
+    },
+
+    "getSellerOrders": {
+      "url": "/orders/sales",
+      "method": "GET",
+      "headers": {
+        "Authorization": "Bearer seller_jwt_token_here"
+      },
+      "queryParams": {
+        "page": 1,
+        "limit": 10,
+        "status": "PENDING"
+      },
+      "expectedResponse": {
+        "success": true,
+        "message": "Sales orders retrieved successfully",
+        "data": {
+          "orders": [],
+          "pagination": {}
+        }
+      }
+    }
+  },
+
+  "testingWorkflow": {
+    "description": "Step-by-step testing workflow for Order Management System",
+    "steps": [
+      {
+        "step": 1,
+        "action": "Register and login as buyer",
+        "endpoint": "/auth/signup and /auth/login",
+        "note": "Get JWT token for buyer"
+      },
+      {
+        "step": 2,
+        "action": "Register and login as seller",
+        "endpoint": "/auth/signup and /auth/login",
+        "note": "Get JWT token for seller"
+      },
+      {
+        "step": 3,
+        "action": "Create a listing as seller",
+        "endpoint": "/listings",
+        "note": "Create product to add to cart"
+      },
+      {
+        "step": 4,
+        "action": "Add item to cart as buyer",
+        "endpoint": "/cart",
+        "note": "Add the created listing to buyer's cart"
+      },
+      {
+        "step": 5,
+        "action": "Create order from cart",
+        "endpoint": "/orders",
+        "note": "Convert cart items to order"
+      },
+      {
+        "step": 6,
+        "action": "View order as buyer",
+        "endpoint": "/orders/purchases or /orders/{id}",
+        "note": "Check order details from buyer perspective"
+      },
+      {
+        "step": 7,
+        "action": "View order as seller",
+        "endpoint": "/orders/sales or /orders/{id}",
+        "note": "Check order details from seller perspective"
+      },
+      {
+        "step": 8,
+        "action": "Update order status as seller",
+        "endpoint": "/orders/{id}/status",
+        "note": "Change order status from PENDING to CONFIRMED"
+      },
+      {
+        "step": 9,
+        "action": "Get order statistics",
+        "endpoint": "/orders/stats",
+        "note": "View order analytics for current user"
+      },
+      {
+        "step": 10,
+        "action": "Test order cancellation",
+        "endpoint": "/orders/{id}/cancel",
+        "note": "Cancel order (if still cancellable)"
+      }
+    ]
+  },
+
+  "errorScenarios": {
+    "description": "Test cases for error handling",
+    "scenarios": [
+      {
+        "name": "Create order with empty cart",
+        "expectedError": "Cart is empty",
+        "statusCode": 400
+      },
+      {
+        "name": "Access order without authentication",
+        "expectedError": "Unauthorized",
+        "statusCode": 401
+      },
+      {
+        "name": "Access other user's order",
+        "expectedError": "Order not found or access denied",
+        "statusCode": 404
+      },
+      {
+        "name": "Invalid status transition",
+        "expectedError": "Invalid status transition",
+        "statusCode": 400
+      },
+      {
+        "name": "Cancel shipped order",
+        "expectedError": "Cannot cancel order that has been shipped",
+        "statusCode": 400
+      },
+      {
+        "name": "Update order status without permission",
+        "expectedError": "Access denied",
+        "statusCode": 403
+      }
+    ]
+  }
+}

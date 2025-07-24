@@ -2,97 +2,17 @@
  * Common types and interfaces used across the Sirkulo application
  */
 
-/**
- * User roles in the system
- */
-export enum UserRole {
-  USER = 'user',
-  RECYCLER = 'recycler',
-  BUSINESS = 'business',
-  ADMIN = 'admin',
-}
+// Export all enums
+export * from './enums';
 
-/**
- * User verification status
- */
-export enum VerificationStatus {
-  PENDING = 'pending',
-  VERIFIED = 'verified',
-  REJECTED = 'rejected',
-}
+// Export all DTOs
+export * from './auth.dto';
+export * from './listing.dto';
+export * from './cart.dto';
+export * from './order.dto';
 
-/**
- * Waste listing types
- */
-export enum WasteType {
-  FABRIC_SCRAPS = 'fabric_scraps',
-  TEXTILE_WASTE = 'textile_waste',
-  LEATHER_WASTE = 'leather_waste',
-  BUTTONS_ZIPPERS = 'buttons_zippers',
-  THREAD_YARN = 'thread_yarn',
-  OTHER = 'other',
-}
-
-/**
- * Listing status
- */
-export enum ListingStatus {
-  ACTIVE = 'active',
-  SOLD = 'sold',
-  RESERVED = 'reserved',
-  INACTIVE = 'inactive',
-}
-
-/**
- * Order/Transaction status
- */
-export enum OrderStatus {
-  PENDING = 'pending',
-  CONFIRMED = 'confirmed',
-  SHIPPED = 'shipped',
-  DELIVERED = 'delivered',
-  CANCELLED = 'cancelled',
-}
-
-/**
- * Pickup status
- */
-export enum PickupStatus {
-  SCHEDULED = 'scheduled',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-}
-
-/**
- * Bid status
- */
-export enum BidStatus {
-  PENDING = 'pending',
-  ACCEPTED = 'accepted',
-  REJECTED = 'rejected',
-  EXPIRED = 'expired',
-}
-
-/**
- * Project status
- */
-export enum ProjectStatus {
-  OPEN = 'open',
-  IN_PROGRESS = 'in_progress',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-}
-
-/**
- * Payment status
- */
-export enum PaymentStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  REFUNDED = 'refunded',
-}
+// Import enums for use in interfaces
+import { UserRole, WasteType } from './enums';
 
 /**
  * Geographic coordinates

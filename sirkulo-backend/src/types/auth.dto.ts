@@ -1,6 +1,6 @@
 import { IsEmail, IsString, MinLength, IsOptional, IsEnum, IsArray, IsPhoneNumber } from 'class-validator';
 import { Request } from 'express';
-import { UserRole } from '../types';
+import { UserRole } from './enums';
 
 /**
  * Data Transfer Object for user registration

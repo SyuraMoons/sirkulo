@@ -98,33 +98,42 @@ sirkulo-backend/
    - Geographic location support
    - Shopping cart and checkout system
 
-3. **Bids & Upcycle Projects**
+3. **Order Management System**
+   - Complete order lifecycle management
+   - Cart-to-order conversion
+   - Multi-seller order support
+   - Order status tracking (Pending → Delivered)
+   - Payment status integration
+   - Order analytics and statistics
+   - Cancellation and refund handling
+
+4. **Bids & Upcycle Projects**
    - Recycler pickup bids
    - Creative upcycling project proposals
    - Acceptance and rejection workflows
 
-4. **Payments & Transactions**
+5. **Payments & Transactions**
    - Xendit/Midtrans integration
    - Invoice generation
    - Payment status tracking
    - Webhook handling
 
-5. **Logistics & Pickups**
+6. **Logistics & Pickups**
    - Pickup scheduling
    - Status updates and notifications
    - Real-time tracking
 
-6. **Communication & Notifications**
+7. **Communication & Notifications**
    - In-app messaging system
    - Push notifications via FCM
    - Email notifications
 
-7. **Analytics & Impact Tracking**
+8. **Analytics & Impact Tracking**
    - Business analytics dashboard
    - Environmental impact metrics
    - Volume tracking
 
-8. **Ratings & Reputation**
+9. **Ratings & Reputation**
    - User feedback system
    - Reputation scoring
    - Automated badge awards
@@ -160,25 +169,50 @@ Copy `.env.example` to `.env` and configure:
 ## 📊 API Documentation
 
 ### Health Check
+
 - `GET /health` - Server health status
 - `GET /api` - API information
 
-### Authentication (Coming Soon)
+### Authentication
+
 - `POST /api/auth/signup` - User registration
 - `POST /api/auth/login` - User login
 - `POST /api/auth/refresh` - Refresh token
 
-### Users (Coming Soon)
+### Users
+
 - `GET /api/users/profile` - Get user profile
 - `PUT /api/users/profile` - Update user profile
 - `POST /api/users/switch-mode` - Switch user mode
 
-### Listings (Coming Soon)
+### Listings
+
 - `GET /api/listings` - Get listings with filters
 - `POST /api/listings` - Create new listing
 - `GET /api/listings/:id` - Get listing by ID
 - `PUT /api/listings/:id` - Update listing
 - `DELETE /api/listings/:id` - Delete listing
+
+### Shopping Cart
+
+- `GET /api/cart` - Get cart items
+- `POST /api/cart` - Add item to cart
+- `PUT /api/cart/:id` - Update cart item
+- `DELETE /api/cart/:id` - Remove cart item
+- `DELETE /api/cart` - Clear entire cart
+
+### Order Management 🆕
+
+- `POST /api/orders` - Create order from cart
+- `GET /api/orders` - Get orders with filters
+- `GET /api/orders/:id` - Get order by ID
+- `PUT /api/orders/:id/status` - Update order status
+- `POST /api/orders/:id/cancel` - Cancel order
+- `GET /api/orders/stats` - Get order statistics
+- `GET /api/orders/purchases` - Get buyer orders
+- `GET /api/orders/sales` - Get seller orders
+
+For detailed Order Management API documentation, see [ORDER_MANAGEMENT.md](./ORDER_MANAGEMENT.md)
 
 ## 🧪 Testing
 
