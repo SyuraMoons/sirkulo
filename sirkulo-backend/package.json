@@ -13,7 +13,13 @@
     "lint:fix": "eslint src/**/*.ts --fix",
     "typeorm": "typeorm-ts-node-commonjs",
     "seed": "ts-node src/utils/database.seeder.ts",
-    "seed:clear": "ts-node -e \"import('./src/utils/database.seeder').then(m => m.DatabaseSeeder.clear())\""
+    "seed:clear": "ts-node -e \"import('./src/utils/database.seeder').then(m => m.DatabaseSeeder.clear())\"",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:dev:down": "docker-compose -f docker-compose.dev.yml down",
+    "docker:prod": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "dev:with-db": "npm run docker:dev && npm run dev"
   },
   "keywords": [
     "typescript",

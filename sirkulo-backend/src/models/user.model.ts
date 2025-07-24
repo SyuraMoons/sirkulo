@@ -24,14 +24,14 @@ export class User {
   @Column()
   password: string;
 
-  @Column({ nullable: true })
-  firstName: string;
+  @Column({ type: 'text', nullable: true })
+  firstName: string | null;
 
-  @Column({ nullable: true })
-  lastName: string;
+  @Column({ type: 'text', nullable: true })
+  lastName: string | null;
 
-  @Column({ nullable: true })
-  phoneNumber: string;
+  @Column({ type: 'text', nullable: true })
+  phoneNumber: string | null;
 
   @Column({
     type: 'enum',
@@ -59,7 +59,7 @@ export class User {
   documents: string[];
 
   @Column({ type: 'jsonb', nullable: true })
-  analyticsData: Record<string, any>;
+  analyticsData: Record<string, any> | null;
 
   @Column({ type: 'jsonb', nullable: true })
   businessProfile: {
@@ -69,7 +69,7 @@ export class User {
     address?: string;
     description?: string;
     website?: string;
-  };
+  } | null;
 
   @Column({ type: 'jsonb', nullable: true })
   recyclerProfile: {
@@ -77,7 +77,7 @@ export class User {
     experience?: string;
     portfolio?: string[];
     certifications?: string[];
-  };
+  } | null;
 
   @Column({ type: 'jsonb', nullable: true })
   location: {
@@ -86,7 +86,7 @@ export class User {
     address: string;
     city: string;
     country: string;
-  };
+  } | null;
 
   @Column({ default: true })
   isActive: boolean;
@@ -94,17 +94,17 @@ export class User {
   @Column({ default: false })
   emailVerified: boolean;
 
-  @Column({ nullable: true })
-  emailVerificationToken: string;
+  @Column({ type: 'text', nullable: true })
+  emailVerificationToken: string | null;
 
-  @Column({ nullable: true })
-  passwordResetToken: string;
+  @Column({ type: 'text', nullable: true })
+  passwordResetToken: string | null;
 
-  @Column({ nullable: true })
-  passwordResetExpires: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  passwordResetExpires: Date | null;
 
-  @Column({ nullable: true })
-  lastLoginAt: Date;
+  @Column({ type: 'timestamp', nullable: true })
+  lastLoginAt: Date | null;
 
   @CreateDateColumn()
   createdAt: Date;
