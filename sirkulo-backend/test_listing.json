@@ -1,0 +1,19 @@
+{
+  "title": "Test Fabric Scraps",
+  "description": "Test listing from business user",
+  "wasteType": "fabric_scraps",
+  "quantity": 100,
+  "unit": "kg",
+  "pricePerUnit": 15000,
+  "location": {
+    "latitude": -6.2088,
+    "longitude": 106.8456,
+    "address": "Jl. Sudirman No. 123, Jakarta",
+    "city": "Jakarta",
+    "state": "DKI Jakarta",
+    "country": "Indonesia",
+    "postalCode": "10210"
+  },
+  "availableFrom": "2025-01-25T00:00:00.000Z",
+  "availableUntil": "2025-03-25T00:00:00.000Z"
+}

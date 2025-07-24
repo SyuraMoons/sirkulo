@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: sirkulo_postgres_dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sirkulo_db
+      POSTGRES_USER: sirkulo_user
+      POSTGRES_PASSWORD: sirkulo_secure_password_2024!
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - sirkulo_dev_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: sirkulo_redis_dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - sirkulo_dev_network
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: sirkulo_pgadmin_dev
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@sirkulo.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_dev_data:/var/lib/pgadmin
+    networks:
+      - sirkulo_dev_network
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  pgadmin_dev_data:
+
+networks:
+  sirkulo_dev_network:
+    driver: bridge
