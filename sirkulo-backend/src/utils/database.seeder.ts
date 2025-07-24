@@ -1,12 +1,14 @@
 import { AppDataSource } from '../config/database';
 import { User } from '../models/user.model';
 import { Listing } from '../models/listing.model';
+import { CartItem } from '../models/cart.model';
 import { PasswordUtil } from './password.util';
 import { UserRole, WasteType, ListingStatus } from '../types';
 
 export class DatabaseSeeder {
   private static userRepository = AppDataSource.getRepository(User);
   private static listingRepository = AppDataSource.getRepository(Listing);
+  private static cartRepository = AppDataSource.getRepository(CartItem);
 
   static async run(): Promise<void> {
     try {
@@ -14,6 +16,7 @@ export class DatabaseSeeder {
       
       await this.createUsers();
       await this.createListings();
+      await this.createCartItems();
       
       console.log('✅ Database seeding completed successfully!');
     } catch (error) {
@@ -257,10 +260,64 @@ export class DatabaseSeeder {
     console.log(`✅ Created ${listings.length} listings`);
   }
 
+  static async createCartItems(): Promise<void> {
+    console.log('🛒 Creating cart items...');
+
+    // Get some users and listings to create cart items
+    const users = await this.userRepository.find({ take: 3 });
+    const listings = await this.listingRepository.find({ take: 5 });
+
+    if (users.length === 0 || listings.length === 0) {
+      console.log('⚠️ No users or listings found, skipping cart items');
+      return;
+    }
+
+    const cartItems = [
+      {
+        user: users[0],
+        listing: listings[0],
+        quantity: 5,
+        pricePerUnit: listings[0].pricePerUnit || 0
+      },
+      {
+        user: users[0],
+        listing: listings[1],
+        quantity: 2,
+        pricePerUnit: listings[1].pricePerUnit || 0
+      },
+      {
+        user: users[1],
+        listing: listings[2],
+        quantity: 10,
+        pricePerUnit: listings[2].pricePerUnit || 0
+      },
+      {
+        user: users[1],
+        listing: listings[3],
+        quantity: 3,
+        pricePerUnit: listings[3].pricePerUnit || 0
+      },
+      {
+        user: users[2],
+        listing: listings[0],
+        quantity: 1,
+        pricePerUnit: listings[0].pricePerUnit || 0
+      }
+    ];
+
+    for (const cartData of cartItems) {
+      const cartItem = this.cartRepository.create(cartData);
+      await this.cartRepository.save(cartItem);
+    }
+
+    console.log(`✅ Created ${cartItems.length} cart items`);
+  }
+
   static async clear(): Promise<void> {
     try {
       console.log('🧹 Clearing database...');
       
+      await this.cartRepository.delete({});
       await this.listingRepository.delete({});
       await this.userRepository.delete({});
       
