@@ -105,7 +105,7 @@ export default function ProductDetailScreen() {
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <FontAwesome name="arrow-left" size={20} color="#386B5F" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Product Details</Text>
+        <View style={{ flex: 1 }} />
         <TouchableOpacity style={styles.shareBtn}>
           <FontAwesome name="share-alt" size={20} color="#386B5F" />
         </TouchableOpacity>
@@ -277,11 +277,6 @@ const styles = StyleSheet.create({
     padding: 8,
     backgroundColor: '#E6F3EC',
     borderRadius: 12,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#222',
   },
   shareBtn: {
     padding: 8,
