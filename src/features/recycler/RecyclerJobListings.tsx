@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { router } from 'expo-router';
 import { COLORS } from '@/src/constants/features';
 
 interface Job {
@@ -29,7 +23,8 @@ const SAMPLE_JOBS: Job[] = [
   {
     id: '1',
     title: 'Custom Tote Bag from Plastic Bottles',
-    description: 'Create a durable tote bag using recycled plastic bottles. Client wants a specific design with their logo.',
+    description:
+      'Create a durable tote bag using recycled plastic bottles. Client wants a specific design with their logo.',
     materials: ['Plastic Bottles', 'Fabric Dye', 'Thread'],
     difficulty: 'Medium',
     estimatedTime: '3-4 days',
@@ -57,7 +52,8 @@ const SAMPLE_JOBS: Job[] = [
   {
     id: '3',
     title: 'Furniture Set from Cardboard',
-    description: 'Design and create a complete furniture set for a temporary exhibition using cardboard materials.',
+    description:
+      'Design and create a complete furniture set for a temporary exhibition using cardboard materials.',
     materials: ['Cardboard', 'Glue', 'Paint'],
     difficulty: 'Hard',
     estimatedTime: '1-2 weeks',
@@ -88,32 +84,41 @@ interface RecyclerJobListingsProps {
   onJobSelect?: (jobId: string) => void;
 }
 
-export default function RecyclerJobListings({ onJobSelect }: RecyclerJobListingsProps) {
+export default function RecyclerJobListings() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'All' | 'Easy' | 'Medium' | 'Hard'>('All');
   const [sortBy, setSortBy] = useState<'payment' | 'deadline' | 'urgency'>('payment');
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'Easy': return '#4CAF50';
-      case 'Medium': return '#FF9800';
-      case 'Hard': return '#F44336';
-      default: return COLORS.text.secondary;
+      case 'Easy':
+        return '#4CAF50';
+      case 'Medium':
+        return '#FF9800';
+      case 'Hard':
+        return '#F44336';
+      default:
+        return COLORS.text.secondary;
     }
   };
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
-      case 'Low': return '#4CAF50';
-      case 'Medium': return '#FF9800';
-      case 'High': return '#F44336';
-      default: return COLORS.text.secondary;
+      case 'Low':
+        return '#4CAF50';
+      case 'Medium':
+        return '#FF9800';
+      case 'High':
+        return '#F44336';
+      default:
+        return COLORS.text.secondary;
     }
   };
 
   const filteredJobs = SAMPLE_JOBS.filter(job => {
-    const matchesSearch = job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         job.description.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch =
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesFilter = selectedFilter === 'All' || job.difficulty === selectedFilter;
     return matchesSearch && matchesFilter;
   }).sort((a, b) => {
@@ -123,7 +128,7 @@ export default function RecyclerJobListings({ onJobSelect }: RecyclerJobListings
       case 'deadline':
         return new Date(a.deadline).getTime() - new Date(b.deadline).getTime();
       case 'urgency':
-        const urgencyOrder = { 'High': 3, 'Medium': 2, 'Low': 1 };
+        const urgencyOrder = { High: 3, Medium: 2, Low: 1 };
         return urgencyOrder[b.urgency] - urgencyOrder[a.urgency];
       default:
         return 0;
@@ -151,19 +156,18 @@ export default function RecyclerJobListings({ onJobSelect }: RecyclerJobListings
 
       <View style={styles.filtersContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
-          {['All', 'Easy', 'Medium', 'Hard'].map((filter) => (
+          {['All', 'Easy', 'Medium', 'Hard'].map(filter => (
             <TouchableOpacity
               key={filter}
-              style={[
-                styles.filterChip,
-                selectedFilter === filter && styles.filterChipActive
-              ]}
+              style={[styles.filterChip, selectedFilter === filter && styles.filterChipActive]}
               onPress={() => setSelectedFilter(filter as any)}
             >
-              <Text style={[
-                styles.filterChipText,
-                selectedFilter === filter && styles.filterChipTextActive
-              ]}>
+              <Text
+                style={[
+                  styles.filterChipText,
+                  selectedFilter === filter && styles.filterChipTextActive,
+                ]}
+              >
                 {filter}
               </Text>
             </TouchableOpacity>
@@ -178,20 +182,27 @@ export default function RecyclerJobListings({ onJobSelect }: RecyclerJobListings
 
       {/* Job Listings */}
       <ScrollView style={styles.jobsList} showsVerticalScrollIndicator={false}>
-        {filteredJobs.map((job) => (
+        {filteredJobs.map(job => (
           <TouchableOpacity
             key={job.id}
             style={styles.jobCard}
-            onPress={() => onJobSelect?.(job.id)}
+            onPress={() => router.push(`/job/${job.id}` as any)}
           >
             <View style={styles.jobHeader}>
               <View style={styles.jobTitleContainer}>
                 <Text style={styles.jobTitle}>{job.title}</Text>
                 <View style={styles.jobBadges}>
-                  <View style={[styles.difficultyBadge, { backgroundColor: getDifficultyColor(job.difficulty) }]}>
+                  <View
+                    style={[
+                      styles.difficultyBadge,
+                      { backgroundColor: getDifficultyColor(job.difficulty) },
+                    ]}
+                  >
                     <Text style={styles.badgeText}>{job.difficulty}</Text>
                   </View>
-                  <View style={[styles.urgencyBadge, { backgroundColor: getUrgencyColor(job.urgency) }]}>
+                  <View
+                    style={[styles.urgencyBadge, { backgroundColor: getUrgencyColor(job.urgency) }]}
+                  >
                     <Text style={styles.badgeText}>{job.urgency}</Text>
                   </View>
                 </View>
@@ -229,7 +240,9 @@ export default function RecyclerJobListings({ onJobSelect }: RecyclerJobListings
                 </View>
                 <View style={styles.infoItem}>
                   <FontAwesome name="calendar" size={14} color={COLORS.text.secondary} />
-                  <Text style={styles.infoText}>Due: {new Date(job.deadline).toLocaleDateString()}</Text>
+                  <Text style={styles.infoText}>
+                    Due: {new Date(job.deadline).toLocaleDateString()}
+                  </Text>
                 </View>
               </View>
 

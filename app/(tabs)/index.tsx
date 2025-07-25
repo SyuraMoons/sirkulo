@@ -11,7 +11,6 @@ import {
 import HomeHeader from '@/src/features/home/HomeHeader';
 import CraftsSection from '@/src/features/home/CraftsSection';
 
-
 import RecyclerJobListings from '@/src/features/recycler/RecyclerJobListings';
 import { useNavigation } from 'expo-router';
 import { useUserMode } from '@/src/contexts/UserModeContext';
@@ -30,36 +29,36 @@ export default function TabOneScreen() {
   const renderBusinessHome = () => (
     <View style={styles.modeContainer}>
       <Text style={styles.modeTitle}>Business Dashboard</Text>
-      
+
       {/* Quick Actions for Businesses */}
       <View style={styles.quickActionsGrid}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.quickActionCard}
           onPress={() => router.push('/waste-listing/create')}
         >
           <FontAwesome name="plus" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>List Waste</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
           onPress={() => router.push('/project-request/create')}
         >
           <FontAwesome name="lightbulb-o" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>Request Project</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
-          onPress={() => console.log('Analytics - Feature coming soon')}
+          onPress={() => router.push('/business/analytics')}
         >
           <FontAwesome name="bar-chart" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>Analytics</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
-          onPress={() => console.log('Partnerships - Feature coming soon')}
+          onPress={() => router.push('/business/partnerships')}
         >
           <FontAwesome name="handshake-o" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>Partnerships</Text>
@@ -74,20 +73,20 @@ export default function TabOneScreen() {
             <Text style={styles.viewAllText}>View Details</Text>
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.overviewCards}>
           <View style={styles.overviewCard}>
             <FontAwesome name="recycle" size={20} color={COLORS.success} />
             <Text style={styles.overviewCardValue}>2.4kg</Text>
             <Text style={styles.overviewCardLabel}>Materials Listed</Text>
           </View>
-          
+
           <View style={styles.overviewCard}>
             <FontAwesome name="lightbulb-o" size={20} color={COLORS.warning} />
             <Text style={styles.overviewCardValue}>3</Text>
             <Text style={styles.overviewCardLabel}>Active Projects</Text>
           </View>
-          
+
           <View style={styles.overviewCard}>
             <FontAwesome name="users" size={20} color={COLORS.info} />
             <Text style={styles.overviewCardValue}>5</Text>
@@ -104,7 +103,7 @@ export default function TabOneScreen() {
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.activityList}>
           <View style={styles.activityItem}>
             <View style={styles.activityIcon}>
@@ -115,7 +114,7 @@ export default function TabOneScreen() {
               <Text style={styles.activityTime}>2 hours ago</Text>
             </View>
           </View>
-          
+
           <View style={styles.activityItem}>
             <View style={styles.activityIcon}>
               <FontAwesome name="handshake-o" size={16} color={COLORS.success} />
@@ -125,7 +124,7 @@ export default function TabOneScreen() {
               <Text style={styles.activityTime}>1 day ago</Text>
             </View>
           </View>
-          
+
           <View style={styles.activityItem}>
             <View style={styles.activityIcon}>
               <FontAwesome name="check" size={16} color={COLORS.success} />
@@ -143,36 +142,36 @@ export default function TabOneScreen() {
   const renderRecyclerHome = () => (
     <View style={styles.modeContainer}>
       <Text style={styles.modeTitle}>Recycler Dashboard</Text>
-      
+
       {/* Quick Actions for Recyclers */}
       <View style={styles.quickActionsGrid}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.quickActionCard}
-          onPress={() => console.log('Browse Waste - Feature coming soon')}
+          onPress={() => router.push('/recycler/browse-waste')}
         >
           <FontAwesome name="search" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>Browse Waste</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
-          onPress={() => console.log('View Projects - Feature coming soon')}
+          onPress={() => router.push('/recycler/view-projects')}
         >
           <FontAwesome name="lightbulb-o" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>View Projects</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
-          onPress={() => console.log('Operations - Feature coming soon')}
+          onPress={() => router.push('/recycler/operation-management')}
         >
           <FontAwesome name="cog" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>Operations</Text>
         </TouchableOpacity>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.quickActionCard}
-          onPress={() => console.log('Analytics - Feature coming soon')}
+          onPress={() => router.push('/business/analytics')}
         >
           <FontAwesome name="bar-chart" size={24} color={COLORS.primary} />
           <Text style={styles.quickActionText}>Analytics</Text>
@@ -181,7 +180,7 @@ export default function TabOneScreen() {
 
       {/* Job Listings Section */}
       <View style={styles.jobListingsSection}>
-        <RecyclerJobListings onJobSelect={(jobId) => console.log('Selected job:', jobId)} />
+        <RecyclerJobListings />
       </View>
 
       {/* Recent Activity */}
@@ -200,7 +199,7 @@ export default function TabOneScreen() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <HomeHeader mode={mode} setMode={setMode} />
-      
+
       {mode === 'Customer' && (
         <>
           {/* Search Bar */}
@@ -214,7 +213,7 @@ export default function TabOneScreen() {
               <FontAwesome name="sliders" size={20} color="#386B5F" />
             </TouchableOpacity>
           </View>
-          
+
           {/* Banner */}
           <View style={styles.bannerContainer}>
             <Image
@@ -223,13 +222,13 @@ export default function TabOneScreen() {
               resizeMode="cover"
             />
           </View>
-          
+
           <CraftsSection />
         </>
       )}
-      
+
       {mode === 'Recycler' && renderRecyclerHome()}
-      
+
       {mode === 'Business' && renderBusinessHome()}
     </ScrollView>
   );

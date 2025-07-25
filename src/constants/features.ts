@@ -10,22 +10,22 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'pet-bottles',
         name: 'PET Bottles',
         description: 'Plastic bottles (water, soda, etc.)',
-        materialSpecs: ['PET #1', 'Clear or colored', 'Clean condition']
+        materialSpecs: ['PET #1', 'Clear or colored', 'Clean condition'],
       },
       {
         id: 'hdpe-containers',
         name: 'HDPE Containers',
         description: 'Milk jugs, detergent bottles',
-        materialSpecs: ['HDPE #2', 'Various colors', 'Label removal preferred']
+        materialSpecs: ['HDPE #2', 'Various colors', 'Label removal preferred'],
       },
       {
         id: 'plastic-bags',
         name: 'Plastic Bags',
         description: 'Shopping bags, food packaging',
-        materialSpecs: ['LDPE #4', 'Clean and dry', 'No mixed materials']
-      }
+        materialSpecs: ['LDPE #4', 'Clean and dry', 'No mixed materials'],
+      },
     ],
-    processingRequirements: ['Cleaning', 'Sorting by type', 'Label removal']
+    processingRequirements: ['Cleaning', 'Sorting by type', 'Label removal'],
   },
   {
     id: 'metal',
@@ -36,22 +36,22 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'aluminum-cans',
         name: 'Aluminum Cans',
         description: 'Beverage cans, food containers',
-        materialSpecs: ['Aluminum alloy', 'Crushed or whole', 'Clean condition']
+        materialSpecs: ['Aluminum alloy', 'Crushed or whole', 'Clean condition'],
       },
       {
         id: 'steel-scrap',
         name: 'Steel Scrap',
         description: 'Steel pieces, appliances',
-        materialSpecs: ['Various steel grades', 'Size limitations apply', 'Rust acceptable']
+        materialSpecs: ['Various steel grades', 'Size limitations apply', 'Rust acceptable'],
       },
       {
         id: 'copper-wire',
         name: 'Copper Wire',
         description: 'Electrical wiring, plumbing',
-        materialSpecs: ['Pure copper', 'Insulation removal preferred', 'No corrosion']
-      }
+        materialSpecs: ['Pure copper', 'Insulation removal preferred', 'No corrosion'],
+      },
     ],
-    processingRequirements: ['Sorting by grade', 'Cleaning', 'Size reduction']
+    processingRequirements: ['Sorting by grade', 'Cleaning', 'Size reduction'],
   },
   {
     id: 'paper',
@@ -62,22 +62,22 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'cardboard',
         name: 'Cardboard',
         description: 'Boxes, packaging materials',
-        materialSpecs: ['Corrugated cardboard', 'Flat or folded', 'Dry condition']
+        materialSpecs: ['Corrugated cardboard', 'Flat or folded', 'Dry condition'],
       },
       {
         id: 'office-paper',
         name: 'Office Paper',
         description: 'White paper, documents',
-        materialSpecs: ['White paper', 'No plastic coating', 'Staples acceptable']
+        materialSpecs: ['White paper', 'No plastic coating', 'Staples acceptable'],
       },
       {
         id: 'newspapers',
         name: 'Newspapers',
         description: 'Newsprint, magazines',
-        materialSpecs: ['Newsprint quality', 'No glossy inserts', 'Bundle preferred']
-      }
+        materialSpecs: ['Newsprint quality', 'No glossy inserts', 'Bundle preferred'],
+      },
     ],
-    processingRequirements: ['Moisture control', 'Contamination removal', 'Baling']
+    processingRequirements: ['Moisture control', 'Contamination removal', 'Baling'],
   },
   {
     id: 'electronic',
@@ -88,22 +88,26 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'smartphones',
         name: 'Smartphones',
         description: 'Mobile phones, tablets',
-        materialSpecs: ['Working or broken', 'Battery included', 'Data wiped']
+        materialSpecs: ['Working or broken', 'Battery included', 'Data wiped'],
       },
       {
         id: 'computers',
         name: 'Computers',
         description: 'Laptops, desktops, components',
-        materialSpecs: ['Complete or parts', 'Hard drives wiped', 'Power cables included']
+        materialSpecs: ['Complete or parts', 'Hard drives wiped', 'Power cables included'],
       },
       {
         id: 'small-appliances',
         name: 'Small Appliances',
         description: 'Toasters, microwaves, etc.',
-        materialSpecs: ['Working or broken', 'Complete units', 'Power cords attached']
-      }
+        materialSpecs: ['Working or broken', 'Complete units', 'Power cords attached'],
+      },
     ],
-    processingRequirements: ['Data destruction', 'Component separation', 'Hazardous material handling']
+    processingRequirements: [
+      'Data destruction',
+      'Component separation',
+      'Hazardous material handling',
+    ],
   },
   {
     id: 'organic',
@@ -114,22 +118,22 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'food-waste',
         name: 'Food Waste',
         description: 'Kitchen scraps, expired food',
-        materialSpecs: ['Organic matter only', 'No packaging', 'Fresh condition']
+        materialSpecs: ['Organic matter only', 'No packaging', 'Fresh condition'],
       },
       {
         id: 'yard-waste',
         name: 'Yard Waste',
         description: 'Leaves, branches, grass',
-        materialSpecs: ['Natural materials', 'No treated wood', 'Seasonal availability']
+        materialSpecs: ['Natural materials', 'No treated wood', 'Seasonal availability'],
       },
       {
         id: 'wood-scraps',
         name: 'Wood Scraps',
         description: 'Untreated lumber, furniture',
-        materialSpecs: ['Untreated wood', 'No paint or stain', 'Various sizes']
-      }
+        materialSpecs: ['Untreated wood', 'No paint or stain', 'Various sizes'],
+      },
     ],
-    processingRequirements: ['Composting preparation', 'Size reduction', 'Contamination removal']
+    processingRequirements: ['Composting preparation', 'Size reduction', 'Contamination removal'],
   },
   {
     id: 'textile',
@@ -140,22 +144,22 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'clothing',
         name: 'Clothing',
         description: 'Used clothes, accessories',
-        materialSpecs: ['Clean condition', 'Various materials', 'Wearable or damaged']
+        materialSpecs: ['Clean condition', 'Various materials', 'Wearable or damaged'],
       },
       {
         id: 'fabric-scraps',
         name: 'Fabric Scraps',
         description: 'Leftover fabric, upholstery',
-        materialSpecs: ['Various fabric types', 'Clean pieces', 'Size varies']
+        materialSpecs: ['Various fabric types', 'Clean pieces', 'Size varies'],
       },
       {
         id: 'shoes',
         name: 'Shoes',
         description: 'Footwear, boots, sandals',
-        materialSpecs: ['Various materials', 'Paired or single', 'Any condition']
-      }
+        materialSpecs: ['Various materials', 'Paired or single', 'Any condition'],
+      },
     ],
-    processingRequirements: ['Sorting by material', 'Cleaning', 'Component separation']
+    processingRequirements: ['Sorting by material', 'Cleaning', 'Component separation'],
   },
   {
     id: 'glass',
@@ -166,22 +170,22 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'bottles',
         name: 'Glass Bottles',
         description: 'Beverage bottles, jars',
-        materialSpecs: ['Clear or colored glass', 'Whole or broken', 'Labels acceptable']
+        materialSpecs: ['Clear or colored glass', 'Whole or broken', 'Labels acceptable'],
       },
       {
         id: 'window-glass',
         name: 'Window Glass',
         description: 'Flat glass, mirrors',
-        materialSpecs: ['Flat glass sheets', 'Various sizes', 'Handle with care']
+        materialSpecs: ['Flat glass sheets', 'Various sizes', 'Handle with care'],
       },
       {
         id: 'cookware',
         name: 'Glass Cookware',
         description: 'Pyrex, glass dishes',
-        materialSpecs: ['Tempered glass', 'Complete pieces', 'Heat-resistant glass']
-      }
+        materialSpecs: ['Tempered glass', 'Complete pieces', 'Heat-resistant glass'],
+      },
     ],
-    processingRequirements: ['Color sorting', 'Crushing', 'Contamination removal']
+    processingRequirements: ['Color sorting', 'Crushing', 'Contamination removal'],
   },
   {
     id: 'composite',
@@ -192,17 +196,17 @@ export const WASTE_CATEGORIES: WasteCategory[] = [
         id: 'tetra-pak',
         name: 'Tetra Pak',
         description: 'Milk cartons, juice boxes',
-        materialSpecs: ['Multi-layer packaging', 'Clean and dry', 'Caps removed']
+        materialSpecs: ['Multi-layer packaging', 'Clean and dry', 'Caps removed'],
       },
       {
         id: 'mixed-materials',
         name: 'Mixed Materials',
         description: 'Complex products with multiple materials',
-        materialSpecs: ['Various combinations', 'Disassembly required', 'Component identification']
-      }
+        materialSpecs: ['Various combinations', 'Disassembly required', 'Component identification'],
+      },
     ],
-    processingRequirements: ['Material separation', 'Specialized processing', 'Component recovery']
-  }
+    processingRequirements: ['Material separation', 'Specialized processing', 'Component recovery'],
+  },
 ];
 
 export const QUALITY_GRADES = [
@@ -210,26 +214,26 @@ export const QUALITY_GRADES = [
     id: 'premium',
     name: 'Premium',
     description: 'Excellent condition, minimal contamination',
-    color: '#4CAF50'
+    color: '#4CAF50',
   },
   {
     id: 'standard',
     name: 'Standard',
     description: 'Good condition, some minor contamination',
-    color: '#2196F3'
+    color: '#2196F3',
   },
   {
     id: 'low-grade',
     name: 'Low Grade',
     description: 'Fair condition, moderate contamination',
-    color: '#FF9800'
+    color: '#FF9800',
   },
   {
     id: 'contaminated',
     name: 'Contaminated',
     description: 'Poor condition, significant contamination',
-    color: '#F44336'
-  }
+    color: '#F44336',
+  },
 ];
 
 export const URGENCY_LEVELS = [
@@ -237,26 +241,26 @@ export const URGENCY_LEVELS = [
     id: 'flexible',
     name: 'Flexible',
     description: 'No rush, flexible timing',
-    color: '#4CAF50'
+    color: '#4CAF50',
   },
   {
     id: 'moderate',
     name: 'Moderate',
     description: 'Preferred timeline, some flexibility',
-    color: '#2196F3'
+    color: '#2196F3',
   },
   {
     id: 'urgent',
     name: 'Urgent',
     description: 'Time-sensitive, quick pickup needed',
-    color: '#FF9800'
+    color: '#FF9800',
   },
   {
     id: 'critical',
     name: 'Critical',
     description: 'Immediate attention required',
-    color: '#F44336'
-  }
+    color: '#F44336',
+  },
 ];
 
 export const QUANTITY_UNITS = [
@@ -266,7 +270,7 @@ export const QUANTITY_UNITS = [
   { id: 'liters', name: 'Liters', type: 'volume' },
   { id: 'cubic-meters', name: 'Cubic Meters', type: 'volume' },
   { id: 'bags', name: 'Bags', type: 'container' },
-  { id: 'boxes', name: 'Boxes', type: 'container' }
+  { id: 'boxes', name: 'Boxes', type: 'container' },
 ];
 
 export const PROJECT_TEMPLATES = [
@@ -278,7 +282,7 @@ export const PROJECT_TEMPLATES = [
     materials: ['PET bottles', 'HDPE containers'],
     estimatedTime: '2-4 weeks',
     complexity: 'moderate',
-    image: 'chair-template.jpg'
+    image: 'chair-template.jpg',
   },
   {
     id: 'metal-art',
@@ -288,7 +292,7 @@ export const PROJECT_TEMPLATES = [
     materials: ['Steel scraps', 'Aluminum pieces'],
     estimatedTime: '1-3 weeks',
     complexity: 'simple',
-    image: 'art-template.jpg'
+    image: 'art-template.jpg',
   },
   {
     id: 'storage-container',
@@ -298,7 +302,7 @@ export const PROJECT_TEMPLATES = [
     materials: ['Plastic containers', 'Metal components'],
     estimatedTime: '1-2 weeks',
     complexity: 'simple',
-    image: 'storage-template.jpg'
+    image: 'storage-template.jpg',
   },
   {
     id: 'garden-planter',
@@ -308,8 +312,8 @@ export const PROJECT_TEMPLATES = [
     materials: ['Wood scraps', 'Organic matter'],
     estimatedTime: '2-3 weeks',
     complexity: 'moderate',
-    image: 'planter-template.jpg'
-  }
+    image: 'planter-template.jpg',
+  },
 ];
 
 export const BUSINESS_ACHIEVEMENT_CATEGORIES = [
@@ -317,26 +321,26 @@ export const BUSINESS_ACHIEVEMENT_CATEGORIES = [
     id: 'environmental',
     name: 'Environmental',
     icon: 'leaf',
-    color: '#4CAF50'
+    color: '#4CAF50',
   },
   {
     id: 'innovation',
     name: 'Innovation',
     icon: 'lightbulb-o',
-    color: '#2196F3'
+    color: '#2196F3',
   },
   {
     id: 'partnership',
     name: 'Partnership',
     icon: 'handshake-o',
-    color: '#FF9800'
+    color: '#FF9800',
   },
   {
     id: 'efficiency',
     name: 'Efficiency',
     icon: 'tachometer',
-    color: '#9C27B0'
-  }
+    color: '#9C27B0',
+  },
 ];
 
 export const MATERIAL_ICONS = {
@@ -347,7 +351,7 @@ export const MATERIAL_ICONS = {
   organic: 'leaf',
   textile: 'scissors',
   glass: 'glass',
-  composite: 'puzzle-piece'
+  composite: 'puzzle-piece',
 };
 
 export const COLORS = {
@@ -363,6 +367,6 @@ export const COLORS = {
   text: {
     primary: '#222222',
     secondary: '#666666',
-    disabled: '#999999'
-  }
+    disabled: '#999999',
+  },
 };

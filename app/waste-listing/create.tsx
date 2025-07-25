@@ -10,7 +10,13 @@ import {
   Alert,
 } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { WASTE_CATEGORIES, QUALITY_GRADES, QUANTITY_UNITS, URGENCY_LEVELS, COLORS } from '@/src/constants/features';
+import {
+  WASTE_CATEGORIES,
+  QUALITY_GRADES,
+  QUANTITY_UNITS,
+  URGENCY_LEVELS,
+  COLORS,
+} from '@/src/constants/features';
 import { WasteListingFormData } from '@/src/types/features';
 import { router, useLocalSearchParams } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -21,7 +27,7 @@ export default function WasteListingCreator() {
   const [formData, setFormData] = useState<WasteListingFormData>({
     step: 1,
     title: '',
-    category: template as string || '',
+    category: (template as string) || '',
     subcategory: '',
     description: '',
     quantity: {
@@ -118,12 +124,7 @@ export default function WasteListingCreator() {
   const renderProgressBar = () => (
     <View style={styles.progressContainer}>
       <View style={styles.progressBar}>
-        <View 
-          style={[
-            styles.progressFill, 
-            { width: `${(currentStep / totalSteps) * 100}%` }
-          ]} 
-        />
+        <View style={[styles.progressFill, { width: `${(currentStep / totalSteps) * 100}%` }]} />
       </View>
       <Text style={styles.progressText}>
         Step {currentStep} of {totalSteps}
@@ -134,9 +135,7 @@ export default function WasteListingCreator() {
   const renderStep1 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 1: Initiate New Listing</Text>
-      <Text style={styles.stepDescription}>
-        Let's start by setting up your waste listing
-      </Text>
+      <Text style={styles.stepDescription}>Let's start by setting up your waste listing</Text>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Listing Title</Text>
@@ -144,14 +143,14 @@ export default function WasteListingCreator() {
           style={styles.textInput}
           placeholder="e.g., Clean Plastic Bottles for Recycling"
           value={formData.title}
-          onChangeText={(text) => updateFormData('title', text)}
+          onChangeText={text => updateFormData('title', text)}
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Listing Type</Text>
         <View style={styles.typeGrid}>
-          {['Sale', 'Donation', 'Processing'].map((type) => (
+          {['Sale', 'Donation', 'Processing'].map(type => (
             <TouchableOpacity key={type} style={styles.typeCard}>
               <Text style={styles.typeText}>{type}</Text>
             </TouchableOpacity>
@@ -167,7 +166,7 @@ export default function WasteListingCreator() {
           multiline
           numberOfLines={4}
           value={formData.description}
-          onChangeText={(text) => updateFormData('description', text)}
+          onChangeText={text => updateFormData('description', text)}
         />
       </View>
     </View>
@@ -176,29 +175,26 @@ export default function WasteListingCreator() {
   const renderStep2 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 2: Choose Category</Text>
-      <Text style={styles.stepDescription}>
-        Select the appropriate category for your waste
-      </Text>
+      <Text style={styles.stepDescription}>Select the appropriate category for your waste</Text>
 
       <View style={styles.categoryGrid}>
-        {WASTE_CATEGORIES.map((category) => (
+        {WASTE_CATEGORIES.map(category => (
           <TouchableOpacity
             key={category.id}
-            style={[
-              styles.categoryCard,
-              formData.category === category.id && styles.selectedCard
-            ]}
+            style={[styles.categoryCard, formData.category === category.id && styles.selectedCard]}
             onPress={() => updateFormData('category', category.id)}
           >
-            <FontAwesome 
-              name={category.icon as any} 
-              size={24} 
-              color={formData.category === category.id ? '#FFFFFF' : COLORS.primary} 
+            <FontAwesome
+              name={category.icon as any}
+              size={24}
+              color={formData.category === category.id ? '#FFFFFF' : COLORS.primary}
             />
-            <Text style={[
-              styles.categoryName,
-              formData.category === category.id && styles.selectedText
-            ]}>
+            <Text
+              style={[
+                styles.categoryName,
+                formData.category === category.id && styles.selectedText,
+              ]}
+            >
               {category.name}
             </Text>
           </TouchableOpacity>
@@ -209,19 +205,21 @@ export default function WasteListingCreator() {
         <View style={styles.subcategorySection}>
           <Text style={styles.label}>Subcategory</Text>
           <View style={styles.subcategoryList}>
-            {WASTE_CATEGORIES.find(c => c.id === formData.category)?.subcategories.map((sub) => (
+            {WASTE_CATEGORIES.find(c => c.id === formData.category)?.subcategories.map(sub => (
               <TouchableOpacity
                 key={sub.id}
                 style={[
                   styles.subcategoryItem,
-                  formData.subcategory === sub.id && styles.selectedSubcategory
+                  formData.subcategory === sub.id && styles.selectedSubcategory,
                 ]}
                 onPress={() => updateFormData('subcategory', sub.id)}
               >
-                <Text style={[
-                  styles.subcategoryText,
-                  formData.subcategory === sub.id && styles.selectedText
-                ]}>
+                <Text
+                  style={[
+                    styles.subcategoryText,
+                    formData.subcategory === sub.id && styles.selectedText,
+                  ]}
+                >
                   {sub.name}
                 </Text>
                 <Text style={styles.subcategoryDesc}>{sub.description}</Text>
@@ -236,9 +234,7 @@ export default function WasteListingCreator() {
   const renderStep3 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 3: Quantity & Location</Text>
-      <Text style={styles.stepDescription}>
-        Enter details about amount and location
-      </Text>
+      <Text style={styles.stepDescription}>Enter details about amount and location</Text>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Quantity</Text>
@@ -248,7 +244,9 @@ export default function WasteListingCreator() {
             placeholder="Amount"
             keyboardType="numeric"
             value={formData.quantity.amount}
-            onChangeText={(text) => updateFormData('quantity', { ...formData.quantity, amount: text })}
+            onChangeText={text =>
+              updateFormData('quantity', { ...formData.quantity, amount: text })
+            }
           />
           <View style={styles.unitPicker}>
             <Text style={styles.unitText}>{formData.quantity.unit}</Text>
@@ -262,7 +260,7 @@ export default function WasteListingCreator() {
           style={styles.textInput}
           placeholder="Enter full address"
           value={formData.location.address}
-          onChangeText={(text) => updateFormData('location', { ...formData.location, address: text })}
+          onChangeText={text => updateFormData('location', { ...formData.location, address: text })}
         />
       </View>
 
@@ -274,7 +272,9 @@ export default function WasteListingCreator() {
           multiline
           numberOfLines={3}
           value={formData.location.accessInfo}
-          onChangeText={(text) => updateFormData('location', { ...formData.location, accessInfo: text })}
+          onChangeText={text =>
+            updateFormData('location', { ...formData.location, accessInfo: text })
+          }
         />
       </View>
     </View>
@@ -283,9 +283,7 @@ export default function WasteListingCreator() {
   const renderStep4 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 4: Add Photos</Text>
-      <Text style={styles.stepDescription}>
-        Add visual representation for better clarity
-      </Text>
+      <Text style={styles.stepDescription}>Add visual representation for better clarity</Text>
 
       <TouchableOpacity style={styles.photoUploadButton} onPress={handlePhotoUpload}>
         <FontAwesome name="camera" size={24} color={COLORS.primary} />
@@ -297,10 +295,7 @@ export default function WasteListingCreator() {
           {formData.photos.map((photo, index) => (
             <View key={index} style={styles.photoItem}>
               <Image source={{ uri: photo }} style={styles.photoImage} />
-              <TouchableOpacity
-                style={styles.removePhotoButton}
-                onPress={() => removePhoto(index)}
-              >
+              <TouchableOpacity style={styles.removePhotoButton} onPress={() => removePhoto(index)}>
                 <FontAwesome name="times" size={16} color="#FFFFFF" />
               </TouchableOpacity>
             </View>
@@ -321,9 +316,7 @@ export default function WasteListingCreator() {
   const renderStep5 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 5: Availability & Pricing</Text>
-      <Text style={styles.stepDescription}>
-        Set when it's available and pricing if desired
-      </Text>
+      <Text style={styles.stepDescription}>Set when it's available and pricing if desired</Text>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Available From</Text>
@@ -331,14 +324,16 @@ export default function WasteListingCreator() {
           style={styles.textInput}
           placeholder="Select date"
           value={formData.availability.startDate}
-          onChangeText={(text) => updateFormData('availability', { ...formData.availability, startDate: text })}
+          onChangeText={text =>
+            updateFormData('availability', { ...formData.availability, startDate: text })
+          }
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Urgency Level</Text>
         <View style={styles.urgencyGrid}>
-          {URGENCY_LEVELS.map((level) => (
+          {URGENCY_LEVELS.map(level => (
             <TouchableOpacity key={level.id} style={styles.urgencyCard}>
               <View style={[styles.urgencyDot, { backgroundColor: level.color }]} />
               <Text style={styles.urgencyText}>{level.name}</Text>
@@ -354,20 +349,20 @@ export default function WasteListingCreator() {
           placeholder="Enter price or leave blank for free"
           keyboardType="numeric"
           value={formData.pricing.basePrice}
-          onChangeText={(text) => updateFormData('pricing', { ...formData.pricing, basePrice: text })}
+          onChangeText={text => updateFormData('pricing', { ...formData.pricing, basePrice: text })}
         />
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.checkboxRow}
-          onPress={() => updateFormData('pricing', { 
-            ...formData.pricing, 
-            negotiable: !formData.pricing.negotiable 
-          })}
+          onPress={() =>
+            updateFormData('pricing', {
+              ...formData.pricing,
+              negotiable: !formData.pricing.negotiable,
+            })
+          }
         >
           <View style={[styles.checkbox, formData.pricing.negotiable && styles.checkedBox]}>
-            {formData.pricing.negotiable && (
-              <FontAwesome name="check" size={12} color="#FFFFFF" />
-            )}
+            {formData.pricing.negotiable && <FontAwesome name="check" size={12} color="#FFFFFF" />}
           </View>
           <Text style={styles.checkboxText}>Price is negotiable</Text>
         </TouchableOpacity>
@@ -378,9 +373,7 @@ export default function WasteListingCreator() {
   const renderStep6 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 6: Review & Publish</Text>
-      <Text style={styles.stepDescription}>
-        Review your listing before making it live
-      </Text>
+      <Text style={styles.stepDescription}>Review your listing before making it live</Text>
 
       <View style={styles.reviewCard}>
         <Text style={styles.reviewTitle}>{formData.title}</Text>
@@ -401,7 +394,7 @@ export default function WasteListingCreator() {
           <FontAwesome name="eye" size={16} color={COLORS.primary} />
           <Text style={styles.optionText}>Preview Listing</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.optionButton}>
           <FontAwesome name="bell" size={16} color={COLORS.primary} />
           <Text style={styles.optionText}>Notification Settings</Text>
@@ -412,34 +405,42 @@ export default function WasteListingCreator() {
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 1: return renderStep1();
-      case 2: return renderStep2();
-      case 3: return renderStep3();
-      case 4: return renderStep4();
-      case 5: return renderStep5();
-      case 6: return renderStep6();
-      case 7: return (
-        <View style={styles.stepContainer}>
-          <View style={styles.successContainer}>
-            <FontAwesome name="check-circle" size={64} color={COLORS.success} />
-            <Text style={styles.successTitle}>Listing Created!</Text>
-            <Text style={styles.successText}>
-              Your waste listing is now live on the marketplace
-            </Text>
-            <TouchableOpacity style={styles.successButton} onPress={handleSubmit}>
-              <Text style={styles.successButtonText}>Continue</Text>
-            </TouchableOpacity>
+      case 1:
+        return renderStep1();
+      case 2:
+        return renderStep2();
+      case 3:
+        return renderStep3();
+      case 4:
+        return renderStep4();
+      case 5:
+        return renderStep5();
+      case 6:
+        return renderStep6();
+      case 7:
+        return (
+          <View style={styles.stepContainer}>
+            <View style={styles.successContainer}>
+              <FontAwesome name="check-circle" size={64} color={COLORS.success} />
+              <Text style={styles.successTitle}>Listing Created!</Text>
+              <Text style={styles.successText}>
+                Your waste listing is now live on the marketplace
+              </Text>
+              <TouchableOpacity style={styles.successButton} onPress={handleSubmit}>
+                <Text style={styles.successButtonText}>Continue</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      );
-      default: return renderStep1();
+        );
+      default:
+        return renderStep1();
     }
   };
 
   return (
     <View style={styles.container}>
       {renderProgressBar()}
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {renderCurrentStep()}
       </ScrollView>
@@ -451,9 +452,9 @@ export default function WasteListingCreator() {
             <Text style={styles.navButtonText}>Back</Text>
           </TouchableOpacity>
         )}
-        
+
         <View style={{ flex: 1 }} />
-        
+
         {currentStep < totalSteps ? (
           <TouchableOpacity style={styles.primaryNavButton} onPress={nextStep}>
             <Text style={styles.primaryNavButtonText}>Next</Text>

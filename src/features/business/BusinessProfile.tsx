@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Share,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Share } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { COLORS } from '@/src/constants/features';
 
@@ -136,14 +129,20 @@ const SAMPLE_PROJECTS: Project[] = [
 ];
 
 export default function BusinessProfile() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'impact' | 'partners' | 'projects'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'impact' | 'partners' | 'projects'>(
+    'overview'
+  );
 
   // Calculate stats
   const completedProjects = SAMPLE_PROJECTS.filter(p => p.status === 'Completed');
   const totalCO2Reduced = SAMPLE_PROJECTS.reduce((sum, p) => sum + p.impactMetrics.co2Reduced, 0);
-  const totalMaterialsRecycled = SAMPLE_PROJECTS.reduce((sum, p) => sum + p.impactMetrics.materialsRecycled, 0);
+  const totalMaterialsRecycled = SAMPLE_PROJECTS.reduce(
+    (sum, p) => sum + p.impactMetrics.materialsRecycled,
+    0
+  );
   const earnedAchievements = SAMPLE_ACHIEVEMENTS.filter(a => a.earned);
-  const averagePartnerRating = SAMPLE_PARTNERS.reduce((sum, p) => sum + p.rating, 0) / SAMPLE_PARTNERS.length;
+  const averagePartnerRating =
+    SAMPLE_PARTNERS.reduce((sum, p) => sum + p.rating, 0) / SAMPLE_PARTNERS.length;
 
   const handleShareProfile = async () => {
     try {
@@ -158,12 +157,7 @@ export default function BusinessProfile() {
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <FontAwesome
-        key={i}
-        name={i < rating ? 'star' : 'star-o'}
-        size={14}
-        color="#FFC107"
-      />
+      <FontAwesome key={i} name={i < rating ? 'star' : 'star-o'} size={14} color="#FFC107" />
     ));
   };
 
@@ -177,7 +171,7 @@ export default function BusinessProfile() {
         <Text style={styles.name}>EcoTech Solutions</Text>
         <Text style={styles.title}>Sustainable Business</Text>
         <Text style={styles.joinDate}>Member since March 2024</Text>
-        
+
         {/* Verification Badge */}
         <View style={styles.verificationContainer}>
           <View style={styles.verificationBadge}>
@@ -215,7 +209,7 @@ export default function BusinessProfile() {
           { key: 'impact', label: 'Impact' },
           { key: 'partners', label: 'Partners' },
           { key: 'projects', label: 'Projects' },
-        ].map((tab) => (
+        ].map(tab => (
           <TouchableOpacity
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
@@ -262,10 +256,14 @@ export default function BusinessProfile() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Recent Achievements</Text>
               <View style={styles.achievementsList}>
-                {earnedAchievements.map((achievement) => (
+                {earnedAchievements.map(achievement => (
                   <View key={achievement.id} style={styles.achievementItem}>
                     <View style={styles.achievementIcon}>
-                      <FontAwesome name={achievement.icon as any} size={20} color={COLORS.primary} />
+                      <FontAwesome
+                        name={achievement.icon as any}
+                        size={20}
+                        color={COLORS.primary}
+                      />
                     </View>
                     <View style={styles.achievementInfo}>
                       <Text style={styles.achievementName}>{achievement.title}</Text>
@@ -344,11 +342,11 @@ export default function BusinessProfile() {
                   </View>
                   <View style={styles.materialProgress}>
                     <View style={styles.materialBar}>
-                      <View 
+                      <View
                         style={[
-                          styles.materialBarFill, 
-                          { width: `${item.percentage}%`, backgroundColor: item.color }
-                        ]} 
+                          styles.materialBarFill,
+                          { width: `${item.percentage}%`, backgroundColor: item.color },
+                        ]}
                       />
                     </View>
                     <Text style={styles.materialPercentage}>{item.percentage}%</Text>
@@ -361,7 +359,7 @@ export default function BusinessProfile() {
 
         {activeTab === 'partners' && (
           <View>
-            {SAMPLE_PARTNERS.map((partner) => (
+            {SAMPLE_PARTNERS.map(partner => (
               <View key={partner.id} style={styles.partnerCard}>
                 <View style={styles.partnerHeader}>
                   <View style={styles.partnerInfo}>
@@ -388,20 +386,22 @@ export default function BusinessProfile() {
 
         {activeTab === 'projects' && (
           <View>
-            {SAMPLE_PROJECTS.map((project) => (
+            {SAMPLE_PROJECTS.map(project => (
               <View key={project.id} style={styles.projectCard}>
                 <View style={styles.projectHeader}>
                   <Text style={styles.projectTitle}>{project.title}</Text>
-                  <View style={[
-                    styles.statusBadge,
-                    project.status === 'Completed' && styles.statusCompleted,
-                    project.status === 'In Progress' && styles.statusInProgress,
-                    project.status === 'Planning' && styles.statusPlanning,
-                  ]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      project.status === 'Completed' && styles.statusCompleted,
+                      project.status === 'In Progress' && styles.statusInProgress,
+                      project.status === 'Planning' && styles.statusPlanning,
+                    ]}
+                  >
                     <Text style={styles.statusText}>{project.status}</Text>
                   </View>
                 </View>
-                
+
                 <View style={styles.projectMetrics}>
                   <View style={styles.projectMetric}>
                     <FontAwesome name="leaf" size={16} color="#10B981" />
@@ -409,7 +409,9 @@ export default function BusinessProfile() {
                   </View>
                   <View style={styles.projectMetric}>
                     <FontAwesome name="recycle" size={16} color="#3B82F6" />
-                    <Text style={styles.metricText}>{project.impactMetrics.materialsRecycled}kg recycled</Text>
+                    <Text style={styles.metricText}>
+                      {project.impactMetrics.materialsRecycled}kg recycled
+                    </Text>
                   </View>
                   <View style={styles.projectMetric}>
                     <FontAwesome name="users" size={16} color="#8B5CF6" />

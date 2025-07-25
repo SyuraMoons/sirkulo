@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Share,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Share } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { BUSINESS_ACHIEVEMENT_CATEGORIES, COLORS } from '@/src/constants/features';
 import { router } from 'expo-router';
@@ -62,7 +55,8 @@ export default function BusinessDashboard() {
   const handleShareProfile = async () => {
     try {
       await Share.share({
-        message: 'Check out my sustainability impact on Sirkulo! I\'ve reduced 1,250kg of CO2 and recycled 2,847kg of materials. Join me in building a circular economy! 🌱',
+        message:
+          "Check out my sustainability impact on Sirkulo! I've reduced 1,250kg of CO2 and recycled 2,847kg of materials. Join me in building a circular economy! 🌱",
         url: 'https://sirkulo.app/profile/business-123',
       });
     } catch (error) {
@@ -122,19 +116,15 @@ export default function BusinessDashboard() {
       </View>
 
       <View style={styles.periodSelector}>
-        {['week', 'month', 'year'].map((period) => (
+        {['week', 'month', 'year'].map(period => (
           <TouchableOpacity
             key={period}
-            style={[
-              styles.periodButton,
-              selectedPeriod === period && styles.selectedPeriod
-            ]}
+            style={[styles.periodButton, selectedPeriod === period && styles.selectedPeriod]}
             onPress={() => setSelectedPeriod(period)}
           >
-            <Text style={[
-              styles.periodText,
-              selectedPeriod === period && styles.selectedPeriodText
-            ]}>
+            <Text
+              style={[styles.periodText, selectedPeriod === period && styles.selectedPeriodText]}
+            >
               {period.charAt(0).toUpperCase() + period.slice(1)}
             </Text>
           </TouchableOpacity>
@@ -146,13 +136,13 @@ export default function BusinessDashboard() {
   const renderTotalRecycled = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Material Breakdown</Text>
-      
+
       <View style={styles.totalRecycledCard}>
         <View style={styles.totalRecycledHeader}>
           <Text style={styles.totalRecycledValue}>{impactStats.totalRecycled}kg</Text>
           <Text style={styles.totalRecycledLabel}>Total Materials Recycled</Text>
         </View>
-        
+
         <View style={styles.recyclingRate}>
           <View style={styles.recyclingRateBar}>
             <View style={[styles.recyclingRateFill, { width: '87%' }]} />
@@ -174,11 +164,11 @@ export default function BusinessDashboard() {
             <View style={styles.materialPercentage}>
               <Text style={styles.percentageText}>{material.percentage}%</Text>
               <View style={styles.materialBar}>
-                <View 
+                <View
                   style={[
-                    styles.materialBarFill, 
-                    { width: `${material.percentage}%`, backgroundColor: material.color }
-                  ]} 
+                    styles.materialBarFill,
+                    { width: `${material.percentage}%`, backgroundColor: material.color },
+                  ]}
                 />
               </View>
             </View>
@@ -191,7 +181,7 @@ export default function BusinessDashboard() {
   const renderCO2Reduced = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Carbon Impact</Text>
-      
+
       <View style={styles.carbonCard}>
         <View style={styles.carbonHeader}>
           <FontAwesome name="leaf" size={32} color={COLORS.success} />
@@ -200,7 +190,7 @@ export default function BusinessDashboard() {
             <Text style={styles.carbonLabel}>CO2 Emissions Prevented</Text>
           </View>
         </View>
-        
+
         <View style={styles.carbonEquivalents}>
           <View style={styles.equivalentItem}>
             <FontAwesome name="tree" size={16} color={COLORS.success} />
@@ -234,32 +224,29 @@ export default function BusinessDashboard() {
       </View>
 
       <View style={styles.achievementsList}>
-        {achievements.map((achievement) => (
+        {achievements.map(achievement => (
           <View key={achievement.id} style={styles.achievementCard}>
             <View style={styles.achievementIcon}>
-              <FontAwesome 
-                name={achievement.icon as any} 
-                size={24} 
-                color={achievement.earned ? COLORS.primary : COLORS.text.disabled} 
+              <FontAwesome
+                name={achievement.icon as any}
+                size={24}
+                color={achievement.earned ? COLORS.primary : COLORS.text.disabled}
               />
             </View>
             <View style={styles.achievementInfo}>
-              <Text style={[
-                styles.achievementTitle,
-                !achievement.earned && styles.disabledText
-              ]}>
+              <Text style={[styles.achievementTitle, !achievement.earned && styles.disabledText]}>
                 {achievement.title}
               </Text>
-              <Text style={styles.achievementDescription}>
-                {achievement.description}
-              </Text>
+              <Text style={styles.achievementDescription}>{achievement.description}</Text>
               <View style={styles.achievementProgress}>
                 <View style={styles.progressBar}>
-                  <View 
+                  <View
                     style={[
-                      styles.progressFill, 
-                      { width: `${(achievement.progress.current / achievement.progress.target) * 100}%` }
-                    ]} 
+                      styles.progressFill,
+                      {
+                        width: `${(achievement.progress.current / achievement.progress.target) * 100}%`,
+                      },
+                    ]}
                   />
                 </View>
                 <Text style={styles.progressText}>
@@ -281,7 +268,7 @@ export default function BusinessDashboard() {
   const renderPublicProfile = () => (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Public Profile</Text>
-      
+
       <View style={styles.publicProfileCard}>
         <View style={styles.profileHeader}>
           <View style={styles.profileAvatar}>
@@ -296,7 +283,7 @@ export default function BusinessDashboard() {
             </View>
           </View>
         </View>
-        
+
         <View style={styles.profileStats}>
           <View style={styles.profileStat}>
             <Text style={styles.profileStatValue}>4.8</Text>
@@ -318,12 +305,12 @@ export default function BusinessDashboard() {
           <FontAwesome name="share" size={16} color={COLORS.primary} />
           <Text style={styles.shareButtonText}>Share Profile</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.shareButton}>
           <FontAwesome name="qrcode" size={16} color={COLORS.primary} />
           <Text style={styles.shareButtonText}>QR Code</Text>
         </TouchableOpacity>
-        
+
         <TouchableOpacity style={styles.shareButton}>
           <FontAwesome name="edit" size={16} color={COLORS.primary} />
           <Text style={styles.shareButtonText}>Edit Profile</Text>
@@ -347,33 +334,33 @@ export default function BusinessDashboard() {
 
       <View style={styles.quickActions}>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
-        
+
         <View style={styles.actionGrid}>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => console.log('Create Project - Feature coming soon')}
           >
             <FontAwesome name="plus" size={20} color={COLORS.primary} />
             <Text style={styles.actionText}>New Project</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => console.log('Find Partners - Feature coming soon')}
           >
             <FontAwesome name="handshake-o" size={20} color={COLORS.primary} />
             <Text style={styles.actionText}>Find Partners</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => console.log('View Reports - Feature coming soon')}
           >
             <FontAwesome name="bar-chart" size={20} color={COLORS.primary} />
             <Text style={styles.actionText}>View Reports</Text>
           </TouchableOpacity>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.actionButton}
             onPress={() => console.log('Sustainability - Feature coming soon')}
           >

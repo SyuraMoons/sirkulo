@@ -36,7 +36,8 @@ export default function ProductDetailScreen() {
 
   // Mock additional product details for Plastic Chair
   const productDetails = {
-    description: 'This eco-friendly plastic chair is made from 100% recycled plastic bottles. Perfect for both indoor and outdoor use, it combines sustainability with modern design. Lightweight yet durable, this chair supports up to 120kg and is weather-resistant.',
+    description:
+      'This eco-friendly plastic chair is made from 100% recycled plastic bottles. Perfect for both indoor and outdoor use, it combines sustainability with modern design. Lightweight yet durable, this chair supports up to 120kg and is weather-resistant.',
     specifications: [
       { label: 'Material', value: '100% Recycled Plastic' },
       { label: 'Dimensions', value: '45cm W × 50cm D × 80cm H' },
@@ -69,7 +70,8 @@ export default function ProductDetailScreen() {
         id: '1',
         name: 'Sarah M.',
         rating: 5,
-        comment: 'Love this chair! Very comfortable and knowing it\'s made from recycled materials makes me feel good about the purchase.',
+        comment:
+          "Love this chair! Very comfortable and knowing it's made from recycled materials makes me feel good about the purchase.",
         date: '2 weeks ago',
       },
       {
@@ -118,10 +120,7 @@ export default function ProductDetailScreen() {
           {productDetails.images.map((_, index) => (
             <TouchableOpacity
               key={index}
-              style={[
-                styles.indicator,
-                selectedImageIndex === index && styles.activeIndicator,
-              ]}
+              style={[styles.indicator, selectedImageIndex === index && styles.activeIndicator]}
               onPress={() => setSelectedImageIndex(index)}
             />
           ))}
@@ -133,7 +132,7 @@ export default function ProductDetailScreen() {
         <View style={styles.categoryBadge}>
           <Text style={styles.categoryText}>{product.category}</Text>
         </View>
-        
+
         <View style={styles.ratingRow}>
           {renderStars(product.rating)}
           <Text style={styles.ratingText}>
@@ -147,7 +146,7 @@ export default function ProductDetailScreen() {
         </View>
 
         <View style={styles.sellerRow}>
-          <FontAwesome name="store" size={16} color="#386B5F" />
+          <FontAwesome name="shopping-bag" size={16} color="#386B5F" />
           <Text style={styles.sellerText}>Sold by {product.seller}</Text>
           <View style={styles.verifiedBadge}>
             <FontAwesome name="check-circle" size={14} color="#4CAF50" />
@@ -198,15 +197,13 @@ export default function ProductDetailScreen() {
       {/* Reviews */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Customer Reviews</Text>
-        {productDetails.reviews.map((review) => (
+        {productDetails.reviews.map(review => (
           <View key={review.id} style={styles.reviewCard}>
             <View style={styles.reviewHeader}>
               <Text style={styles.reviewerName}>{review.name}</Text>
               <Text style={styles.reviewDate}>{review.date}</Text>
             </View>
-            <View style={styles.reviewRating}>
-              {renderStars(review.rating)}
-            </View>
+            <View style={styles.reviewRating}>{renderStars(review.rating)}</View>
             <Text style={styles.reviewComment}>{review.comment}</Text>
           </View>
         ))}
@@ -223,10 +220,7 @@ export default function ProductDetailScreen() {
         >
           <FontAwesome name="shopping-cart" size={20} color="#fff" />
           <Text style={styles.addToCartText}>
-            {isItemInCart(product.id) 
-              ? `In Cart (${getItemQuantity(product.id)})` 
-              : 'Add to Cart'
-            }
+            {isItemInCart(product.id) ? `In Cart (${getItemQuantity(product.id)})` : 'Add to Cart'}
           </Text>
         </TouchableOpacity>
       </View>

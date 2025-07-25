@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { WASTE_CATEGORIES, COLORS } from '@/src/constants/features';
 import { router } from 'expo-router';
@@ -29,9 +22,7 @@ export default function WasteListingMain({ onStartListing }: WasteListingMainPro
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>List Your Waste</Text>
-        <Text style={styles.subtitle}>
-          Turn your waste into resources for the circular economy
-        </Text>
+        <Text style={styles.subtitle}>Turn your waste into resources for the circular economy</Text>
       </View>
 
       {/* Quick Start Button */}
@@ -46,28 +37,20 @@ export default function WasteListingMain({ onStartListing }: WasteListingMainPro
       {/* Quick Templates */}
       <View style={styles.templatesSection}>
         <Text style={styles.sectionTitle}>Quick Start Templates</Text>
-        <Text style={styles.sectionSubtitle}>
-          Choose a category to get started quickly
-        </Text>
-        
+        <Text style={styles.sectionSubtitle}>Choose a category to get started quickly</Text>
+
         <View style={styles.templateGrid}>
-          {WASTE_CATEGORIES.slice(0, 6).map((category) => (
+          {WASTE_CATEGORIES.slice(0, 6).map(category => (
             <TouchableOpacity
               key={category.id}
               style={styles.templateCard}
               onPress={() => handleQuickTemplate(category.id)}
             >
               <View style={styles.templateIcon}>
-                <FontAwesome 
-                  name={category.icon as any} 
-                  size={24} 
-                  color={COLORS.primary} 
-                />
+                <FontAwesome name={category.icon as any} size={24} color={COLORS.primary} />
               </View>
               <Text style={styles.templateName}>{category.name}</Text>
-              <Text style={styles.templateCount}>
-                {category.subcategories.length} types
-              </Text>
+              <Text style={styles.templateCount}>{category.subcategories.length} types</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -81,28 +64,24 @@ export default function WasteListingMain({ onStartListing }: WasteListingMainPro
             <Text style={styles.viewAllText}>View All</Text>
           </TouchableOpacity>
         </View>
-        
+
         <View style={styles.activityCard}>
           <FontAwesome name="clock-o" size={16} color={COLORS.text.secondary} />
-          <Text style={styles.activityText}>
-            You haven't created any listings yet
-          </Text>
+          <Text style={styles.activityText}>You haven't created any listings yet</Text>
         </View>
       </View>
 
       {/* Help Section */}
       <View style={styles.helpSection}>
         <Text style={styles.sectionTitle}>Need Help?</Text>
-        
+
         <TouchableOpacity style={styles.helpCard}>
           <View style={styles.helpIcon}>
             <FontAwesome name="question-circle" size={20} color={COLORS.primary} />
           </View>
           <View style={styles.helpContent}>
             <Text style={styles.helpTitle}>Listing Guidelines</Text>
-            <Text style={styles.helpDescription}>
-              Learn how to create effective waste listings
-            </Text>
+            <Text style={styles.helpDescription}>Learn how to create effective waste listings</Text>
           </View>
           <FontAwesome name="chevron-right" size={16} color={COLORS.text.secondary} />
         </TouchableOpacity>
@@ -113,9 +92,7 @@ export default function WasteListingMain({ onStartListing }: WasteListingMainPro
           </View>
           <View style={styles.helpContent}>
             <Text style={styles.helpTitle}>Contact Support</Text>
-            <Text style={styles.helpDescription}>
-              Get help with your listing process
-            </Text>
+            <Text style={styles.helpDescription}>Get help with your listing process</Text>
           </View>
           <FontAwesome name="chevron-right" size={16} color={COLORS.text.secondary} />
         </TouchableOpacity>
@@ -124,7 +101,7 @@ export default function WasteListingMain({ onStartListing }: WasteListingMainPro
       {/* Stats Overview */}
       <View style={styles.statsSection}>
         <Text style={styles.sectionTitle}>Marketplace Overview</Text>
-        
+
         <View style={styles.statsGrid}>
           <View style={styles.statCard}>
             <Text style={styles.statNumber}>1,234</Text>

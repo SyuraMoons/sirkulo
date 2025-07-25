@@ -113,12 +113,7 @@ export default function ProjectRequestCreator() {
   const renderProgressBar = () => (
     <View style={styles.progressContainer}>
       <View style={styles.progressBar}>
-        <View 
-          style={[
-            styles.progressFill, 
-            { width: `${(currentStep / totalSteps) * 100}%` }
-          ]} 
-        />
+        <View style={[styles.progressFill, { width: `${(currentStep / totalSteps) * 100}%` }]} />
       </View>
       <Text style={styles.progressText}>
         Step {currentStep} of {totalSteps}
@@ -129,14 +124,9 @@ export default function ProjectRequestCreator() {
   const renderStep1 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 1: Post Project Request</Text>
-      <Text style={styles.stepDescription}>
-        Choose a template or start from scratch
-      </Text>
+      <Text style={styles.stepDescription}>Choose a template or start from scratch</Text>
 
-      <TouchableOpacity 
-        style={styles.customProjectButton}
-        onPress={nextStep}
-      >
+      <TouchableOpacity style={styles.customProjectButton} onPress={nextStep}>
         <FontAwesome name="plus-circle" size={24} color={COLORS.primary} />
         <Text style={styles.customProjectText}>Create Custom Project</Text>
       </TouchableOpacity>
@@ -144,7 +134,7 @@ export default function ProjectRequestCreator() {
       <Text style={styles.templatesTitle}>Or choose a template:</Text>
 
       <View style={styles.templatesGrid}>
-        {PROJECT_TEMPLATES.map((template) => (
+        {PROJECT_TEMPLATES.map(template => (
           <TouchableOpacity
             key={template.id}
             style={styles.templateCard}
@@ -157,9 +147,15 @@ export default function ProjectRequestCreator() {
             <Text style={styles.templateDescription}>{template.description}</Text>
             <View style={styles.templateFooter}>
               <Text style={styles.templateTime}>{template.estimatedTime}</Text>
-              <View style={[styles.complexityBadge, { 
-                backgroundColor: template.complexity === 'simple' ? COLORS.success : COLORS.warning 
-              }]}>
+              <View
+                style={[
+                  styles.complexityBadge,
+                  {
+                    backgroundColor:
+                      template.complexity === 'simple' ? COLORS.success : COLORS.warning,
+                  },
+                ]}
+              >
                 <Text style={styles.complexityText}>{template.complexity}</Text>
               </View>
             </View>
@@ -172,9 +168,7 @@ export default function ProjectRequestCreator() {
   const renderStep2 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 2: Describe Your Idea</Text>
-      <Text style={styles.stepDescription}>
-        Detail your recycling concept and requirements
-      </Text>
+      <Text style={styles.stepDescription}>Detail your recycling concept and requirements</Text>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Project Title</Text>
@@ -182,7 +176,7 @@ export default function ProjectRequestCreator() {
           style={styles.textInput}
           placeholder="e.g., Chair from Plastic Waste"
           value={formData.title}
-          onChangeText={(text) => updateFormData('title', text)}
+          onChangeText={text => updateFormData('title', text)}
         />
       </View>
 
@@ -194,7 +188,7 @@ export default function ProjectRequestCreator() {
           multiline
           numberOfLines={4}
           value={formData.description}
-          onChangeText={(text) => updateFormData('description', text)}
+          onChangeText={text => updateFormData('description', text)}
         />
       </View>
 
@@ -206,7 +200,7 @@ export default function ProjectRequestCreator() {
           multiline
           numberOfLines={4}
           value={formData.concept}
-          onChangeText={(text) => updateFormData('concept', text)}
+          onChangeText={text => updateFormData('concept', text)}
         />
       </View>
 
@@ -218,7 +212,7 @@ export default function ProjectRequestCreator() {
           multiline
           numberOfLines={3}
           value={formData.materialRequirements}
-          onChangeText={(text) => updateFormData('materialRequirements', text)}
+          onChangeText={text => updateFormData('materialRequirements', text)}
         />
       </View>
 
@@ -235,9 +229,7 @@ export default function ProjectRequestCreator() {
   const renderStep3 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 3: Upload References</Text>
-      <Text style={styles.stepDescription}>
-        Add inspiration photos and visual examples
-      </Text>
+      <Text style={styles.stepDescription}>Add inspiration photos and visual examples</Text>
 
       <TouchableOpacity style={styles.referenceUploadButton} onPress={handleReferenceUpload}>
         <FontAwesome name="image" size={24} color={COLORS.primary} />
@@ -262,7 +254,7 @@ export default function ProjectRequestCreator() {
 
       <View style={styles.referenceTypes}>
         <Text style={styles.sectionTitle}>Reference Types:</Text>
-        
+
         <View style={styles.referenceTypeCard}>
           <FontAwesome name="camera" size={20} color={COLORS.primary} />
           <View style={styles.referenceTypeContent}>
@@ -293,9 +285,7 @@ export default function ProjectRequestCreator() {
   const renderStep4 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 4: Set Deadline</Text>
-      <Text style={styles.stepDescription}>
-        Configure timeline and urgency level
-      </Text>
+      <Text style={styles.stepDescription}>Configure timeline and urgency level</Text>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Project Deadline</Text>
@@ -303,34 +293,32 @@ export default function ProjectRequestCreator() {
           style={styles.textInput}
           placeholder="Select completion date"
           value={formData.deadline}
-          onChangeText={(text) => updateFormData('deadline', text)}
+          onChangeText={text => updateFormData('deadline', text)}
         />
       </View>
 
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Urgency Level</Text>
         <View style={styles.urgencyGrid}>
-          {URGENCY_LEVELS.map((level) => (
+          {URGENCY_LEVELS.map(level => (
             <TouchableOpacity
               key={level.id}
-              style={[
-                styles.urgencyCard,
-                formData.urgency === level.id && styles.selectedUrgency
-              ]}
+              style={[styles.urgencyCard, formData.urgency === level.id && styles.selectedUrgency]}
               onPress={() => updateFormData('urgency', level.id)}
             >
               <View style={[styles.urgencyDot, { backgroundColor: level.color }]} />
               <View style={styles.urgencyContent}>
-                <Text style={[
-                  styles.urgencyName,
-                  formData.urgency === level.id && styles.selectedText
-                ]}>
+                <Text
+                  style={[styles.urgencyName, formData.urgency === level.id && styles.selectedText]}
+                >
                   {level.name}
                 </Text>
-                <Text style={[
-                  styles.urgencyDesc,
-                  formData.urgency === level.id && styles.selectedDescText
-                ]}>
+                <Text
+                  style={[
+                    styles.urgencyDesc,
+                    formData.urgency === level.id && styles.selectedDescText,
+                  ]}
+                >
                   {level.description}
                 </Text>
               </View>
@@ -347,14 +335,14 @@ export default function ProjectRequestCreator() {
             placeholder="Min budget"
             keyboardType="numeric"
             value={formData.budget?.min}
-            onChangeText={(text) => updateFormData('budget', { ...formData.budget, min: text })}
+            onChangeText={text => updateFormData('budget', { ...formData.budget, min: text })}
           />
           <TextInput
             style={[styles.textInput, { flex: 1 }]}
             placeholder="Max budget"
             keyboardType="numeric"
             value={formData.budget?.max}
-            onChangeText={(text) => updateFormData('budget', { ...formData.budget, max: text })}
+            onChangeText={text => updateFormData('budget', { ...formData.budget, max: text })}
           />
         </View>
       </View>
@@ -372,24 +360,22 @@ export default function ProjectRequestCreator() {
   const renderStep5 = () => (
     <View style={styles.stepContainer}>
       <Text style={styles.stepTitle}>Step 5: Wait for Recyclers</Text>
-      <Text style={styles.stepDescription}>
-        Your request is ready to be published
-      </Text>
+      <Text style={styles.stepDescription}>Your request is ready to be published</Text>
 
       <View style={styles.summaryCard}>
         <Text style={styles.summaryTitle}>{formData.title}</Text>
         <Text style={styles.summaryDescription}>{formData.description}</Text>
-        
+
         <View style={styles.summaryRow}>
           <FontAwesome name="calendar" size={16} color={COLORS.text.secondary} />
           <Text style={styles.summaryText}>Deadline: {formData.deadline || 'Not specified'}</Text>
         </View>
-        
+
         <View style={styles.summaryRow}>
           <FontAwesome name="clock-o" size={16} color={COLORS.text.secondary} />
           <Text style={styles.summaryText}>Urgency: {formData.urgency}</Text>
         </View>
-        
+
         {formData.references.length > 0 && (
           <View style={styles.summaryRow}>
             <FontAwesome name="image" size={16} color={COLORS.text.secondary} />
@@ -400,28 +386,30 @@ export default function ProjectRequestCreator() {
 
       <View style={styles.nextStepsCard}>
         <Text style={styles.nextStepsTitle}>What happens next?</Text>
-        
+
         <View style={styles.nextStepItem}>
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>1</Text>
           </View>
           <Text style={styles.nextStepText}>Your request will be published to the marketplace</Text>
         </View>
-        
+
         <View style={styles.nextStepItem}>
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>2</Text>
           </View>
           <Text style={styles.nextStepText}>Qualified recyclers will be notified</Text>
         </View>
-        
+
         <View style={styles.nextStepItem}>
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>3</Text>
           </View>
-          <Text style={styles.nextStepText}>You'll receive proposals and can choose the best one</Text>
+          <Text style={styles.nextStepText}>
+            You'll receive proposals and can choose the best one
+          </Text>
         </View>
-        
+
         <View style={styles.nextStepItem}>
           <View style={styles.stepNumber}>
             <Text style={styles.stepNumberText}>4</Text>
@@ -432,14 +420,14 @@ export default function ProjectRequestCreator() {
 
       <View style={styles.notificationSettings}>
         <Text style={styles.settingsTitle}>Notification Preferences</Text>
-        
+
         <View style={styles.settingRow}>
           <Text style={styles.settingText}>Email notifications for new proposals</Text>
           <View style={styles.settingToggle}>
             <FontAwesome name="check" size={16} color={COLORS.success} />
           </View>
         </View>
-        
+
         <View style={styles.settingRow}>
           <Text style={styles.settingText}>Push notifications for messages</Text>
           <View style={styles.settingToggle}>
@@ -452,19 +440,25 @@ export default function ProjectRequestCreator() {
 
   const renderCurrentStep = () => {
     switch (currentStep) {
-      case 1: return renderStep1();
-      case 2: return renderStep2();
-      case 3: return renderStep3();
-      case 4: return renderStep4();
-      case 5: return renderStep5();
-      default: return renderStep1();
+      case 1:
+        return renderStep1();
+      case 2:
+        return renderStep2();
+      case 3:
+        return renderStep3();
+      case 4:
+        return renderStep4();
+      case 5:
+        return renderStep5();
+      default:
+        return renderStep1();
     }
   };
 
   return (
     <View style={styles.container}>
       {renderProgressBar()}
-      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {renderCurrentStep()}
       </ScrollView>
@@ -476,9 +470,9 @@ export default function ProjectRequestCreator() {
             <Text style={styles.navButtonText}>Back</Text>
           </TouchableOpacity>
         )}
-        
+
         <View style={{ flex: 1 }} />
-        
+
         {currentStep < totalSteps ? (
           <TouchableOpacity style={styles.primaryNavButton} onPress={nextStep}>
             <Text style={styles.primaryNavButtonText}>Next</Text>

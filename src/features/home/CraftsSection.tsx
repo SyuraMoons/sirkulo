@@ -8,6 +8,8 @@ import {
   Image,
   Modal,
   StyleSheet,
+  TextInput,
+  ScrollView,
 } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { router } from 'expo-router';
@@ -15,10 +17,34 @@ import { router } from 'expo-router';
 import { CRAFT_CATEGORIES, MOCK_CRAFTS, CraftItem } from '@/src/constants/crafts';
 import { useCart } from '@/src/context/CartContext';
 
+interface Message {
+  id: number;
+  text: string;
+  sent: boolean;
+  time: string;
+}
+
 export default function CraftsSection() {
   const [category, setCategory] = useState<string>('All');
   const [modalVisible, setModalVisible] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [chatVisible, setChatVisible] = useState(false);
+  const [selectedCraft, setSelectedCraft] = useState<CraftItem | null>(null);
+  const [newMessage, setNewMessage] = useState('');
+  const [chatMessages, setChatMessages] = useState<Message[]>([
+    {
+      id: 1,
+      text: "Hi! I'm interested in this craft. Can you tell me more?",
+      sent: true,
+      time: '10:30',
+    },
+    {
+      id: 2,
+      text: 'Hello! Thanks for your interest. What would you like to know?',
+      sent: false,
+      time: '10:35',
+    },
+  ]);
   const { addItem, isItemInCart, getItemQuantity } = useCart();
 
   const filteredCrafts =
@@ -31,10 +57,28 @@ export default function CraftsSection() {
     addItem(item);
   };
 
+  const sendMessage = () => {
+    if (newMessage.trim()) {
+      const newMsg: Message = {
+        id: chatMessages.length + 1,
+        text: newMessage,
+        sent: true,
+        time: new Date().toLocaleTimeString().slice(0, 5),
+      };
+      setChatMessages([...chatMessages, newMsg]);
+      setNewMessage('');
+    }
+  };
+
+  const handleChatOpen = (item: CraftItem) => {
+    setSelectedCraft(item);
+    setChatVisible(true);
+  };
+
   const renderCraftItem = ({ item }: { item: CraftItem }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       style={[styles.card, showAll && styles.cardGrid]}
-      onPress={() => router.push(`/product/${item.id}`)}
+      onPress={() => router.push(`/product/${item.id}` as any)}
       activeOpacity={0.7}
     >
       <View style={styles.cardImageWrapper}>
@@ -68,7 +112,7 @@ export default function CraftsSection() {
       <View style={styles.cardFooterRow}>
         <TouchableOpacity
           style={[styles.addBtn, isItemInCart(item.id) && styles.addBtnInCart]}
-          onPress={(e) => {
+          onPress={e => {
             e.stopPropagation();
             handleAddToCart(item);
           }}
@@ -77,6 +121,15 @@ export default function CraftsSection() {
           <Text style={styles.addBtnText}>
             {isItemInCart(item.id) ? `Added (${getItemQuantity(item.id)})` : 'Add'}
           </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.chatBtn}
+          onPress={e => {
+            e.stopPropagation();
+            handleChatOpen(item);
+          }}
+        >
+          <FontAwesome name="comment" size={16} color="#386B5F" />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -147,6 +200,58 @@ export default function CraftsSection() {
             ))}
           </View>
         </Pressable>
+      </Modal>
+
+      {/* Chat Modal */}
+      <Modal
+        visible={chatVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setChatVisible(false)}
+      >
+        <View style={styles.chatContainer}>
+          <View style={styles.chatHeader}>
+            <TouchableOpacity onPress={() => setChatVisible(false)} style={styles.chatBackBtn}>
+              <FontAwesome name="arrow-left" size={20} color="#386B5F" />
+            </TouchableOpacity>
+            <View style={styles.chatHeaderInfo}>
+              <Text style={styles.chatHeaderName}>{selectedCraft?.seller || 'Seller'}</Text>
+              <Text style={styles.chatHeaderSubtitle}>Product: {selectedCraft?.name}</Text>
+            </View>
+          </View>
+
+          <ScrollView style={styles.messagesList}>
+            {chatMessages.map((message: Message) => (
+              <View
+                key={message.id}
+                style={[
+                  styles.messageContainer,
+                  message.sent ? styles.sentMessage : styles.receivedMessage,
+                ]}
+              >
+                <Text style={[styles.messageText, !message.sent && styles.receivedMessageText]}>
+                  {message.text}
+                </Text>
+                <Text style={[styles.messageTime, !message.sent && styles.receivedMessageTime]}>
+                  {message.time}
+                </Text>
+              </View>
+            ))}
+          </ScrollView>
+
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              value={newMessage}
+              onChangeText={setNewMessage}
+              placeholder="Type a message..."
+              placeholderTextColor="#999"
+            />
+            <TouchableOpacity onPress={sendMessage} style={styles.sendButton}>
+              <FontAwesome name="send" size={20} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
     </>
   );
@@ -322,5 +427,97 @@ const styles = StyleSheet.create({
   modalItemText: {
     fontSize: 18,
     color: '#386B5F',
+  },
+  chatBtn: {
+    padding: 8,
+    backgroundColor: '#E6F3EC',
+    borderRadius: 8,
+    marginLeft: 8,
+  },
+  // Chat Modal Styles
+  chatContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  chatHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    paddingTop: 50,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E6E6E6',
+    backgroundColor: '#fff',
+  },
+  chatBackBtn: {
+    marginRight: 16,
+  },
+  chatHeaderInfo: {
+    flex: 1,
+  },
+  chatHeaderName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#222',
+  },
+  chatHeaderSubtitle: {
+    fontSize: 12,
+    color: '#666',
+  },
+  messagesList: {
+    flex: 1,
+    padding: 16,
+  },
+  messageContainer: {
+    maxWidth: '80%',
+    marginBottom: 12,
+    padding: 12,
+    borderRadius: 16,
+  },
+  sentMessage: {
+    alignSelf: 'flex-end',
+    backgroundColor: '#386B5F',
+  },
+  receivedMessage: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#F5F6F8',
+  },
+  messageText: {
+    fontSize: 14,
+    color: '#fff',
+  },
+  messageTime: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.7)',
+    alignSelf: 'flex-end',
+    marginTop: 4,
+  },
+  receivedMessageText: {
+    color: '#222',
+  },
+  receivedMessageTime: {
+    color: '#666',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#E6E6E6',
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#F5F6F8',
+    borderRadius: 24,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 8,
+    fontSize: 14,
+  },
+  sendButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#386B5F',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

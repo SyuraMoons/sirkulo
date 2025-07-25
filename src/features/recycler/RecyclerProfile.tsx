@@ -1,12 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { COLORS } from '@/src/constants/features';
 
@@ -91,7 +84,8 @@ const SAMPLE_REVIEWS: Review[] = [
     id: '1',
     customerName: 'Sarah M.',
     rating: 5,
-    comment: 'Absolutely amazing work! The tote bag exceeded my expectations. Beautiful craftsmanship and delivered on time.',
+    comment:
+      'Absolutely amazing work! The tote bag exceeded my expectations. Beautiful craftsmanship and delivered on time.',
     projectTitle: 'Custom Tote Bag from Plastic Bottles',
     date: '2024-07-20',
     verified: true,
@@ -100,7 +94,8 @@ const SAMPLE_REVIEWS: Review[] = [
     id: '2',
     customerName: 'Green Cafe',
     rating: 5,
-    comment: 'Perfect plant pots for our cafe! Customers love them and they fit our eco-friendly theme perfectly.',
+    comment:
+      'Perfect plant pots for our cafe! Customers love them and they fit our eco-friendly theme perfectly.',
     projectTitle: 'Decorative Plant Pots from Tin Cans',
     date: '2024-07-18',
     verified: true,
@@ -145,31 +140,34 @@ const SAMPLE_PROJECTS: Project[] = [
 ];
 
 export default function RecyclerProfile() {
-  const [activeTab, setActiveTab] = useState<'overview' | 'badges' | 'reviews' | 'projects'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'badges' | 'reviews' | 'projects'>(
+    'overview'
+  );
 
   const completedProjects = SAMPLE_PROJECTS.filter(p => p.status === 'Completed');
-  const averageRating = completedProjects.reduce((sum, p) => sum + (p.rating || 0), 0) / completedProjects.length;
+  const averageRating =
+    completedProjects.reduce((sum, p) => sum + (p.rating || 0), 0) / completedProjects.length;
   const totalEarnings = completedProjects.reduce((sum, p) => sum + p.payment, 0);
   const earnedBadges = SAMPLE_BADGES.filter(b => b.earned);
 
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
-      case 'Common': return '#9CA3AF';
-      case 'Rare': return '#3B82F6';
-      case 'Epic': return '#8B5CF6';
-      case 'Legendary': return '#F59E0B';
-      default: return COLORS.text.secondary;
+      case 'Common':
+        return '#9CA3AF';
+      case 'Rare':
+        return '#3B82F6';
+      case 'Epic':
+        return '#8B5CF6';
+      case 'Legendary':
+        return '#F59E0B';
+      default:
+        return COLORS.text.secondary;
     }
   };
 
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }, (_, i) => (
-      <FontAwesome
-        key={i}
-        name={i < rating ? 'star' : 'star-o'}
-        size={14}
-        color="#FFC107"
-      />
+      <FontAwesome key={i} name={i < rating ? 'star' : 'star-o'} size={14} color="#FFC107" />
     ));
   };
 
@@ -183,7 +181,7 @@ export default function RecyclerProfile() {
         <Text style={styles.name}>Alex Chen</Text>
         <Text style={styles.title}>Master Recycler</Text>
         <Text style={styles.joinDate}>Member since March 2024</Text>
-        
+
         {/* Reputation Level */}
         <View style={styles.reputationContainer}>
           <View style={styles.reputationBadge}>
@@ -221,7 +219,7 @@ export default function RecyclerProfile() {
           { key: 'badges', label: 'Badges' },
           { key: 'reviews', label: 'Reviews' },
           { key: 'projects', label: 'Projects' },
-        ].map((tab) => (
+        ].map(tab => (
           <TouchableOpacity
             key={tab.key}
             style={[styles.tab, activeTab === tab.key && styles.activeTab]}
@@ -250,7 +248,7 @@ export default function RecyclerProfile() {
                   <Text style={styles.ratingCount}>Based on {SAMPLE_REVIEWS.length} reviews</Text>
                 </View>
                 <View style={styles.ratingBars}>
-                  {[5, 4, 3, 2, 1].map((star) => {
+                  {[5, 4, 3, 2, 1].map(star => {
                     const count = SAMPLE_REVIEWS.filter(r => r.rating === star).length;
                     const percentage = (count / SAMPLE_REVIEWS.length) * 100;
                     return (
@@ -271,9 +269,11 @@ export default function RecyclerProfile() {
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Recent Achievements</Text>
               <View style={styles.achievementsList}>
-                {earnedBadges.slice(0, 3).map((badge) => (
+                {earnedBadges.slice(0, 3).map(badge => (
                   <View key={badge.id} style={styles.achievementItem}>
-                    <View style={[styles.badgeIcon, { backgroundColor: getRarityColor(badge.rarity) }]}>
+                    <View
+                      style={[styles.badgeIcon, { backgroundColor: getRarityColor(badge.rarity) }]}
+                    >
                       <FontAwesome name={badge.icon as any} size={20} color="#fff" />
                     </View>
                     <View style={styles.achievementInfo}>
@@ -318,25 +318,34 @@ export default function RecyclerProfile() {
 
         {activeTab === 'badges' && (
           <View style={styles.badgesGrid}>
-            {SAMPLE_BADGES.map((badge) => (
-              <View key={badge.id} style={[styles.badgeCard, !badge.earned && styles.badgeCardLocked]}>
-                <View style={[
-                  styles.badgeIconLarge,
-                  { backgroundColor: badge.earned ? getRarityColor(badge.rarity) : '#E5E7EB' }
-                ]}>
-                  <FontAwesome 
-                    name={badge.icon as any} 
-                    size={32} 
-                    color={badge.earned ? '#fff' : '#9CA3AF'} 
+            {SAMPLE_BADGES.map(badge => (
+              <View
+                key={badge.id}
+                style={[styles.badgeCard, !badge.earned && styles.badgeCardLocked]}
+              >
+                <View
+                  style={[
+                    styles.badgeIconLarge,
+                    { backgroundColor: badge.earned ? getRarityColor(badge.rarity) : '#E5E7EB' },
+                  ]}
+                >
+                  <FontAwesome
+                    name={badge.icon as any}
+                    size={32}
+                    color={badge.earned ? '#fff' : '#9CA3AF'}
                   />
                 </View>
                 <Text style={[styles.badgeName, !badge.earned && styles.badgeNameLocked]}>
                   {badge.name}
                 </Text>
-                <Text style={[styles.badgeDescription, !badge.earned && styles.badgeDescriptionLocked]}>
+                <Text
+                  style={[styles.badgeDescription, !badge.earned && styles.badgeDescriptionLocked]}
+                >
                   {badge.description}
                 </Text>
-                <View style={[styles.rarityBadge, { backgroundColor: getRarityColor(badge.rarity) }]}>
+                <View
+                  style={[styles.rarityBadge, { backgroundColor: getRarityColor(badge.rarity) }]}
+                >
                   <Text style={styles.rarityText}>{badge.rarity}</Text>
                 </View>
                 {badge.earned && badge.earnedDate && (
@@ -351,7 +360,7 @@ export default function RecyclerProfile() {
 
         {activeTab === 'reviews' && (
           <View>
-            {SAMPLE_REVIEWS.map((review) => (
+            {SAMPLE_REVIEWS.map(review => (
               <View key={review.id} style={styles.reviewCard}>
                 <View style={styles.reviewHeader}>
                   <View style={styles.reviewerInfo}>
@@ -360,9 +369,7 @@ export default function RecyclerProfile() {
                       <FontAwesome name="check-circle" size={14} color="#10B981" />
                     )}
                   </View>
-                  <View style={styles.reviewRating}>
-                    {renderStars(review.rating)}
-                  </View>
+                  <View style={styles.reviewRating}>{renderStars(review.rating)}</View>
                 </View>
                 <Text style={styles.reviewProject}>{review.projectTitle}</Text>
                 <Text style={styles.reviewComment}>{review.comment}</Text>
@@ -374,20 +381,22 @@ export default function RecyclerProfile() {
 
         {activeTab === 'projects' && (
           <View>
-            {SAMPLE_PROJECTS.map((project) => (
+            {SAMPLE_PROJECTS.map(project => (
               <View key={project.id} style={styles.projectCard}>
                 <View style={styles.projectHeader}>
                   <Text style={styles.projectTitle}>{project.title}</Text>
-                  <View style={[
-                    styles.statusBadge,
-                    project.status === 'Completed' && styles.statusCompleted,
-                    project.status === 'In Progress' && styles.statusInProgress,
-                    project.status === 'Pending' && styles.statusPending,
-                  ]}>
+                  <View
+                    style={[
+                      styles.statusBadge,
+                      project.status === 'Completed' && styles.statusCompleted,
+                      project.status === 'In Progress' && styles.statusInProgress,
+                      project.status === 'Pending' && styles.statusPending,
+                    ]}
+                  >
                     <Text style={styles.statusText}>{project.status}</Text>
                   </View>
                 </View>
-                
+
                 <View style={styles.projectMaterials}>
                   {project.materials.map((material, index) => (
                     <View key={index} style={styles.materialTag}>
@@ -399,9 +408,7 @@ export default function RecyclerProfile() {
                 <View style={styles.projectFooter}>
                   <Text style={styles.projectPayment}>Rp{project.payment.toLocaleString()}</Text>
                   {project.rating && (
-                    <View style={styles.projectRating}>
-                      {renderStars(project.rating)}
-                    </View>
+                    <View style={styles.projectRating}>{renderStars(project.rating)}</View>
                   )}
                   {project.completedDate && (
                     <Text style={styles.projectDate}>
