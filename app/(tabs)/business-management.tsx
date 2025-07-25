@@ -57,8 +57,33 @@ interface Buyer {
   avatar?: any;
 }
 
+interface Job {
+  id: string;
+  title: string;
+  department: string;
+  type: 'Full-time' | 'Part-time' | 'Contract' | 'Internship';
+  location: string;
+  salary: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  status: 'Open' | 'Closed' | 'Draft' | 'On Hold';
+  datePosted: string;
+  deadline: string;
+  description: string;
+  requirements: string[];
+  applications: number;
+  views: number;
+  experience: string;
+  education: string;
+  skills: string[];
+}
+
 export default function BusinessManagement() {
-  const [activeTab, setActiveTab] = useState<'listings' | 'projects' | 'buyers'>('listings');
+  const [activeTab, setActiveTab] = useState<'listings' | 'projects' | 'buyers' | 'jobs'>(
+    'listings'
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -189,6 +214,121 @@ export default function BusinessManagement() {
     },
   ];
 
+  const jobs: Job[] = [
+    {
+      id: '1',
+      title: 'Sustainability Manager',
+      department: 'Environmental',
+      type: 'Full-time',
+      location: 'Jakarta Pusat',
+      salary: {
+        min: 15000000,
+        max: 25000000,
+        currency: 'IDR',
+      },
+      status: 'Open',
+      datePosted: '2024-07-20',
+      deadline: '2024-08-20',
+      description:
+        'Lead our sustainability initiatives and develop environmental strategies for circular economy practices.',
+      requirements: [
+        "Bachelor's degree in Environmental Science or related field",
+        '3+ years experience in sustainability management',
+        'Knowledge of circular economy principles',
+        'Strong analytical and communication skills',
+      ],
+      applications: 15,
+      views: 89,
+      experience: '3-5 years',
+      education: "Bachelor's Degree",
+      skills: ['Sustainability', 'Environmental Management', 'Data Analysis', 'Project Management'],
+    },
+    {
+      id: '2',
+      title: 'Waste Processing Technician',
+      department: 'Operations',
+      type: 'Full-time',
+      location: 'Jakarta Timur',
+      salary: {
+        min: 8000000,
+        max: 12000000,
+        currency: 'IDR',
+      },
+      status: 'Open',
+      datePosted: '2024-07-22',
+      deadline: '2024-08-15',
+      description:
+        'Operate and maintain waste processing equipment, ensure quality control in recycling operations.',
+      requirements: [
+        'Technical diploma or equivalent',
+        '2+ years experience in manufacturing/processing',
+        'Knowledge of safety protocols',
+        'Ability to work in shifts',
+      ],
+      applications: 8,
+      views: 45,
+      experience: '2-3 years',
+      education: 'Diploma',
+      skills: ['Equipment Operation', 'Quality Control', 'Safety Protocols', 'Technical Skills'],
+    },
+    {
+      id: '3',
+      title: 'Business Development Intern',
+      department: 'Business Development',
+      type: 'Internship',
+      location: 'Jakarta Selatan',
+      salary: {
+        min: 3000000,
+        max: 4000000,
+        currency: 'IDR',
+      },
+      status: 'Closed',
+      datePosted: '2024-07-10',
+      deadline: '2024-07-25',
+      description:
+        'Support business development activities, market research, and partnership coordination.',
+      requirements: [
+        "Currently pursuing Bachelor's degree in Business or related field",
+        'Strong communication skills',
+        'Interest in sustainability and circular economy',
+        'Proficiency in Microsoft Office',
+      ],
+      applications: 25,
+      views: 120,
+      experience: 'Entry Level',
+      education: "Bachelor's Degree (In Progress)",
+      skills: ['Market Research', 'Communication', 'Microsoft Office', 'Business Analysis'],
+    },
+    {
+      id: '4',
+      title: 'Environmental Compliance Officer',
+      department: 'Legal & Compliance',
+      type: 'Contract',
+      location: 'Jakarta Barat',
+      salary: {
+        min: 12000000,
+        max: 18000000,
+        currency: 'IDR',
+      },
+      status: 'On Hold',
+      datePosted: '2024-07-18',
+      deadline: '2024-08-30',
+      description:
+        'Ensure compliance with environmental regulations, manage permits and reporting requirements.',
+      requirements: [
+        "Bachelor's degree in Law, Environmental Science, or related field",
+        '3+ years experience in environmental compliance',
+        'Knowledge of Indonesian environmental regulations',
+        'Strong attention to detail',
+      ],
+      applications: 6,
+      views: 32,
+      experience: '3-5 years',
+      education: "Bachelor's Degree",
+      skills: ['Environmental Law', 'Compliance', 'Regulatory Knowledge', 'Documentation'],
+    },
+  ];
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'Active':
@@ -200,10 +340,13 @@ export default function BusinessManagement() {
       case 'In Progress':
         return COLORS.info;
       case 'Pending':
+      case 'Draft':
         return COLORS.warning;
       case 'Expired':
       case 'Cancelled':
       case 'Inactive':
+      case 'Closed':
+      case 'On Hold':
         return COLORS.error;
       default:
         return COLORS.text.secondary;
@@ -226,6 +369,13 @@ export default function BusinessManagement() {
     buyer =>
       buyer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       buyer.company.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const filteredJobs = jobs.filter(
+    job =>
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.type.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const renderListingCard = (listing: WasteListing) => (
@@ -377,6 +527,66 @@ export default function BusinessManagement() {
     </TouchableOpacity>
   );
 
+  const renderJobCard = (job: Job) => (
+    <TouchableOpacity
+      key={job.id}
+      style={styles.card}
+      onPress={() => {
+        setSelectedItem(job);
+        setDetailModalVisible(true);
+      }}
+    >
+      <View style={styles.cardHeader}>
+        <View style={styles.cardInfo}>
+          <Text style={styles.cardTitle}>{job.title}</Text>
+          <Text style={styles.cardType}>
+            {job.department} • {job.type}
+          </Text>
+        </View>
+        <View style={[styles.statusBadge, { backgroundColor: getStatusColor(job.status) }]}>
+          <Text style={styles.statusText}>{job.status}</Text>
+        </View>
+      </View>
+
+      <View style={styles.cardDetails}>
+        <View style={styles.cardMeta}>
+          <FontAwesome name="map-marker" size={12} color={COLORS.text.secondary} />
+          <Text style={styles.metaText}>{job.location}</Text>
+        </View>
+        <View style={styles.cardMeta}>
+          <FontAwesome name="money" size={12} color={COLORS.text.secondary} />
+          <Text style={styles.metaText}>
+            Rp{job.salary.min.toLocaleString()} - Rp{job.salary.max.toLocaleString()}
+          </Text>
+        </View>
+        <View style={styles.cardMeta}>
+          <FontAwesome name="calendar" size={12} color={COLORS.text.secondary} />
+          <Text style={styles.metaText}>
+            Deadline: {new Date(job.deadline).toLocaleDateString()}
+          </Text>
+        </View>
+      </View>
+
+      <Text style={styles.cardDescription} numberOfLines={2}>
+        {job.description}
+      </Text>
+
+      <View style={styles.cardFooter}>
+        <View style={styles.cardStats}>
+          <View style={styles.statItem}>
+            <FontAwesome name="eye" size={12} color={COLORS.text.secondary} />
+            <Text style={styles.statText}>{job.views}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <FontAwesome name="users" size={12} color={COLORS.text.secondary} />
+            <Text style={styles.statText}>{job.applications} applications</Text>
+          </View>
+        </View>
+        <Text style={styles.dateText}>{new Date(job.datePosted).toLocaleDateString()}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -389,6 +599,8 @@ export default function BusinessManagement() {
               router.push('/waste-listing/create');
             } else if (activeTab === 'projects') {
               router.push('/project-request/create');
+            } else if (activeTab === 'jobs') {
+              router.push('/job/create');
             }
           }}
         >
@@ -403,7 +615,7 @@ export default function BusinessManagement() {
           onPress={() => setActiveTab('listings')}
         >
           <Text style={[styles.tabText, activeTab === 'listings' && styles.activeTabText]}>
-            Waste Listings
+            Waste
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -411,7 +623,7 @@ export default function BusinessManagement() {
           onPress={() => setActiveTab('projects')}
         >
           <Text style={[styles.tabText, activeTab === 'projects' && styles.activeTabText]}>
-            Project Requests
+            Projects
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -421,6 +633,12 @@ export default function BusinessManagement() {
           <Text style={[styles.tabText, activeTab === 'buyers' && styles.activeTabText]}>
             Buyers
           </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 'jobs' && styles.activeTab]}
+          onPress={() => setActiveTab('jobs')}
+        >
+          <Text style={[styles.tabText, activeTab === 'jobs' && styles.activeTabText]}>Jobs</Text>
         </TouchableOpacity>
       </View>
 
@@ -443,6 +661,7 @@ export default function BusinessManagement() {
         {activeTab === 'listings' && filteredListings.map(renderListingCard)}
         {activeTab === 'projects' && filteredProjects.map(renderProjectCard)}
         {activeTab === 'buyers' && filteredBuyers.map(renderBuyerCard)}
+        {activeTab === 'jobs' && filteredJobs.map(renderJobCard)}
         <View style={{ height: 50 }} />
       </ScrollView>
 
@@ -467,7 +686,9 @@ export default function BusinessManagement() {
                   ? 'Listing Details'
                   : activeTab === 'projects'
                     ? 'Project Details'
-                    : 'Buyer Details'}
+                    : activeTab === 'buyers'
+                      ? 'Buyer Details'
+                      : 'Job Details'}
               </Text>
               <TouchableOpacity style={styles.modalEditBtn}>
                 <FontAwesome name="edit" size={20} color="#386B5F" />
@@ -617,6 +838,90 @@ export default function BusinessManagement() {
                   </View>
                 </View>
               )}
+
+              {activeTab === 'jobs' && (
+                <View>
+                  <Text style={styles.modalItemTitle}>{selectedItem.title}</Text>
+                  <Text style={styles.modalItemType}>
+                    {selectedItem.department} • {selectedItem.type}
+                  </Text>
+
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Job Details</Text>
+                    <View style={styles.modalInfoGrid}>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Location</Text>
+                        <Text style={styles.modalInfoValue}>{selectedItem.location}</Text>
+                      </View>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Salary Range</Text>
+                        <Text style={styles.modalInfoValue}>
+                          Rp{selectedItem.salary.min.toLocaleString()} - Rp
+                          {selectedItem.salary.max.toLocaleString()}
+                        </Text>
+                      </View>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Experience</Text>
+                        <Text style={styles.modalInfoValue}>{selectedItem.experience}</Text>
+                      </View>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Education</Text>
+                        <Text style={styles.modalInfoValue}>{selectedItem.education}</Text>
+                      </View>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Deadline</Text>
+                        <Text style={styles.modalInfoValue}>
+                          {new Date(selectedItem.deadline).toLocaleDateString()}
+                        </Text>
+                      </View>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Status</Text>
+                        <Text style={styles.modalInfoValue}>{selectedItem.status}</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Performance</Text>
+                    <View style={styles.modalInfoGrid}>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Views</Text>
+                        <Text style={styles.modalInfoValue}>{selectedItem.views}</Text>
+                      </View>
+                      <View style={styles.modalInfoItem}>
+                        <Text style={styles.modalInfoLabel}>Applications</Text>
+                        <Text style={styles.modalInfoValue}>{selectedItem.applications}</Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Required Skills</Text>
+                    <View style={styles.skillsContainer}>
+                      {selectedItem.skills.map((skill: string, index: number) => (
+                        <View key={index} style={styles.skillBadge}>
+                          <Text style={styles.skillText}>{skill}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Requirements</Text>
+                    {selectedItem.requirements.map((req: string, index: number) => (
+                      <View key={index} style={styles.requirementItem}>
+                        <FontAwesome name="check" size={12} color={COLORS.success} />
+                        <Text style={styles.requirementText}>{req}</Text>
+                      </View>
+                    ))}
+                  </View>
+
+                  <View style={styles.modalSection}>
+                    <Text style={styles.modalSectionTitle}>Description</Text>
+                    <Text style={styles.modalDescription}>{selectedItem.description}</Text>
+                  </View>
+                </View>
+              )}
             </ScrollView>
           </View>
         )}
@@ -662,7 +967,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     alignItems: 'center',
     borderRadius: 8,
-    marginHorizontal: 4,
+    marginHorizontal: 2,
   },
   activeTab: {
     backgroundColor: COLORS.primary,
@@ -912,5 +1217,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#222',
     flex: 1,
+  },
+  skillsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  skillBadge: {
+    backgroundColor: '#E6F3EC',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  skillText: {
+    fontSize: 12,
+    color: COLORS.primary,
+    fontWeight: '500',
   },
 });
