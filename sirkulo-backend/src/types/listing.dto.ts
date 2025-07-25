@@ -268,7 +268,7 @@ export class ListingSearchDto {
 
   @IsOptional()
   @IsString()
-  sortBy?: 'createdAt' | 'price' | 'quantity' | 'distance';
+  sortBy?: 'createdAt' | 'price' | 'quantity' | 'distance' | 'rating';
 
   @IsOptional()
   @IsString()
@@ -309,6 +309,8 @@ export interface ListingResponseDto {
   isActive: boolean;
   viewCount: number;
   inquiryCount: number;
+  averageRating: number;
+  totalRatings: number;
   business: {
     id: number;
     firstName: string;
@@ -338,6 +340,8 @@ export interface ListingSummaryResponseDto {
     country: string;
   };
   images: string[];
+  averageRating: number;
+  totalRatings: number;
   createdAt: Date;
   business: {
     id: number;

@@ -17,6 +17,7 @@ import uploadRoutes from './routes/upload.routes';
 import { paymentRoutes } from './routes/payment.routes';
 import pushNotificationRoutes from './routes/push-notification.routes';
 import searchRoutes from './routes/search.routes';
+import ratingRoutes from './routes/rating.routes';
 
 /**
  * Sirkulo Backend Server with Real-time Notifications
@@ -98,6 +99,7 @@ class Server {
     this.app.use('/api/payments', paymentRoutes);
     this.app.use('/api/notifications', pushNotificationRoutes);
     this.app.use('/api/search', searchRoutes);
+    this.app.use('/api/ratings', ratingRoutes);
 
     // 404 handler
     this.app.use('*', (req: express.Request, res: express.Response) => {

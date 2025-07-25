@@ -96,6 +96,13 @@ export class Listing {
   @Column({ type: 'integer', default: 0 })
   inquiryCount: number;
 
+  // Rating aggregates (calculated fields)
+  @Column({ type: 'decimal', precision: 3, scale: 2, default: 0 })
+  averageRating: number;
+
+  @Column({ type: 'integer', default: 0 })
+  totalRatings: number;
+
   // Relations
   @ManyToOne(() => User, { eager: false })
   @JoinColumn({ name: 'businessId' })
@@ -107,6 +114,9 @@ export class Listing {
 
   @OneToMany(() => Image, image => image.listing, { eager: false, cascade: true })
   imageEntities: Image[];
+
+  @OneToMany('Rating', 'listing', { eager: false })
+  ratings: any[];
 
   @CreateDateColumn()
   createdAt: Date;
@@ -158,6 +168,8 @@ export class Listing {
         country: this.location.country,
       },
       images: this.getAllImageUrls().slice(0, 1), // Only first image for summary
+      averageRating: this.averageRating || 0,
+      totalRatings: this.totalRatings || 0,
       createdAt: this.createdAt,
       business: this.business ? {
         id: this.business.id,
@@ -201,5 +213,13 @@ export class Listing {
    */
   incrementInquiryCount(): void {
     this.inquiryCount += 1;
+  }
+
+  /**
+   * Update rating aggregates
+   */
+  updateRatingAggregates(averageRating: number, totalRatings: number): void {
+    this.averageRating = averageRating;
+    this.totalRatings = totalRatings;
   }
 }
