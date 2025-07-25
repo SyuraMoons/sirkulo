@@ -100,17 +100,6 @@ export default function ProductDetailScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
-          <FontAwesome name="arrow-left" size={20} color="#386B5F" />
-        </TouchableOpacity>
-        <View style={{ flex: 1 }} />
-        <TouchableOpacity style={styles.shareBtn}>
-          <FontAwesome name="share-alt" size={20} color="#386B5F" />
-        </TouchableOpacity>
-      </View>
-
       {/* Product Images */}
       <View style={styles.imageSection}>
         <Image source={productDetails.images[selectedImageIndex]} style={styles.mainImage} />
@@ -259,32 +248,6 @@ const styles = StyleSheet.create({
   backButtonText: {
     color: '#fff',
     fontWeight: '600',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 50,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#E6E6E6',
-  },
-  backBtn: {
-    padding: 8,
-    backgroundColor: '#E6F3EC',
-    borderRadius: 12,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#222',
-  },
-  shareBtn: {
-    padding: 8,
-    backgroundColor: '#E6F3EC',
-    borderRadius: 12,
   },
   imageSection: {
     position: 'relative',
