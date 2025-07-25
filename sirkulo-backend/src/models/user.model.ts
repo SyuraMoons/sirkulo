@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
 } from 'typeorm';
 import { UserRole, VerificationStatus } from '../types';
 
@@ -105,6 +106,10 @@ export class User {
 
   @Column({ type: 'timestamp', nullable: true })
   lastLoginAt: Date | null;
+
+  // Relationships
+  @OneToMany('DeviceToken', 'user')
+  deviceTokens: any[];
 
   @CreateDateColumn()
   createdAt: Date;

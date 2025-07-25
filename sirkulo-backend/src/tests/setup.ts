@@ -1,196 +1,177 @@
-import { AppDataSource } from '../config/database';
-import { initializeRedis } from '../config/redis';
-import { Redis } from 'redis';
+import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect, jest } from '@jest/globals';
+import { createConnection, Connection } from 'typeorm';
+import { createClient } from 'redis';
+import type { RedisClientType } from 'redis';
 
-// Global test setup
-beforeAll(async () => {
-  // Initialize test database
-  if (!AppDataSource.isInitialized) {
-    await AppDataSource.initialize();
+// Global test database connection
+let testConnection: Connection | null = null;
+let testRedisClient: RedisClientType | null = null;
+
+// Test database configuration
+const TEST_DB_CONFIG = {
+  type: 'sqlite' as const,
+  database: ':memory:',
+  synchronize: true,
+  logging: false,
+  entities: [],
+};
+
+// Mock Redis client
+export const mockRedisClient = {
+  get: jest.fn().mockResolvedValue(null),
+  set: jest.fn().mockResolvedValue('OK'),
+  del: jest.fn().mockResolvedValue(1),
+  exists: jest.fn().mockResolvedValue(0),
+  expire: jest.fn().mockResolvedValue(1),
+  ttl: jest.fn().mockResolvedValue(-1),
+  keys: jest.fn().mockResolvedValue([]),
+  flushall: jest.fn().mockResolvedValue('OK'),
+  quit: jest.fn().mockResolvedValue('OK'),
+  connect: jest.fn().mockResolvedValue(undefined),
+  disconnect: jest.fn().mockResolvedValue(undefined),
+  isOpen: true,
+  isReady: true,
+};
+
+// Test setup utilities
+export const setupTestDatabase = async () => {
+  if (!testConnection) {
+    testConnection = await createConnection(TEST_DB_CONFIG);
   }
-  
-  // Initialize Redis for testing
-  await initializeRedis();
-  
-  // Set test environment
-  process.env.NODE_ENV = 'test';
-  process.env.JWT_SECRET = 'test-jwt-secret';
-  process.env.JWT_REFRESH_SECRET = 'test-jwt-refresh-secret';
+  return testConnection;
+};
+
+export const cleanupTestDatabase = async () => {
+  if (testConnection && testConnection.isConnected) {
+    await testConnection.close();
+    testConnection = null;
+  }
+};
+
+export const setupTestRedis = async () => {
+  // Return mock Redis client for testing
+  testRedisClient = mockRedisClient as any;
+  return testRedisClient;
+};
+
+export const cleanupTestRedis = async () => {
+  if (testRedisClient) {
+    // Reset all mocks
+    Object.values(mockRedisClient).forEach(mock => {
+      if (typeof mock === 'function' && 'mockReset' in mock) {
+        mock.mockReset();
+      }
+    });
+    testRedisClient = null;
+  }
+};
+
+// Socket.IO test utilities
+export const createTestSocketClient = () => {
+  // Mock socket client for testing
+  return {
+    id: 'test-socket-id',
+    emit: jest.fn(),
+    on: jest.fn(),
+    join: jest.fn(),
+    leave: jest.fn(),
+    disconnect: jest.fn(),
+    connected: true,
+  };
+};
+
+export const cleanupTestSocket = (client: any) => {
+  if (client && client.disconnect) {
+    client.disconnect();
+  }
+};
+
+// User authentication mock
+export const mockAuthenticatedUser = {
+  id: 1,
+  email: 'test@example.com',
+  userType: 'buyer' as const,
+  name: 'Test User',
+  isActive: true,
+};
+
+// Mock Express request and response
+export const mockRequest = (overrides: any = {}) => ({
+  user: mockAuthenticatedUser,
+  body: {},
+  params: {},
+  query: {},
+  headers: {},
+  ...overrides,
 });
 
-// Clean up after each test
-afterEach(async () => {
-  // Clear all test data but keep schema
-  const entities = AppDataSource.entityMetadatas;
-  
-  for (const entity of entities) {
-    const repository = AppDataSource.getRepository(entity.name);
-    await repository.clear();
-  }
-  
-  // Clear Redis test data
-  const redis = AppDataSource.manager.connection.queryRunner?.data?.redis as Redis;
-  if (redis) {
-    await redis.flushdb();
-  }
-});
+export const mockResponse = () => {
+  const res: any = {};
+  res.status = jest.fn().mockReturnValue(res);
+  res.json = jest.fn().mockReturnValue(res);
+  res.send = jest.fn().mockReturnValue(res);
+  res.end = jest.fn().mockReturnValue(res);
+  return res;
+};
 
-// Global test teardown
-afterAll(async () => {
-  if (AppDataSource.isInitialized) {
-    await AppDataSource.destroy();
-  }
-});
+export const mockNext = () => jest.fn();
 
-// Mock external services for testing
-jest.mock('../services/email.service', () => ({
-  EmailService: jest.fn().mockImplementation(() => ({
-    sendVerificationEmail: jest.fn().mockResolvedValue(true),
-    sendPasswordResetEmail: jest.fn().mockResolvedValue(true),
-    sendOrderConfirmationEmail: jest.fn().mockResolvedValue(true),
-    sendPaymentConfirmationEmail: jest.fn().mockResolvedValue(true)
-  }))
-}));
-
-// Mock Xendit for testing
-jest.mock('xendit-node', () => ({
-  Xendit: jest.fn().mockImplementation(() => ({
-    Invoice: {
-      createInvoice: jest.fn().mockResolvedValue({
-        id: 'test-invoice-id',
-        invoice_url: 'https://test-payment-url.com',
-        external_id: 'test-external-id',
-        status: 'PENDING'
-      })
-    },
-    VirtualAccount: {
-      createVirtualAccount: jest.fn().mockResolvedValue({
-        id: 'test-va-id',
-        external_id: 'test-external-id',
-        bank_code: 'BCA',
-        account_number: '8808123456789',
-        status: 'PENDING'
-      })
-    },
-    EWallet: {
-      createEWalletCharge: jest.fn().mockResolvedValue({
-        id: 'test-ewallet-id',
-        reference_id: 'test-reference-id',
-        status: 'PENDING',
-        actions: {
-          mobile_web_checkout_url: 'https://test-ewallet-url.com'
-        }
-      })
-    },
-    RetailOutlet: {
-      createFixedPaymentCode: jest.fn().mockResolvedValue({
-        id: 'test-retail-id',
-        external_id: 'test-external-id',
-        retail_outlet_name: 'ALFAMART',
-        payment_code: 'TEST123456',
-        status: 'ACTIVE'
-      })
-    },
-    Payment: {
-      createRefund: jest.fn().mockResolvedValue({
-        id: 'test-refund-id',
-        payment_request_id: 'test-payment-id',
-        amount: 100000,
-        status: 'PENDING'
-      })
-    }
-  }))
-}));
-
-// Mock Firebase Admin for testing
+// Firebase Admin mock
 jest.mock('firebase-admin', () => ({
   initializeApp: jest.fn(),
-  messaging: jest.fn(() => ({
-    send: jest.fn().mockResolvedValue('test-message-id'),
+  credential: {
+    cert: jest.fn().mockReturnValue({}),
+  },
+  messaging: jest.fn().mockReturnValue({
+    send: jest.fn().mockResolvedValue('message-id'),
     sendMulticast: jest.fn().mockResolvedValue({
       successCount: 1,
       failureCount: 0,
-      responses: [{ success: true, messageId: 'test-message-id' }]
-    })
-  }))
+      responses: [{ success: true }],
+    }),
+    subscribeToTopic: jest.fn().mockResolvedValue(undefined),
+    unsubscribeFromTopic: jest.fn().mockResolvedValue(undefined),
+  }),
 }));
 
-// Test utilities
-export const createTestUser = async (overrides: any = {}) => {
-  const { User } = await import('../models/user.model');
-  const { UserRole } = await import('../types/enums');
-  
-  return AppDataSource.getRepository(User).save({
-    email: 'test@example.com',
-    password: 'hashedpassword123',
-    firstName: 'Test',
-    lastName: 'User',
-    roles: [UserRole.USER],
-    activeMode: UserRole.USER,
-    isActive: true,
-    emailVerified: true,
-    ...overrides
-  });
-};
+// Nodemailer mock
+jest.mock('nodemailer', () => ({
+  createTransporter: jest.fn().mockReturnValue({
+    sendMail: jest.fn().mockResolvedValue({
+      messageId: 'test-message-id',
+      accepted: ['test@example.com'],
+      rejected: [],
+    }),
+    verify: jest.fn().mockResolvedValue(true),
+  }),
+}));
 
-export const createTestBusiness = async (overrides: any = {}) => {
-  const { User } = await import('../models/user.model');
-  const { UserRole } = await import('../types/enums');
-  
-  return AppDataSource.getRepository(User).save({
-    email: 'business@example.com',
-    password: 'hashedpassword123',
-    firstName: 'Test',
-    lastName: 'Business',
-    roles: [UserRole.BUSINESS],
-    activeMode: UserRole.BUSINESS,
-    isActive: true,
-    emailVerified: true,
-    businessProfile: {
-      companyName: 'Test Business',
-      businessType: 'Fashion Manufacturer',
-      registrationNumber: 'TEST123456'
-    },
-    ...overrides
-  });
-};
+// Global test setup
+beforeAll(async () => {
+  await setupTestDatabase();
+  await setupTestRedis();
+});
 
-export const createTestListing = async (businessId: number, overrides: any = {}) => {
-  const { Listing } = await import('../models/listing.model');
-  const { WasteType, ListingStatus } = await import('../types/enums');
-  
-  return AppDataSource.getRepository(Listing).save({
-    title: 'Test Fabric Waste',
-    description: 'High quality cotton fabric scraps',
-    wasteType: WasteType.FABRIC_SCRAPS,
-    quantity: 100,
-    unit: 'kg',
-    pricePerUnit: 15000,
-    totalPrice: 1500000,
-    isNegotiable: false,
-    status: ListingStatus.ACTIVE,
-    location: {
-      latitude: -6.2088,
-      longitude: 106.8456,
-      address: 'Jakarta',
-      city: 'Jakarta',
-      state: 'DKI Jakarta',
-      country: 'Indonesia',
-      postalCode: '12345'
-    },
-    businessId,
-    isActive: true,
-    ...overrides
-  });
-};
+afterAll(async () => {
+  await cleanupTestDatabase();
+  await cleanupTestRedis();
+});
 
-export const generateTestJWT = async (userId: number, roles: string[], activeMode: string) => {
-  const { TokenUtil } = await import('../utils/token.util');
-  
-  return TokenUtil.generateTokenPair({
-    userId,
-    email: 'test@example.com',
-    roles: roles as any,
-    activeMode: activeMode as any
-  });
+// Reset mocks before each test
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+export default {
+  setupTestDatabase,
+  cleanupTestDatabase,
+  setupTestRedis,
+  cleanupTestRedis,
+  createTestSocketClient,
+  cleanupTestSocket,
+  mockAuthenticatedUser,
+  mockRequest,
+  mockResponse,
+  mockNext,
+  mockRedisClient,
 };

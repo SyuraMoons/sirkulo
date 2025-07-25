@@ -2,8 +2,10 @@ import 'reflect-metadata';
 import express, { Application } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
+import { createServer } from 'http';
 import { initializeDatabase } from './config/database';
 import { initializeRedis } from './config/redis';
+import SocketService from './config/socket';
 import config from './config';
 
 // Import routes
@@ -13,20 +15,19 @@ import cartRoutes from './routes/cart.routes';
 import { orderRoutes } from './routes/order.routes';
 import uploadRoutes from './routes/upload.routes';
 import { paymentRoutes } from './routes/payment.routes';
-import { generalRateLimit, authRateLimit, paymentRateLimit, uploadRateLimit } from './middlewares/rate-limit.middleware';
-import { auditMiddleware } from './middlewares/audit.middleware';
-import { securityMiddleware } from './middlewares/security.middleware';
-// import userRoutes from './routes/user.routes';
+import notificationRoutes from './routes/notification.routes';
 
 /**
- * Sirkulo Backend Server
+ * Sirkulo Backend Server with Real-time Notifications
  * Main entry point for the circular economy B2B marketplace API
  */
 class Server {
   private app: Application;
+  private httpServer: any;
 
   constructor() {
     this.app = express();
+    this.httpServer = createServer(this.app);
     this.initializeMiddlewares();
     this.initializeRoutes();
     this.initializeErrorHandling();
@@ -69,6 +70,11 @@ class Server {
         message: 'Sirkulo Backend API is running',
         timestamp: new Date().toISOString(),
         environment: config.nodeEnv,
+        features: {
+          socketIO: SocketService.getConnectedUserCount(),
+          realTimeNotifications: true,
+          firebasePush: !!process.env.FIREBASE_PROJECT_ID,
+        },
       });
     });
 
@@ -78,6 +84,7 @@ class Server {
         message: 'Welcome to Sirkulo API',
         version: '1.0.0',
         documentation: '/api/docs',
+        features: ['Real-time Notifications', 'Socket.IO', 'Firebase Push'],
       });
     });
 
@@ -88,7 +95,7 @@ class Server {
     this.app.use('/api/orders', orderRoutes);
     this.app.use('/api/uploads', uploadRoutes);
     this.app.use('/api/payments', paymentRoutes);
-    // this.app.use('/api/users', userRoutes);
+    this.app.use('/api/notifications', notificationRoutes);
 
     // 404 handler
     this.app.use('*', (req: express.Request, res: express.Response) => {
@@ -126,11 +133,18 @@ class Server {
       // Initialize Redis connection
       await initializeRedis();
 
-      // Start Express server
-      this.app.listen(config.port, () => {
+      // Initialize Socket.IO server
+      SocketService.initialize(this.httpServer);
+
+      // Start HTTP server with Socket.IO
+      this.httpServer.listen(config.port, () => {
         console.log(`🚀 Sirkulo Backend server is running on port ${config.port}`);
         console.log(`📊 Environment: ${config.nodeEnv}`);
         console.log(`🔗 Health check: http://localhost:${config.port}/health`);
+        console.log(`⚡ Socket.IO server initialized`);
+        console.log(`🔔 Real-time notifications enabled`);
+        console.log(`📱 Firebase push notifications ${process.env.FIREBASE_PROJECT_ID ? 'configured' : 'not configured'}`);
+        console.log(`📡 Socket.IO endpoint: ws://localhost:${config.port}`);
       });
     } catch (error) {
       console.error('❌ Failed to start server:', error);

@@ -1,432 +1,247 @@
-import sgMail from '@sendgrid/mail';
 import nodemailer, { Transporter } from 'nodemailer';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
-import config from '../config';
-import {
-  EmailConfig,
-  SendEmailOptions,
-  EmailVerificationData,
-  PasswordResetData,
-  OrderConfirmationData,
-  PaymentConfirmationData,
-  OrderStatusUpdateData
-} from '../types/email.dto';
+import fs from 'fs';
+import path from 'path';
 
 /**
- * Email Service for handling all email communications
+ * Email template types
+ */
+export type EmailTemplate = 'email-verification' | 'order-confirmation' | 'general-notification';
+
+/**
+ * Email service configuration
+ */
+interface EmailConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  auth: {
+    user: string;
+    pass: string;
+  };
+}
+
+/**
+ * Template data interface
+ */
+interface TemplateData {
+  [key: string]: any;
+}
+
+/**
+ * Email service for Sirkulo marketplace
+ * Handles transactional emails with template support
  */
 export class EmailService {
-  private transporter?: Transporter;
-  private emailConfig: EmailConfig;
+  private static instance: EmailService;
+  private transporter: Transporter | null = null;
+  private isConfigured: boolean = false;
 
-  constructor() {
-    this.emailConfig = this.getEmailConfig();
-    this.initializeProviders();
+  private constructor() {
+    this.initializeTransporter();
+  }
+
+  public static getInstance(): EmailService {
+    if (!EmailService.instance) {
+      EmailService.instance = new EmailService();
+    }
+    return EmailService.instance;
   }
 
   /**
-   * Initialize email providers
+   * Initialize email transporter
    */
-  private initializeProviders(): void {
-    // Initialize SendGrid
-    if (config.email.sendgrid.apiKey) {
-      sgMail.setApiKey(config.email.sendgrid.apiKey);
-      console.log('✅ SendGrid initialized successfully');
-    } else {
-      console.warn('⚠️ SendGrid API key not configured');
-    }
-
-    // Fallback SMTP transporter (if needed)
-    if (this.emailConfig.provider === 'smtp') {
-      this.transporter = this.createTransporter();
-    }
-  }
-
-  /**
-   * Get email configuration from environment
-   */
-  private getEmailConfig(): EmailConfig {
-    return {
-      provider: 'sendgrid' as const,
-      smtp: {
+  private initializeTransporter(): void {
+    try {
+      const emailConfig: EmailConfig = {
         host: process.env.SMTP_HOST || 'smtp.gmail.com',
         port: parseInt(process.env.SMTP_PORT || '587'),
-        secure: process.env.SMTP_SECURE === 'true',
+        secure: false, // true for 465, false for other ports
         auth: {
           user: process.env.SMTP_USER || '',
-          pass: process.env.SMTP_PASS || ''
-        }
-      },
-      sendgrid: {
-        apiKey: config.email.sendgrid.apiKey,
-        fromEmail: config.email.from.email,
-        fromName: config.email.from.name
-      },
-      from: {
-        email: config.email.from.email,
-        name: config.email.from.name
-      },
-      templates: {
-        verification: 'email-verification',
-        passwordReset: 'password-reset',
-        orderConfirmation: 'order-confirmation',
-        paymentConfirmation: 'payment-confirmation',
-        orderStatusUpdate: 'order-status-update',
-        welcomeEmail: 'welcome-email'
-      }
-    };
-  }
-
-  /**
-   * Create email transporter based on configuration
-   */
-  private createTransporter(): Transporter {
-    if (this.emailConfig.provider === 'smtp') {
-      return nodemailer.createTransporter({
-        host: this.emailConfig.smtp!.host,
-        port: this.emailConfig.smtp!.port,
-        secure: this.emailConfig.smtp!.secure,
-        auth: {
-          user: this.emailConfig.smtp!.auth.user,
-          pass: this.emailConfig.smtp!.auth.pass
+          pass: process.env.SMTP_PASS || '',
         },
-        tls: {
-          rejectUnauthorized: false
-        }
-      });
-    }
-
-    // Add other providers (SendGrid, etc.) here
-    throw new Error(`Email provider ${this.emailConfig.provider} not implemented`);
-  }
-
-  /**
-   * Send email with template
-   */
-  async sendEmail(options: SendEmailOptions): Promise<boolean> {
-    try {
-      // Use SendGrid as primary provider
-      if (config.email.sendgrid.apiKey) {
-        return await this.sendWithSendGrid(options);
-      }
-      
-      // Fallback to SMTP if configured
-      if (this.transporter) {
-        return await this.sendWithSMTP(options);
-      }
-      
-      // Development mode - just log
-      if (config.nodeEnv === 'development') {
-        console.log('📧 [DEV MODE] Email would be sent:', {
-          to: options.to,
-          subject: options.subject,
-          from: this.emailConfig.from
-        });
-        return true;
-      }
-      
-      throw new Error('No email provider configured');
-    } catch (error) {
-      console.error('Email sending failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send email using SendGrid
-   */
-  private async sendWithSendGrid(options: SendEmailOptions): Promise<boolean> {
-    try {
-      const msg = {
-        to: Array.isArray(options.to) ? options.to : [options.to],
-        from: {
-          email: this.emailConfig.from.email,
-          name: this.emailConfig.from.name,
-        },
-        subject: options.subject,
-        html: options.html,
-        text: options.text || this.stripHtml(options.html || ''),
-        ...(options.cc && { cc: Array.isArray(options.cc) ? options.cc : [options.cc] }),
-        ...(options.bcc && { bcc: Array.isArray(options.bcc) ? options.bcc : [options.bcc] }),
       };
 
-      await sgMail.send(msg);
-      console.log(`✅ Email sent via SendGrid to: ${Array.isArray(options.to) ? options.to.join(', ') : options.to}`);
-      return true;
+      if (!emailConfig.auth.user || !emailConfig.auth.pass) {
+        console.warn('⚠️ Email credentials not configured. Email service will be disabled.');
+        return;
+      }
+
+      this.transporter = nodemailer.createTransport(emailConfig);
+      this.isConfigured = true;
+      
+      console.log('✅ Email service initialized successfully');
     } catch (error) {
-      console.error('❌ SendGrid email failed:', error);
-      throw error;
+      console.error('❌ Failed to initialize email service:', error);
     }
   }
 
   /**
-   * Send email using SMTP (fallback)
+   * Send template-based email
    */
-  private async sendWithSMTP(options: SendEmailOptions): Promise<boolean> {
+  public async sendTemplateEmail(
+    to: string,
+    template: EmailTemplate,
+    data: TemplateData
+  ): Promise<boolean> {
+    if (!this.isConfigured || !this.transporter) {
+      console.warn('⚠️ Email service not configured. Cannot send email.');
+      return false;
+    }
+
     try {
+      const { subject, html, text } = await this.renderTemplate(template, data);
+
       const mailOptions = {
-        from: `${this.emailConfig.from.name} <${this.emailConfig.from.email}>`,
-        to: Array.isArray(options.to) ? options.to.join(', ') : options.to,
-        cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(', ') : options.cc) : undefined,
-        bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(', ') : options.bcc) : undefined,
-        subject: options.subject,
-        html: options.html,
-        text: options.text,
-        attachments: options.attachments
+        from: `${process.env.EMAIL_FROM_NAME || 'Sirkulo'} <${process.env.EMAIL_FROM_ADDRESS || process.env.SMTP_USER}>`,
+        to,
+        subject,
+        html,
+        text,
       };
 
-      const result = await this.transporter!.sendMail(mailOptions);
-      console.log(`✅ Email sent via SMTP: ${result.messageId}`);
+      const result = await this.transporter.sendMail(mailOptions);
+      console.log(`✅ Email sent successfully to ${to}: ${result.messageId}`);
       return true;
     } catch (error) {
-      console.error('❌ SMTP email failed:', error);
-      throw error;
-    }
-  }
-
-  /**
-   * Load and render email template
-   */
-  private async renderTemplate(templateName: string, data: Record<string, any>): Promise<{ html: string; text: string }> {
-    try {
-      const templatePath = join(__dirname, '../templates/email', templateName);
-      
-      // Load HTML template
-      const htmlTemplate = await readFile(`${templatePath}.html`, 'utf-8');
-      
-      // Load text template (fallback to HTML if not exists)
-      let textTemplate: string;
-      try {
-        textTemplate = await readFile(`${templatePath}.txt`, 'utf-8');
-      } catch {
-        textTemplate = htmlTemplate.replace(/<[^>]*>/g, ''); // Strip HTML tags
-      }
-
-      // Simple template engine (replace {{variable}} with data)
-      const html = this.interpolateTemplate(htmlTemplate, data);
-      const text = this.interpolateTemplate(textTemplate, data);
-
-      return { html, text };
-    } catch (error) {
-      console.error(`Template rendering failed for ${templateName}:`, error);
-      throw new Error(`Template ${templateName} not found or rendering failed`);
-    }
-  }
-
-  /**
-   * Simple template interpolation
-   */
-  private interpolateTemplate(template: string, data: Record<string, any>): string {
-    return template.replace(/\{\{(\w+)\}\}/g, (match, key) => {
-      return data[key] !== undefined ? String(data[key]) : match;
-    });
-  }
-
-  /**
-   * Send email verification
-   */
-  async sendVerificationEmail(email: string, data: EmailVerificationData): Promise<boolean> {
-    try {
-      const { html, text } = await this.renderTemplate(this.emailConfig.templates.verification, data);
-      
-      return await this.sendEmail({
-        to: email,
-        subject: 'Verify Your Sirkulo Account',
-        html,
-        text
-      });
-    } catch (error) {
-      console.error('Verification email sending failed:', error);
+      console.error(`❌ Failed to send email to ${to}:`, error);
       return false;
     }
   }
 
   /**
-   * Send password reset email
+   * Render email template
    */
-  async sendPasswordResetEmail(email: string, data: PasswordResetData): Promise<boolean> {
-    try {
-      const { html, text } = await this.renderTemplate(this.emailConfig.templates.passwordReset, data);
-      
-      return await this.sendEmail({
-        to: email,
-        subject: 'Reset Your Sirkulo Password',
-        html,
-        text
-      });
-    } catch (error) {
-      console.error('Password reset email sending failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send order confirmation email
-   */
-  async sendOrderConfirmationEmail(email: string, data: OrderConfirmationData): Promise<boolean> {
-    try {
-      const { html, text } = await this.renderTemplate(this.emailConfig.templates.orderConfirmation, data);
-      
-      return await this.sendEmail({
-        to: email,
-        subject: `Order Confirmation - ${data.orderNumber}`,
-        html,
-        text
-      });
-    } catch (error) {
-      console.error('Order confirmation email sending failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send payment confirmation email
-   */
-  async sendPaymentConfirmationEmail(email: string, data: PaymentConfirmationData): Promise<boolean> {
-    try {
-      const { html, text } = await this.renderTemplate(this.emailConfig.templates.paymentConfirmation, data);
-      
-      return await this.sendEmail({
-        to: email,
-        subject: `Payment Confirmed - ${data.orderNumber}`,
-        html,
-        text
-      });
-    } catch (error) {
-      console.error('Payment confirmation email sending failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send order status update email
-   */
-  async sendOrderStatusUpdateEmail(email: string, data: OrderStatusUpdateData): Promise<boolean> {
-    try {
-      const { html, text } = await this.renderTemplate(this.emailConfig.templates.orderStatusUpdate, data);
-      
-      return await this.sendEmail({
-        to: email,
-        subject: `Order Update - ${data.orderNumber}`,
-        html,
-        text
-      });
-    } catch (error) {
-      console.error('Order status update email sending failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send welcome email to new users
-   */
-  async sendWelcomeEmail(email: string, data: { firstName: string; userType: string }): Promise<boolean> {
-    try {
-      const { html, text } = await this.renderTemplate(this.emailConfig.templates.welcomeEmail, data);
-      
-      return await this.sendEmail({
-        to: email,
-        subject: 'Welcome to Sirkulo!',
-        html,
-        text
-      });
-    } catch (error) {
-      console.error('Welcome email sending failed:', error);
-      return false;
-    }
-  }
-
-  /**
-   * Send bulk emails (for newsletters, announcements)
-   */
-  async sendBulkEmail(
-    recipients: string[], 
-    subject: string, 
-    templateName: string, 
-    data: Record<string, any>
-  ): Promise<{ success: number; failed: number }> {
-    const results = { success: 0, failed: 0 };
+  private async renderTemplate(
+    template: EmailTemplate,
+    data: TemplateData
+  ): Promise<{ subject: string; html: string; text: string }> {
+    const templatePath = path.join(__dirname, '../templates/email');
     
-    const { html, text } = await this.renderTemplate(templateName, data);
-    
-    // Send emails in batches to avoid rate limiting
-    const batchSize = 50;
-    for (let i = 0; i < recipients.length; i += batchSize) {
-      const batch = recipients.slice(i, i + batchSize);
-      
-      try {
-        await this.sendEmail({
-          bcc: batch, // Use BCC for bulk emails
-          to: this.emailConfig.from.email, // Send to self with BCC
-          subject,
-          html,
-          text
-        });
-        
-        results.success += batch.length;
-      } catch (error) {
-        console.error(`Bulk email batch failed:`, error);
-        results.failed += batch.length;
-      }
-      
-      // Rate limiting delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    
-    return results;
-  }
-
-  /**
-   * Strip HTML tags for plain text version
-   */
-  private stripHtml(html: string): string {
-    return html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-  }
-
-  /**
-   * Test email configuration
-   */
-  async testEmailConfiguration(): Promise<boolean> {
     try {
-      if (config.email.sendgrid.apiKey) {
-        // Test SendGrid by sending a test email
-        const testMsg = {
-          to: this.emailConfig.from.email,
-          from: {
-            email: this.emailConfig.from.email,
-            name: this.emailConfig.from.name,
-          },
-          subject: 'Sirkulo SendGrid Test',
-          html: '<p>Your Sirkulo SendGrid email service is working correctly!</p>',
-        };
-        
-        await sgMail.send(testMsg);
-        console.log('✅ SendGrid configuration test passed');
-        return true;
-      } else if (this.transporter) {
-        await this.transporter.verify();
-        console.log('✅ SMTP configuration test passed');
-        return true;
+      // Read HTML template
+      const htmlFile = path.join(templatePath, `${template}.html`);
+      let html = '';
+      
+      if (fs.existsSync(htmlFile)) {
+        html = fs.readFileSync(htmlFile, 'utf-8');
       } else {
-        console.log('⚠️ No email provider configured');
-        return false;
+        html = this.getDefaultTemplate();
       }
+
+      // Read text template
+      const textFile = path.join(templatePath, `${template}.txt`);
+      let text = '';
+      
+      if (fs.existsSync(textFile)) {
+        text = fs.readFileSync(textFile, 'utf-8');
+      } else {
+        text = this.getDefaultTextTemplate();
+      }
+
+      // Replace placeholders
+      html = this.replacePlaceholders(html, data);
+      text = this.replacePlaceholders(text, data);
+
+      // Generate subject based on template
+      const subject = this.generateSubject(template, data);
+
+      return { subject, html, text };
     } catch (error) {
-      console.error('❌ Email configuration test failed:', error);
-      return false;
+      console.error('❌ Failed to render email template:', error);
+      return {
+        subject: data.title || 'Notification from Sirkulo',
+        html: this.getDefaultTemplate(),
+        text: this.getDefaultTextTemplate(),
+      };
     }
   }
 
   /**
-   * Queue email for later sending (useful for failed emails)
+   * Replace placeholders in template
    */
-  async queueEmail(options: SendEmailOptions, retryCount: number = 0): Promise<void> {
-    // TODO: Implement email queue using Redis or database
-    // For now, we'll just log it
-    console.log(`Email queued for retry (attempt ${retryCount + 1}):`, {
-      to: options.to,
-      subject: options.subject
+  private replacePlaceholders(template: string, data: TemplateData): string {
+    let result = template;
+    
+    Object.entries(data).forEach(([key, value]) => {
+      const placeholder = new RegExp(`{{${key}}}`, 'g');
+      result = result.replace(placeholder, String(value));
     });
+
+    return result;
+  }
+
+  /**
+   * Generate email subject
+   */
+  private generateSubject(template: EmailTemplate, data: TemplateData): string {
+    switch (template) {
+      case 'email-verification':
+        return 'Verify your Sirkulo account';
+      case 'order-confirmation':
+        return `Order confirmation - ${data.orderId || 'Your order'}`;
+      case 'general-notification':
+        return data.title || 'Notification from Sirkulo';
+      default:
+        return 'Notification from Sirkulo';
+    }
+  }
+
+  /**
+   * Default HTML template
+   */
+  private getDefaultTemplate(): string {
+    return `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>{{title}}</title>
+      </head>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #2c5aa0;">{{title}}</h1>
+          <p>{{message}}</p>
+          <hr style="border: 1px solid #eee; margin: 20px 0;">
+          <p style="color: #666; font-size: 12px;">
+            This email was sent by Sirkulo - Circular Economy Marketplace
+          </p>
+        </div>
+      </body>
+      </html>
+    `;
+  }
+
+  /**
+   * Default text template
+   */
+  private getDefaultTextTemplate(): string {
+    return `
+{{title}}
+
+{{message}}
+
+---
+This email was sent by Sirkulo - Circular Economy Marketplace
+    `;
+  }
+
+  /**
+   * Verify email service configuration
+   */
+  public async verifyConfiguration(): Promise<boolean> {
+    if (!this.transporter) {
+      return false;
+    }
+
+    try {
+      await this.transporter.verify();
+      return true;
+    } catch (error) {
+      console.error('❌ Email service verification failed:', error);
+      return false;
+    }
   }
 }
+
+export default EmailService.getInstance();

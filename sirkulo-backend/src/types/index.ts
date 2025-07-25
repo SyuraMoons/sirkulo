@@ -95,3 +95,6 @@ export interface FileUpload {
 
 export * from './payment.dto';
 export * from './email.dto';
+
+// Notification DTOs
+export * from './notification.dto';

@@ -10,6 +10,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:email": "ts-node test-email.ts",
+    "test:firebase": "ts-node src/tests/firebase.test.ts",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "typeorm": "typeorm-ts-node-commonjs",
