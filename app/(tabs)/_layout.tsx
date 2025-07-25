@@ -1,13 +1,12 @@
 import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable } from 'react-native';
+import { Tabs } from 'expo-router';
 
-import Colors from '@/constants/Colors';
-import { useColorScheme } from '@/components/useColorScheme';
-import { useClientOnlyValue } from '@/components/useClientOnlyValue';
+import { useClientOnlyValue } from '@/src/hooks/useClientOnlyValue';
+import { useCart } from '@/src/context/CartContext';
+import { UserModeProvider, useUserMode } from '@/src/contexts/UserModeContext';
 
-// You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
@@ -15,45 +14,115 @@ function TabBarIcon(props: {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+function CartTabBarIcon({ color }: { color: string }) {
+  const { state } = useCart();
+
+  return (
+    <View style={styles.cartIconContainer}>
+      <TabBarIcon name="shopping-cart" color={color} />
+      {state.totalItems > 0 && (
+        <View style={styles.badge}>
+          <Text style={styles.badgeText}>{state.totalItems > 99 ? '99+' : state.totalItems}</Text>
+        </View>
+      )}
+    </View>
+  );
+}
+
+function BusinessManagementTabBarIcon({ color }: { color: string }) {
+  return <TabBarIcon name="briefcase" color={color} />;
+}
+
+function TabsContent() {
+  const { mode } = useUserMode();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        // Disable the static render of the header on web
-        // to prevent a hydration error in React Navigation v6.
+        tabBarActiveTintColor: '#386B5F',
+        tabBarInactiveTintColor: '#A0A4A8',
+        tabBarLabelStyle: { fontSize: 16, fontWeight: '500', marginBottom: 4 },
+        tabBarStyle: { borderTopColor: '#E6E6E6', borderTopWidth: 1, height: 70 },
         headerShown: useClientOnlyValue(false, true),
-      }}>
+      }}
+    >
+      {/* Home Tab - Always visible */}
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
-          headerRight: () => (
-            <Link href="/modal" asChild>
-              <Pressable>
-                {({ pressed }) => (
-                  <FontAwesome
-                    name="info-circle"
-                    size={25}
-                    color={Colors[colorScheme ?? 'light'].text}
-                    style={{ marginRight: 15, opacity: pressed ? 0.5 : 1 }}
-                  />
-                )}
-              </Pressable>
-            </Link>
-          ),
+          title: 'Home',
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
+
+      {/* Cart Tab - Visible in Basic and Recycler modes, hidden in Business mode */}
       <Tabs.Screen
-        name="two"
+        name="cart"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: 'Cart',
+          tabBarIcon: ({ color }) => <CartTabBarIcon color={color} />,
+          href: mode === 'Business' ? null : '/cart',
+        }}
+      />
+
+      {/* Business Management Tab - Visible only in Business mode */}
+      <Tabs.Screen
+        name="business-management"
+        options={{
+          title: 'Manage',
+          tabBarIcon: ({ color }) => <BusinessManagementTabBarIcon color={color} />,
+          href: mode === 'Business' ? '/business-management' : null,
+        }}
+      />
+
+      {/* Messages Tab - Always visible */}
+      <Tabs.Screen
+        name="messages"
+        options={{
+          title: 'Messages',
+          tabBarIcon: ({ color }) => <TabBarIcon name="comment-o" color={color} />,
+        }}
+      />
+
+      {/* Profile Tab - Always visible */}
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color }) => <TabBarIcon name="user-o" color={color} />,
         }}
       />
     </Tabs>
   );
 }
+
+export default function TabLayout() {
+  return (
+    <UserModeProvider>
+      <TabsContent />
+    </UserModeProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  cartIconContainer: {
+    position: 'relative',
+  },
+  badge: {
+    position: 'absolute',
+    top: -8,
+    right: -12,
+    backgroundColor: '#E74C3C',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  badgeText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+});
