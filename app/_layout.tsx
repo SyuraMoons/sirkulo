@@ -8,6 +8,8 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/src/hooks/useColorScheme';
 import { CartProvider } from '@/src/context/CartContext';
+import { AuthProvider } from '@/src/contexts/AuthContext';
+import { NotificationProvider } from '@/src/contexts/NotificationContext';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -50,18 +52,22 @@ function RootLayoutNav() {
   const colorScheme = useColorScheme();
 
   return (
-    <CartProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
-          <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
-    </CartProvider>
+    <AuthProvider>
+      <NotificationProvider>
+        <CartProvider>
+          <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+              <Stack.Screen name="product/[id]" options={{ headerShown: false }} />
+            </Stack>
+          </ThemeProvider>
+        </CartProvider>
+      </NotificationProvider>
+    </AuthProvider>
   );
 }

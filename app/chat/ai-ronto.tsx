@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,103 +7,104 @@ import {
   ScrollView,
   TextInput,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-
-interface Message {
-  id: number;
-  text: string;
-  sent: boolean;
-  time: string;
-}
-
-const INITIAL_MESSAGES: Message[] = [
-  {
-    id: 1,
-    text: "Hello! I'm Ronto, your AI assistant for sustainable living and recycling consultation. How can I help you today?",
-    sent: false,
-    time: new Date().toLocaleTimeString().slice(0, 5),
-  },
-];
-
-const AI_RESPONSES = [
-  "That's a great question about recycling! Let me help you with that.",
-  "Based on sustainable practices, I'd recommend considering the environmental impact first.",
-  'Here are some eco-friendly alternatives you might want to explore:',
-  'For waste management, the best approach would be to reduce, reuse, then recycle.',
-  'I can help you find local recycling centers or sustainable businesses in your area.',
-  "That's an interesting challenge. Let me suggest some creative upcycling ideas.",
-  "From an environmental perspective, here's what I'd recommend:",
-  'Great initiative! Sustainability starts with small steps like this.',
-];
+import { useAIChat } from '@/src/hooks/useAIChat';
+import { useAuth } from '@/src/contexts/AuthContext';
 
 export default function AIRontoScreen() {
   const router = useRouter();
   const [newMessage, setNewMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState<Message[]>(INITIAL_MESSAGES);
-  const [isTyping, setIsTyping] = useState(false);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
+  
+  const { state: authState } = useAuth();
+  const {
+    conversations,
+    currentConversation,
+    messages,
+    isLoading,
+    isTyping,
+    error,
+    isConnected,
+    createConversation,
+    selectConversation,
+    sendMessage,
+    loadConversations,
+    clearError,
+  } = useAIChat();
 
-  const generateAIResponse = (userMessage: string): string => {
-    const lowerMessage = userMessage.toLowerCase();
-
-    if (lowerMessage.includes('recycle') || lowerMessage.includes('recycling')) {
-      return 'Great question about recycling! Here are some tips: Always clean containers before recycling, check your local recycling guidelines as they vary by location, and remember that not all plastics are recyclable. Would you like specific advice about a particular material?';
+  // Auto-scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (scrollViewRef.current) {
+      scrollViewRef.current.scrollToEnd({ animated: true });
     }
+  }, [messages, isTyping]);
 
-    if (lowerMessage.includes('plastic') || lowerMessage.includes('bottle')) {
-      return 'For plastic items, look for the recycling number (1-7) on the bottom. Numbers 1 and 2 are most commonly recycled. Consider reducing plastic use by switching to reusable alternatives like glass or stainless steel containers.';
+  // Create or select conversation on mount
+  useEffect(() => {
+    if (authState.isAuthenticated && conversations.length === 0 && !isLoading) {
+      handleCreateConversation();
+    } else if (conversations.length > 0 && !selectedConversationId) {
+      const latestConversation = conversations[0];
+      setSelectedConversationId(latestConversation.id);
+      selectConversation(latestConversation.id);
     }
+  }, [authState.isAuthenticated, conversations, selectedConversationId, isLoading]);
 
-    if (lowerMessage.includes('upcycle') || lowerMessage.includes('reuse')) {
-      return 'Upcycling is fantastic! You can transform old items into something new and useful. For example: turn glass jars into storage containers, use old t-shirts as cleaning rags, or convert cardboard boxes into organizers. What items are you looking to upcycle?';
+  // Handle errors
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error', error, [
+        { text: 'OK', onPress: clearError }
+      ]);
     }
+  }, [error, clearError]);
 
-    if (lowerMessage.includes('sustainable') || lowerMessage.includes('eco')) {
-      return 'Sustainable living is all about making conscious choices. Start small: use reusable bags, choose products with minimal packaging, support local businesses, and consider the lifecycle of items before purchasing. Every small action counts!';
+  const handleCreateConversation = async () => {
+    const conversationId = await createConversation('general', 'Chat with Ronto');
+    if (conversationId) {
+      setSelectedConversationId(conversationId);
+      selectConversation(conversationId);
     }
-
-    if (lowerMessage.includes('help') || lowerMessage.includes('advice')) {
-      return "I'm here to help with all your sustainability questions! I can assist with recycling guidelines, upcycling ideas, eco-friendly product recommendations, waste reduction strategies, and connecting you with local green businesses. What specific area interests you most?";
-    }
-
-    // Default responses
-    const randomIndex = Math.floor(Math.random() * AI_RESPONSES.length);
-    return (
-      AI_RESPONSES[randomIndex] +
-      ' Feel free to ask me anything about recycling, upcycling, or sustainable living practices!'
-    );
   };
 
-  const sendMessage = async () => {
-    if (newMessage.trim()) {
-      // Add user message
-      const userMsg: Message = {
-        id: chatMessages.length + 1,
-        text: newMessage,
-        sent: true,
-        time: new Date().toLocaleTimeString().slice(0, 5),
-      };
-
-      const userInput = newMessage;
-      setChatMessages(prev => [...prev, userMsg]);
+  const handleSendMessage = async () => {
+    if (newMessage.trim() && currentConversation) {
+      const messageContent = newMessage.trim();
       setNewMessage('');
-      setIsTyping(true);
-
-      // Simulate AI thinking time
-      setTimeout(() => {
-        const aiResponse: Message = {
-          id: chatMessages.length + 2,
-          text: generateAIResponse(userInput),
-          sent: false,
-          time: new Date().toLocaleTimeString().slice(0, 5),
-        };
-
-        setChatMessages(prev => [...prev, aiResponse]);
-        setIsTyping(false);
-      }, 1500);
+      await sendMessage(messageContent);
     }
   };
+
+  const handleQuickAction = (message: string) => {
+    setNewMessage(message);
+  };
+
+  // Show loading state if not authenticated
+  if (!authState.isAuthenticated) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+            <FontAwesome name="arrow-left" size={20} color="#386B5F" />
+          </TouchableOpacity>
+          <Text style={styles.headerName}>Ronto AI Assistant</Text>
+        </View>
+        <View style={styles.centerContainer}>
+          <Text style={styles.errorText}>Please log in to chat with Ronto</Text>
+          <TouchableOpacity 
+            style={styles.loginButton}
+            onPress={() => router.push('/(auth)/login')}
+          >
+            <Text style={styles.loginButtonText}>Go to Login</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -115,34 +116,59 @@ export default function AIRontoScreen() {
           <View style={styles.avatarIcon}>
             <FontAwesome name="android" size={32} color="#386B5F" />
           </View>
-          <View style={styles.onlineBadge} />
+          <View style={[styles.onlineBadge, { backgroundColor: isConnected ? '#4CAF50' : '#FFA500' }]} />
         </View>
         <View style={styles.headerInfo}>
           <Text style={styles.headerName}>Ronto AI Assistant</Text>
-          <Text style={styles.headerStatus}>Online • Sustainability Consultant</Text>
+          <Text style={styles.headerStatus}>
+            {isConnected ? 'Online' : 'Connecting...'} • Sustainability Consultant
+          </Text>
         </View>
       </View>
 
-      <ScrollView style={styles.messagesList} showsVerticalScrollIndicator={false}>
-        {chatMessages.map((message: Message) => (
+      <ScrollView 
+        ref={scrollViewRef}
+        style={styles.messagesList} 
+        showsVerticalScrollIndicator={false}
+      >
+        {messages.length === 0 && !isLoading && (
+          <View style={styles.welcomeContainer}>
+            <View style={styles.welcomeIcon}>
+              <FontAwesome name="android" size={48} color="#386B5F" />
+            </View>
+            <Text style={styles.welcomeTitle}>Welcome to Ronto AI!</Text>
+            <Text style={styles.welcomeText}>
+              I'm your AI assistant for sustainable living and recycling consultation. 
+              How can I help you today?
+            </Text>
+          </View>
+        )}
+
+        {messages.map((message) => (
           <View
             key={message.id}
             style={[
               styles.messageContainer,
-              message.sent ? styles.sentMessage : styles.receivedMessage,
+              message.role === 'user' ? styles.sentMessage : styles.receivedMessage,
             ]}
           >
-            {!message.sent && (
+            {message.role === 'assistant' && (
               <View style={styles.aiAvatar}>
                 <FontAwesome name="android" size={16} color="#386B5F" />
               </View>
             )}
             <View style={styles.messageContent}>
-              <Text style={[styles.messageText, !message.sent && styles.receivedMessageText]}>
-                {message.text}
+              <Text style={[
+                styles.messageText, 
+                message.role === 'assistant' && styles.receivedMessageText
+              ]}>
+                {message.content}
               </Text>
-              <Text style={[styles.messageTime, !message.sent && styles.receivedMessageTime]}>
-                {message.time}
+              <Text style={[
+                styles.messageTime, 
+                message.role === 'assistant' && styles.receivedMessageTime
+              ]}>
+                {new Date(message.timestamp).toLocaleTimeString().slice(0, 5)}
               </Text>
             </View>
           </View>
@@ -165,25 +191,25 @@ export default function AIRontoScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={() => setNewMessage('How do I recycle plastic bottles?')}
+            onPress={() => handleQuickAction('How do I recycle plastic bottles?')}
           >
             <Text style={styles.quickActionText}>♻️ Recycling Tips</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={() => setNewMessage('Give me upcycling ideas for old items')}
+            onPress={() => handleQuickAction('Give me upcycling ideas for old items')}
           >
             <Text style={styles.quickActionText}>🔄 Upcycling Ideas</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={() => setNewMessage('How to live more sustainably?')}
+            onPress={() => handleQuickAction('How to live more sustainably?')}
           >
             <Text style={styles.quickActionText}>🌱 Sustainable Living</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickActionButton}
-            onPress={() => setNewMessage('Find eco-friendly businesses near me')}
+            onPress={() => handleQuickAction('Find eco-friendly businesses near me')}
           >
             <Text style={styles.quickActionText}>🏪 Green Businesses</Text>
           </TouchableOpacity>
@@ -198,13 +224,25 @@ export default function AIRontoScreen() {
           placeholder="Ask Ronto about sustainability..."
           placeholderTextColor="#999"
           multiline
+          editable={!isLoading && isConnected}
         />
         <TouchableOpacity
-          onPress={sendMessage}
-          style={[styles.sendButton, newMessage.trim() ? styles.sendButtonActive : null]}
-          disabled={!newMessage.trim()}
+          onPress={handleSendMessage}
+          style={[
+            styles.sendButton, 
+            (newMessage.trim() && !isLoading && isConnected) ? styles.sendButtonActive : null
+          ]}
+          disabled={!newMessage.trim() || isLoading || !isConnected}
         >
-          <FontAwesome name="send" size={18} color={newMessage.trim() ? '#fff' : '#ccc'} />
+          {isLoading ? (
+            <ActivityIndicator size="small" color="#fff" />
+          ) : (
+            <FontAwesome 
+              name="send" 
+              size={18} 
+              color={(newMessage.trim() && isConnected) ? '#fff' : '#ccc'} 
+            />
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -270,9 +308,59 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 2,
   },
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  errorText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  loginButton: {
+    backgroundColor: '#386B5F',
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
   messagesList: {
     flex: 1,
     padding: 16,
+  },
+  welcomeContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 40,
+  },
+  welcomeIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: '#E6F3EC',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  welcomeTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#386B5F',
+    marginBottom: 8,
+  },
+  welcomeText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 20,
   },
   messageContainer: {
     flexDirection: 'row',
