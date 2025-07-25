@@ -39,7 +39,13 @@ export default function MessagesScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Messages</Text>
+        <View style={styles.headerTop}>
+          <Text style={styles.headerTitle}>Messages</Text>
+          <TouchableOpacity style={styles.aiButton} onPress={() => router.push('/chat/ai-ronto')}>
+            <FontAwesome name="android" size={24} color="#386B5F" />
+            <Text style={styles.aiButtonText}>Ronto AI</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.searchContainer}>
           <TextInput
             style={styles.searchInput}
@@ -89,11 +95,30 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#E6E6E6',
   },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   headerTitle: {
     fontSize: 24,
     fontWeight: '700',
     color: '#386B5F',
-    marginBottom: 12,
+  },
+  aiButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E6F3EC',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+  },
+  aiButtonText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#386B5F',
   },
   searchContainer: {
     marginTop: 8,
