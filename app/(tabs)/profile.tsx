@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useRouter } from 'expo-router';
 import { useUserMode } from '@/src/contexts/UserModeContext';
 import RecyclerProfile from '@/src/features/recycler/RecyclerProfile';
 import BusinessProfile from '@/src/features/business/BusinessProfile';
@@ -8,24 +9,24 @@ import BusinessProfile from '@/src/features/business/BusinessProfile';
 const PURCHASES = [
   {
     id: '1',
-    title: 'Tas dari Botol Plastik Daur Ulang',
-    status: 'Dikirim',
-    time: '1 hari lalu',
+    title: 'Bag from Recycled Plastic Bottles',
+    status: 'Shipped',
+    time: '1 day ago',
     price: 125000,
   },
   {
     id: '2',
     title: 'Review: EcoFurniture Co.',
-    status: 'Dipublikasi',
+    status: 'Published',
     rating: 4,
-    time: '3 hari lalu',
+    time: '3 days ago',
   },
   {
     id: '3',
-    title: 'Lacak: Sepatu dari Ban Bekas',
-    status: 'Dilihat',
-    label: 'Transparan',
-    time: '5 hari lalu',
+    title: 'Track: Shoes from Used Tires',
+    status: 'Viewed',
+    label: 'Transparent',
+    time: '5 days ago',
   },
 ];
 
@@ -57,8 +58,15 @@ const ACHIEVEMENTS = [
 ];
 
 export default function ProfileScreen() {
-  const [activeTab, setActiveTab] = useState('ringkasan');
+  const [activeTab, setActiveTab] = useState('summary');
   const { mode } = useUserMode();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    // Clear any user data/tokens here if needed
+    // Navigate to onboarding screen
+    router.replace('/onboarding/onboard');
+  };
 
   // If user is a recycler, show RecyclerProfile
   if (mode === 'Recycler') {
@@ -81,7 +89,7 @@ export default function ProfileScreen() {
           </View>
           <Text style={styles.name}>John</Text>
           <Text style={styles.subtitle}>Conscious Consumer</Text>
-          <Text style={styles.joinDate}>Bergabung sejak Januari 2024</Text>
+          <Text style={styles.joinDate}>Joined since January 2024</Text>
         </View>
 
         {/* Environmental Impact */}
@@ -93,11 +101,11 @@ export default function ProfileScreen() {
           <View style={styles.impactStats}>
             <View style={styles.impactItem}>
               <Text style={styles.impactValue}>45.2kg</Text>
-              <Text style={styles.impactLabel}>CO2 Dikurangi</Text>
+              <Text style={styles.impactLabel}>CO2 Reduced</Text>
             </View>
             <View style={styles.impactItem}>
               <Text style={styles.impactValue}>7</Text>
-              <Text style={styles.impactLabel}>Bisnis Didukung</Text>
+              <Text style={styles.impactLabel}>Businesses Supported</Text>
             </View>
           </View>
         </View>
@@ -105,13 +113,13 @@ export default function ProfileScreen() {
         {/* Stats Navigation */}
         <View style={styles.statsNav}>
           <TouchableOpacity
-            style={[styles.statsTab, activeTab === 'ringkasan' && styles.statsTabActive]}
-            onPress={() => setActiveTab('ringkasan')}
+            style={[styles.statsTab, activeTab === 'summary' && styles.statsTabActive]}
+            onPress={() => setActiveTab('summary')}
           >
             <Text
-              style={[styles.statsTabText, activeTab === 'ringkasan' && styles.statsTabTextActive]}
+              style={[styles.statsTabText, activeTab === 'summary' && styles.statsTabTextActive]}
             >
-              Ringkasan
+              Summary
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -125,18 +133,21 @@ export default function ProfileScreen() {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={[styles.statsTab, activeTab === 'pencapaian' && styles.statsTabActive]}
-            onPress={() => setActiveTab('pencapaian')}
+            style={[styles.statsTab, activeTab === 'achievements' && styles.statsTabActive]}
+            onPress={() => setActiveTab('achievements')}
           >
             <Text
-              style={[styles.statsTabText, activeTab === 'pencapaian' && styles.statsTabTextActive]}
+              style={[
+                styles.statsTabText,
+                activeTab === 'achievements' && styles.statsTabTextActive,
+              ]}
             >
-              Pencapaian
+              Achievements
             </Text>
           </TouchableOpacity>
         </View>
 
-        {activeTab === 'pencapaian' ? (
+        {activeTab === 'achievements' ? (
           <View style={styles.achievementsList}>
             {ACHIEVEMENTS.map(achievement => (
               <View key={achievement.id} style={styles.achievementItem}>
@@ -181,9 +192,9 @@ export default function ProfileScreen() {
                     <Text
                       style={[
                         styles.statusBadge,
-                        item.status === 'Dipublikasi' && styles.statusPublished,
-                        item.status === 'Dikirim' && styles.statusShipped,
-                        item.status === 'Dilihat' && styles.statusViewed,
+                        item.status === 'Published' && styles.statusPublished,
+                        item.status === 'Shipped' && styles.statusShipped,
+                        item.status === 'Viewed' && styles.statusViewed,
                       ]}
                     >
                       {item.status}
@@ -201,7 +212,7 @@ export default function ProfileScreen() {
               </View>
             ))}
             <TouchableOpacity style={styles.viewAllButton}>
-              <Text style={styles.viewAllText}>Lihat Semua Aktivitas</Text>
+              <Text style={styles.viewAllText}>View All Activities</Text>
             </TouchableOpacity>
           </View>
         ) : (
@@ -225,7 +236,7 @@ export default function ProfileScreen() {
             <View style={styles.statsCard}>
               <FontAwesome name="line-chart" size={24} color="#386B5F" />
               <View style={styles.statsTextContainer}>
-                <Text style={styles.statsNumber}>Rp1,850,000</Text>
+                <Text style={styles.statsNumber}>$1,850</Text>
                 <Text style={styles.statsTitle}>Total Spent</Text>
               </View>
             </View>
@@ -260,7 +271,7 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
               <FontAwesome name="cog" size={20} color="#386B5F" />
-              <Text style={styles.menuItemText}>Pengaturan Akun</Text>
+              <Text style={styles.menuItemText}>Account Settings</Text>
             </View>
             <FontAwesome name="chevron-right" size={16} color="#666" />
           </TouchableOpacity>
@@ -268,7 +279,7 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
               <FontAwesome name="bell" size={20} color="#386B5F" />
-              <Text style={styles.menuItemText}>Notifikasi</Text>
+              <Text style={styles.menuItemText}>Notifications</Text>
             </View>
             <FontAwesome name="chevron-right" size={16} color="#666" />
           </TouchableOpacity>
@@ -276,14 +287,14 @@ export default function ProfileScreen() {
           <TouchableOpacity style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
               <FontAwesome name="question-circle" size={20} color="#386B5F" />
-              <Text style={styles.menuItemText}>Bantuan & Dukungan</Text>
+              <Text style={styles.menuItemText}>Help & Support</Text>
             </View>
             <FontAwesome name="chevron-right" size={16} color="#666" />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.logoutButton}>
+          <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
             <FontAwesome name="sign-out" size={20} color="#FF4B4B" />
-            <Text style={styles.logoutText}>Keluar</Text>
+            <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
       </View>

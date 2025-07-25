@@ -8,22 +8,22 @@ const CHATS = [
   {
     id: '1',
     name: 'Budi Santoso',
-    lastMessage: 'Apakah botol kaca masih tersedia?',
+    lastMessage: 'Are glass bottles still available?',
     time: '10:30',
     online: true,
   },
   {
     id: '2',
     name: 'Siti Aminah',
-    lastMessage: 'Saya tertarik dengan vas bunga Anda',
+    lastMessage: 'I am interested in your flower vase',
     time: '09:15',
     online: false,
   },
   {
     id: '3',
     name: 'Dedi Cahyono',
-    lastMessage: 'Bisa dikirim ke alamat saya?',
-    time: 'Kemarin',
+    lastMessage: 'Can it be delivered to my address?',
+    time: 'Yesterday',
     online: false,
   },
 ];
