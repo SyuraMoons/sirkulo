@@ -213,6 +213,17 @@ Copy `.env.example` to `.env` and configure:
 - `GET /api/orders/sales` - Get seller orders
 
 For detailed Order Management API documentation, see [ORDER_MANAGEMENT.md](./ORDER_MANAGEMENT.md)
+### Payment Management 🆕
+
+- `POST /api/payments` - Create payment for order
+- `GET /api/payments` - Get payments with filters
+- `GET /api/payments/:id` - Get payment by ID
+- `POST /api/payments/:id/refund` - Create refund
+- `GET /api/payments/stats` - Get payment statistics
+- `GET /api/payments/methods` - Get supported payment methods
+- `POST /api/payments/webhook` - Handle Xendit webhook
+
+For detailed Payment API documentation, see [PAYMENT_API_DOCS.md](./PAYMENT_API_DOCS.md)
 
 ## 🧪 Testing
 

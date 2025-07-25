@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation - Sirkulo</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 28px; font-weight: bold; color: #2c5aa0; margin-bottom: 10px; }
+        .order-header { background-color: #e8f4fd; padding: 20px; border-radius: 8px; margin-bottom: 30px; }
+        .order-number { font-size: 24px; font-weight: bold; color: #2c5aa0; }
+        .status { background-color: #28a745; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; }
+        .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        .table th { background-color: #f8f9fa; font-weight: bold; }
+        .total-row { font-weight: bold; background-color: #f8f9fa; }
+        .info-section { margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-radius: 5px; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌱 Sirkulo</div>
+            <div class="subtitle">Circular Economy Marketplace</div>
+        </div>
+        
+        <div class="order-header">
+            <h1>Order Confirmed!</h1>
+            <div class="order-number">Order #{{orderNumber}}</div>
+            <span class="status">Confirmed</span>
+        </div>
+        
+        <p>Hello {{firstName}},</p>
+        
+        <p>Thank you for your order! We've received your order and it's being processed. You'll receive another email when your items have been shipped.</p>
+        
+        <h3>Order Details</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Unit Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each orderItems}}
+                <tr>
+                    <td>{{title}}</td>
+                    <td>{{quantity}}</td>
+                    <td>Rp {{price}}</td>
+                    <td>Rp {{multiply quantity price}}</td>
+                </tr>
+                {{/each}}
+                <tr class="total-row">
+                    <td colspan="3"><strong>Total Amount</strong></td>
+                    <td><strong>Rp {{totalAmount}}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="info-section">
+            <h4>🚚 Shipping Information</h4>
+            <p><strong>Delivery Address:</strong><br>{{shippingAddress}}</p>
+            <p><strong>Estimated Delivery:</strong> {{estimatedDelivery}}</p>
+        </div>
+        
+        <div class="info-section">
+            <h4>💰 Payment Information</h4>
+            <p>Payment is being processed. You'll receive a payment confirmation email once completed.</p>
+        </div>
+        
+        <p>You can track your order status anytime by logging into your Sirkulo account.</p>
+        
+        <p>If you have any questions about your order, please don't hesitate to contact our support team.</p>
+        
+        <p>Thank you for choosing Sirkulo and contributing to the circular economy!</p>
+        
+        <p>Best regards,<br>The Sirkulo Team</p>
+        
+        <div class="footer">
+            <p>© 2024 Sirkulo. All rights reserved.</p>
+            <p>
+                <a href="mailto:support@sirkulo.com" style="color: #2c5aa0;">Contact Support</a> | 
+                <a href="https://sirkulo.com/orders/{{orderNumber}}" style="color: #2c5aa0;">Track Order</a> | 
+                <a href="https://sirkulo.com/account" style="color: #2c5aa0;">Your Account</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

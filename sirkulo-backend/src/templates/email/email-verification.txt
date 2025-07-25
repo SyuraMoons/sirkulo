@@ -1,0 +1,29 @@
+Verify Your Email Address - Sirkulo
+
+Hello {{firstName}},
+
+Welcome to {{companyName}}! We're excited to have you join our circular economy marketplace where waste becomes valuable resources.
+
+To complete your account setup and start trading sustainable materials, please verify your email address by visiting this link:
+
+{{verificationUrl}}
+
+IMPORTANT: This verification link will expire in 24 hours for security reasons.
+
+Once verified, you'll be able to:
+• List your textile waste for sale
+• Browse available materials for upcycling  
+• Start trading and building your circular economy network
+• Access analytics to track your environmental impact
+
+If you didn't create an account with us, please ignore this email or contact our support team.
+
+Best regards,
+The Sirkulo Team
+
+© 2024 Sirkulo. All rights reserved.
+Building a sustainable future through circular economy.
+
+Contact Support: support@sirkulo.com
+Privacy Policy: https://sirkulo.com/privacy
+Terms of Service: https://sirkulo.com/terms

@@ -92,3 +92,6 @@ export interface FileUpload {
   filename: string;
   path: string;
 }
+
+export * from './payment.dto';
+export * from './email.dto';

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email - Sirkulo</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .logo { font-size: 28px; font-weight: bold; color: #2c5aa0; margin-bottom: 10px; }
+        .title { color: #333; font-size: 24px; margin-bottom: 20px; }
+        .content { margin-bottom: 30px; }
+        .button { display: inline-block; background-color: #2c5aa0; color: white; text-decoration: none; padding: 12px 30px; border-radius: 5px; font-weight: bold; margin: 20px 0; }
+        .button:hover { background-color: #1e3d6f; }
+        .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 14px; }
+        .warning { background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 15px; border-radius: 5px; margin: 20px 0; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🌱 Sirkulo</div>
+            <div class="subtitle">Circular Economy Marketplace</div>
+        </div>
+        
+        <h1 class="title">Verify Your Email Address</h1>
+        
+        <div class="content">
+            <p>Hello {{firstName}},</p>
+            
+            <p>Welcome to {{companyName}}! We're excited to have you join our circular economy marketplace where waste becomes valuable resources.</p>
+            
+            <p>To complete your account setup and start trading sustainable materials, please verify your email address by clicking the button below:</p>
+            
+            <div style="text-align: center;">
+                <a href="{{verificationUrl}}" class="button">Verify Email Address</a>
+            </div>
+            
+            <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+            <p style="word-break: break-all; color: #2c5aa0;">{{verificationUrl}}</p>
+            
+            <div class="warning">
+                <strong>⚠️ Important:</strong> This verification link will expire in 24 hours for security reasons.
+            </div>
+            
+            <p>Once verified, you'll be able to:</p>
+            <ul>
+                <li>🏭 List your textile waste for sale</li>
+                <li>♻️ Browse available materials for upcycling</li>
+                <li>💰 Start trading and building your circular economy network</li>
+                <li>📊 Access analytics to track your environmental impact</li>
+            </ul>
+            
+            <p>If you didn't create an account with us, please ignore this email or contact our support team.</p>
+            
+            <p>Best regards,<br>The Sirkulo Team</p>
+        </div>
+        
+        <div class="footer">
+            <p>© 2024 Sirkulo. All rights reserved.</p>
+            <p>Building a sustainable future through circular economy.</p>
+            <p>
+                <a href="mailto:support@sirkulo.com" style="color: #2c5aa0;">Contact Support</a> | 
+                <a href="https://sirkulo.com/privacy" style="color: #2c5aa0;">Privacy Policy</a> | 
+                <a href="https://sirkulo.com/terms" style="color: #2c5aa0;">Terms of Service</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

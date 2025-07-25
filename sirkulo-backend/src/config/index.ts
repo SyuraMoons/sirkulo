@@ -16,6 +16,8 @@ interface AppConfig {
   payment: PaymentConfig;
   firebase: FirebaseConfig;
   upload: UploadConfig;
+  email: EmailConfig;
+  frontend: FrontendConfig;
 }
 
 /**
@@ -75,6 +77,27 @@ interface UploadConfig {
 }
 
 /**
+ * Email configuration interface
+ */
+interface EmailConfig {
+  provider: 'sendgrid';
+  sendgrid: {
+    apiKey: string;
+  };
+  from: {
+    email: string;
+    name: string;
+  };
+}
+
+/**
+ * Frontend configuration interface
+ */
+interface FrontendConfig {
+  url: string;
+}
+
+/**
  * Main application configuration
  */
 const config: AppConfig = {
@@ -112,6 +135,19 @@ const config: AppConfig = {
   upload: {
     maxFileSize: parseInt(process.env.MAX_FILE_SIZE || '10485760', 10),
     allowedFileTypes: process.env.ALLOWED_FILE_TYPES?.split(',') || ['image/jpeg', 'image/png'],
+  },
+  email: {
+    provider: 'sendgrid' as const,
+    sendgrid: {
+      apiKey: process.env.SENDGRID_API_KEY || '',
+    },
+    from: {
+      email: process.env.FROM_EMAIL || '',
+      name: process.env.FROM_NAME || 'Sirkulo',
+    },
+  },
+  frontend: {
+    url: process.env.FRONTEND_URL || 'http://localhost:3000',
   },
 };
 
