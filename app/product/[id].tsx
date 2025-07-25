@@ -134,8 +134,6 @@ export default function ProductDetailScreen() {
           <Text style={styles.categoryText}>{product.category}</Text>
         </View>
         
-        <Text style={styles.productName}>{product.name}</Text>
-        
         <View style={styles.ratingRow}>
           {renderStars(product.rating)}
           <Text style={styles.ratingText}>
@@ -278,6 +276,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#E6F3EC',
     borderRadius: 12,
   },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#222',
+  },
   shareBtn: {
     padding: 8,
     backgroundColor: '#E6F3EC',
@@ -324,12 +327,6 @@ const styles = StyleSheet.create({
     color: '#386B5F',
     fontWeight: '600',
     fontSize: 12,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#222',
-    marginBottom: 8,
   },
   ratingRow: {
     flexDirection: 'row',
