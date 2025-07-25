@@ -3,6 +3,7 @@ import { Server as SocketIOServer, Socket } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import config from './index';
 import { getRedisClient } from './redis';
+import { MessagingSocketHandler } from '../handlers/messaging.socket.handler';
 
 /**
  * Socket.IO Server Configuration
@@ -19,8 +20,11 @@ export class SocketService {
   private io: SocketIOServer | null = null;
   private connectedUsers: Map<number, string> = new Map(); // userId -> socketId
   private userSockets: Map<string, AuthenticatedSocket> = new Map(); // socketId -> socket
+  private messagingHandler: MessagingSocketHandler;
 
-  private constructor() {}
+  private constructor() {
+    this.messagingHandler = new MessagingSocketHandler();
+  }
 
   public static getInstance(): SocketService {
     if (!SocketService.instance) {
@@ -45,6 +49,9 @@ export class SocketService {
 
     this.setupMiddleware();
     this.setupEventHandlers();
+    
+    // Initialize messaging handlers
+    this.messagingHandler.initializeHandlers(this.io);
 
     console.log('✅ Socket.IO server initialized');
   }
