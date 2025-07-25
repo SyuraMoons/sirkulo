@@ -94,7 +94,7 @@ export const getImagePath = (filename: string, type: 'original' | 'thumbnail' = 
  * URL generation utilities
  */
 export const getImageUrl = (filename: string, type: 'original' | 'thumbnail' = 'original'): string => {
-  const baseUrl = config.baseUrl || `http://localhost:${config.port}`;
+  const baseUrl = config.frontend.baseUrl || `http://localhost:${config.port}`;
   const endpoint = type === 'thumbnail' ? '/api/uploads/thumbnail' : '/api/uploads/image';
   return `${baseUrl}${endpoint}/${filename}`;
 };

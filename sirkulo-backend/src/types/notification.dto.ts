@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, IsEnum, IsObject, IsArray, IsEmail, IsIn } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsBoolean, IsEnum, IsObject, IsArray, IsIn } from 'class-validator';
 
 /**
  * Notification type enumeration

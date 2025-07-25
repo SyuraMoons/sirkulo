@@ -98,3 +98,5 @@ export * from './email.dto';
 
 // Notification DTOs
 export * from './notification.dto';
+// Search DTOs
+export * from './search.dto';

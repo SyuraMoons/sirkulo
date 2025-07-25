@@ -2,7 +2,7 @@
  * Payment-related DTOs for Xendit integration
  */
 
-import { IsString, IsNumber, IsEmail, IsOptional, IsEnum, IsArray, ValidateNested, IsDateString, IsBoolean } from 'class-validator';
+import { IsString, IsNumber, IsEmail, IsOptional, IsEnum, IsArray, ValidateNested, IsDateString } from 'class-validator';
 import { Type } from 'class-transformer';
 
 /**
