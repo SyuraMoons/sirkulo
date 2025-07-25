@@ -18,6 +18,8 @@ import { Message } from './message.model';
  */
 @Entity('conversations')
 @Index(['participant1Id', 'participant2Id'])
+@Index(['participant1Id'])
+@Index(['participant2Id'])
 @Index(['listingId'])
 export class Conversation {
   @PrimaryGeneratedColumn()
@@ -47,7 +49,6 @@ export class Conversation {
   participant1: User;
 
   @Column()
-  @Index()
   participant1Id: number;
 
   @ManyToOne(() => User, { eager: false })
@@ -55,7 +56,6 @@ export class Conversation {
   participant2: User;
 
   @Column()
-  @Index()
   participant2Id: number;
 
   // Optional listing reference for listing-specific conversations
@@ -64,7 +64,6 @@ export class Conversation {
   listing: Listing | null;
 
   @Column({ nullable: true })
-  @Index()
   listingId: number | null;
 
   // Messages in this conversation

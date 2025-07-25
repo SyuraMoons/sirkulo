@@ -18,6 +18,8 @@ import { Listing } from './listing.model';
 @Entity('ratings')
 @Unique(['userId', 'listingId']) // Prevent duplicate ratings from same user
 @Index(['listingId', 'rating']) // Optimize rating queries
+@Index(['userId'])
+@Index(['listingId'])
 export class Rating {
   @PrimaryGeneratedColumn()
   id: number;
@@ -37,7 +39,6 @@ export class Rating {
   user: User;
 
   @Column()
-  @Index()
   userId: number;
 
   @ManyToOne(() => Listing, { eager: false, onDelete: 'CASCADE' })
@@ -45,7 +46,6 @@ export class Rating {
   listing: Listing;
 
   @Column()
-  @Index()
   listingId: number;
 
   @CreateDateColumn()

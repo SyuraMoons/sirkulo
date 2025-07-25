@@ -18,6 +18,7 @@ import { Conversation } from './conversation.model';
 @Entity('message_read_status')
 @Unique(['userId', 'conversationId'])
 @Index(['conversationId'])
+@Index(['userId'])
 export class MessageReadStatus {
   @PrimaryGeneratedColumn()
   id: number;
@@ -37,7 +38,6 @@ export class MessageReadStatus {
   user: User;
 
   @Column()
-  @Index()
   userId: number;
 
   @ManyToOne(() => Conversation, { eager: false })
@@ -45,7 +45,6 @@ export class MessageReadStatus {
   conversation: Conversation;
 
   @Column()
-  @Index()
   conversationId: number;
 
   @CreateDateColumn()

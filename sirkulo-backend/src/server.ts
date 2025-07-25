@@ -19,6 +19,8 @@ import pushNotificationRoutes from './routes/push-notification.routes';
 import searchRoutes from './routes/search.routes';
 import ratingRoutes from './routes/rating.routes';
 import messagingRoutes from './routes/messaging.routes';
+import projectListingRoutes from './routes/project-listing.routes';
+import craftsListingRoutes from './routes/crafts-listing.routes';
 
 /**
  * Sirkulo Backend Server with Real-time Notifications
@@ -102,6 +104,8 @@ class Server {
     this.app.use('/api/search', searchRoutes);
     this.app.use('/api/ratings', ratingRoutes);
     this.app.use('/api/messaging', messagingRoutes);
+    this.app.use('/api/projects', projectListingRoutes);
+    this.app.use('/api/crafts', craftsListingRoutes);
 
     // 404 handler
     this.app.use('*', (req: express.Request, res: express.Response) => {

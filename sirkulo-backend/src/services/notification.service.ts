@@ -1,5 +1,3 @@
-import { Repository } from 'typeorm';
-import { AppDataSource } from '../config/database';
 import FirebaseService from '../config/firebase';
 import SocketService from '../config/socket';
 import { EmailService } from './email.service';
@@ -79,9 +77,6 @@ export interface DeviceToken {
  */
 export class NotificationService {
   private static instance: NotificationService;
-  private notificationRepository: Repository<any>;
-  private preferencesRepository: Repository<any>;
-  private deviceTokenRepository: Repository<any>;
   private firebaseService: typeof FirebaseService;
   private socketService: typeof SocketService;
   private emailService: EmailService;
@@ -280,7 +275,7 @@ export class NotificationService {
       
       await this.emailService.sendTemplateEmail(
         user.email,
-        emailTemplate,
+        emailTemplate as any,
         {
           name: user.name || 'User',
           title,
@@ -333,7 +328,7 @@ export class NotificationService {
    */
   public async registerDeviceToken(
     userId: number,
-    token: string,
+    _token: string,
     platform: 'ios' | 'android' | 'web'
   ): Promise<void> {
     try {
@@ -364,8 +359,8 @@ export class NotificationService {
    */
   public async getUserNotifications(
     userId: number,
-    limit: number = 50,
-    offset: number = 0
+    _limit: number = 50,
+    _offset: number = 0
   ): Promise<NotificationEntity[]> {
     try {
       // In a real implementation, this would query the database
@@ -413,25 +408,25 @@ export class NotificationService {
     };
   }
 
-  private async getUserDeviceTokens(userId: number): Promise<DeviceToken[]> {
+  private async getUserDeviceTokens(_userId: number): Promise<DeviceToken[]> {
     // In a real implementation, this would query the database
     return [];
   }
 
-  private async getUserEmail(userId: number): Promise<{ email: string; name?: string } | null> {
+  private async getUserEmail(_userId: number): Promise<{ email: string; name?: string } | null> {
     // In a real implementation, this would query the user database
     return null;
   }
 
-  private async updateDeviceTokensLastUsed(userId: number): Promise<void> {
+  private async updateDeviceTokensLastUsed(_userId: number): Promise<void> {
     // In a real implementation, this would update the database
   }
 
   private async sendPushToRole(
-    role: 'buyer' | 'seller',
-    title: string,
-    message: string,
-    data?: Record<string, any>
+    _role: 'buyer' | 'seller',
+    _title: string,
+    _message: string,
+    _data?: Record<string, any>
   ): Promise<void> {
     // In a real implementation, this would query all users with the role and send push notifications
   }

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
-import { errorResponse } from '../utils/response.util';
+import { ResponseUtil } from '../utils/response.util';
 
 /**
  * Enhanced security middleware
@@ -9,7 +9,7 @@ import { errorResponse } from '../utils/response.util';
 /**
  * Input sanitization middleware
  */
-export const sanitizeInput = (req: Request, res: Response, next: NextFunction) => {
+export const sanitizeInput = (req: Request, _res: Response, next: NextFunction) => {
   // Recursively sanitize all string inputs
   const sanitizeValue = (value: any): any => {
     if (typeof value === 'string') {
@@ -43,7 +43,7 @@ export const sanitizeInput = (req: Request, res: Response, next: NextFunction) =
     req.params = sanitizeValue(req.params);
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -72,13 +72,10 @@ export const sqlInjectionProtection = (req: Request, res: Response, next: NextFu
   const inputs = [req.body, req.query, req.params].filter(Boolean);
   
   if (inputs.some(checkValue)) {
-    return res.status(400).json(errorResponse(
-      'Invalid input detected. Please check your request.',
-      'INVALID_INPUT'
-    ));
+    return ResponseUtil.error(res, 'Invalid input detected. Please check your request.', 400);
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -109,13 +106,10 @@ export const xssProtection = (req: Request, res: Response, next: NextFunction) =
   const inputs = [req.body, req.query, req.params].filter(Boolean);
   
   if (inputs.some(checkValue)) {
-    return res.status(400).json(errorResponse(
-      'Potentially malicious content detected.',
-      'XSS_DETECTED'
-    ));
+    return ResponseUtil.error(res, 'Potentially malicious content detected.', 400);
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -126,13 +120,10 @@ export const validateRequestSize = (maxSizeBytes: number = 10 * 1024 * 1024) => 
     const contentLength = parseInt(req.get('Content-Length') || '0');
     
     if (contentLength > maxSizeBytes) {
-      return res.status(413).json(errorResponse(
-        'Request entity too large.',
-        'REQUEST_TOO_LARGE'
-      ));
+      return ResponseUtil.error(res, 'Request entity too large.', 413);
     }
 
-    next();
+    return next();
   };
 };
 
@@ -154,14 +145,11 @@ export const requestFrequencyCheck = (maxRequests: number = 1000, windowMs: numb
     }
     
     if (record.count >= maxRequests) {
-      return res.status(429).json(errorResponse(
-        'Too many requests from this IP.',
-        'RATE_LIMIT_EXCEEDED'
-      ));
+      return ResponseUtil.error(res, 'Too many requests from this IP.', 429);
     }
     
     record.count++;
-    next();
+    return next();
   };
 };
 
@@ -185,13 +173,10 @@ export const validateHeaders = (req: Request, res: Response, next: NextFunction)
   // Validate User-Agent
   const userAgent = req.get('User-Agent');
   if (!userAgent || userAgent.length > 500) {
-    return res.status(400).json(errorResponse(
-      'Invalid or missing User-Agent header.',
-      'INVALID_USER_AGENT'
-    ));
+    return ResponseUtil.error(res, 'Invalid or missing User-Agent header.', 400);
   }
 
-  next();
+  return next();
 };
 
 /**
@@ -242,31 +227,22 @@ export const fileUploadSecurity = (req: Request, res: Response, next: NextFuncti
       ];
 
       if (!allowedMimeTypes.includes(file.mimetype)) {
-        return res.status(400).json(errorResponse(
-          'Invalid file type.',
-          'INVALID_FILE_TYPE'
-        ));
+        return ResponseUtil.error(res, 'Invalid file type.', 400);
       }
 
       // Check file size (10MB limit)
       if (file.size > 10 * 1024 * 1024) {
-        return res.status(400).json(errorResponse(
-          'File too large.',
-          'FILE_TOO_LARGE'
-        ));
+        return ResponseUtil.error(res, 'File too large.', 400);
       }
 
       // Check filename for suspicious content
       if (/[<>:"/\\|?*]/.test(file.originalname)) {
-        return res.status(400).json(errorResponse(
-          'Invalid filename.',
-          'INVALID_FILENAME'
-        ));
+        return ResponseUtil.error(res, 'Invalid filename.', 400);
       }
     }
   }
 
-  next();
+  return next();
 };
 
 /**

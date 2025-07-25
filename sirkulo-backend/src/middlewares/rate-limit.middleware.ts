@@ -1,6 +1,6 @@
 import rateLimit from 'express-rate-limit';
 import { Request, Response } from 'express';
-import { errorResponse } from '../utils/response.util';
+import { ResponseUtil } from '../utils/response.util';
 
 /**
  * Rate limiting configurations for different endpoints
@@ -17,11 +17,8 @@ export const generalRateLimit = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Too many requests from this IP, please try again later.',
-      'RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Too many requests from this IP, please try again later.', 429);
   }
 });
 
@@ -35,11 +32,8 @@ export const authRateLimit = rateLimit({
     error: 'AUTH_RATE_LIMIT_EXCEEDED'
   },
   skipSuccessfulRequests: true,
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Too many authentication attempts, please try again later.',
-      'AUTH_RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Too many authentication attempts, please try again later.', 429);
   }
 });
 
@@ -52,11 +46,8 @@ export const paymentRateLimit = rateLimit({
     message: 'Too many payment attempts, please try again later.',
     error: 'PAYMENT_RATE_LIMIT_EXCEEDED'
   },
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Too many payment attempts, please try again later.',
-      'PAYMENT_RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Too many payment attempts, please try again later.', 429);
   }
 });
 
@@ -69,11 +60,8 @@ export const uploadRateLimit = rateLimit({
     message: 'Too many upload attempts, please try again later.',
     error: 'UPLOAD_RATE_LIMIT_EXCEEDED'
   },
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Too many upload attempts, please try again later.',
-      'UPLOAD_RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Too many upload attempts, please try again later.', 429);
   }
 });
 
@@ -86,11 +74,8 @@ export const emailRateLimit = rateLimit({
     message: 'Too many email requests, please try again later.',
     error: 'EMAIL_RATE_LIMIT_EXCEEDED'
   },
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Too many email requests, please try again later.',
-      'EMAIL_RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Too many email requests, please try again later.', 429);
   }
 });
 
@@ -103,11 +88,8 @@ export const listingRateLimit = rateLimit({
     message: 'Daily listing limit reached, please try again tomorrow.',
     error: 'LISTING_RATE_LIMIT_EXCEEDED'
   },
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Daily listing limit reached, please try again tomorrow.',
-      'LISTING_RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Daily listing limit reached, please try again tomorrow.', 429);
   }
 });
 
@@ -120,11 +102,8 @@ export const orderRateLimit = rateLimit({
     message: 'Too many orders created, please try again later.',
     error: 'ORDER_RATE_LIMIT_EXCEEDED'
   },
-  handler: (req: Request, res: Response) => {
-    res.status(429).json(errorResponse(
-      'Too many orders created, please try again later.',
-      'ORDER_RATE_LIMIT_EXCEEDED'
-    ));
+  handler: (_req: Request, res: Response) => {
+    return ResponseUtil.error(res, 'Too many orders created, please try again later.', 429);
   }
 });
 
@@ -139,10 +118,7 @@ export const securityMiddleware = (req: Request, res: Response, next: any) => {
   
   // Check if IP is blocked
   if (suspiciousIPs.has(clientIP)) {
-    return res.status(403).json(errorResponse(
-      'Access denied due to suspicious activity.',
-      'IP_BLOCKED'
-    ));
+    return ResponseUtil.error(res, 'Access denied due to suspicious activity.', 403);
   }
   
   // Track failed attempts
@@ -159,7 +135,7 @@ export const securityMiddleware = (req: Request, res: Response, next: any) => {
     ipAttempts.set(clientIP, attempts);
   }
   
-  next();
+  return next();
 };
 
 /**

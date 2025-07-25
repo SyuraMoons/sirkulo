@@ -206,7 +206,7 @@ export class Refund {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @Column({ type: 'varchar', length: 36 })
+  @Column({ type: 'varchar' })
   paymentId!: string;
 
   @ManyToOne(() => Payment, payment => payment.refunds)

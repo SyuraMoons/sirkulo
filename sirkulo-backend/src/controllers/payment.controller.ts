@@ -1,4 +1,5 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
+import { AuthenticatedRequest } from '../types/auth.dto';
 import { PaymentService } from '../services/payment.service';
 import {
   CreatePaymentDto,
@@ -6,7 +7,7 @@ import {
   PaymentQueryDto,
   XenditWebhookDto
 } from '../types/payment.dto';
-import { successResponse, errorResponse } from '../utils/response.util';
+import { ResponseUtil } from '../utils/response.util';
 import { validationResult } from 'express-validator';
 
 /**
@@ -24,12 +25,12 @@ export class PaymentController {
    * Create payment for an order
    * POST /api/payments
    */
-  createPayment = async (req: Request, res: Response): Promise<void> => {
+  createPayment = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       // Check validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json(errorResponse('Validation failed', errors.array()));
+        ResponseUtil.validationError(res, errors.array().map(err => err.msg), 'Validation failed');
         return;
       }
 
@@ -38,13 +39,10 @@ export class PaymentController {
 
       const payment = await this.paymentService.createPayment(createPaymentDto, userId);
 
-      res.status(201).json(successResponse(
-        'Payment created successfully',
-        payment.toResponseObject()
-      ));
+      ResponseUtil.success(res, payment.toResponseObject(), 'Payment created successfully', 201);
     } catch (error) {
-      console.error('Create payment error:', error);
-      res.status(400).json(errorResponse(error.message));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      ResponseUtil.error(res, errorMessage, 400);
     }
   };
 
@@ -52,7 +50,7 @@ export class PaymentController {
    * Get payments with filtering
    * GET /api/payments
    */
-  getPayments = async (req: Request, res: Response): Promise<void> => {
+  getPayments = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const queryDto: PaymentQueryDto = {
         orderId: req.query.orderId ? parseInt(req.query.orderId as string) : undefined,
@@ -67,23 +65,20 @@ export class PaymentController {
       const userId = req.user!.userId;
       const result = await this.paymentService.getPayments(queryDto, userId);
 
-      res.status(200).json(successResponse(
-        'Payments retrieved successfully',
-        {
-          payments: result.payments.map(p => p.toResponseObject()),
-          meta: {
-            total: result.total,
-            page: result.page,
-            limit: result.limit,
-            totalPages: result.totalPages,
-            hasNextPage: result.page < result.totalPages,
-            hasPreviousPage: result.page > 1
-          }
+      ResponseUtil.success(res, {
+        payments: result.payments.map(p => p.toResponseObject()),
+        meta: {
+          total: result.total,
+          page: result.page,
+          limit: result.limit,
+          totalPages: result.totalPages,
+          hasNextPage: result.page < result.totalPages,
+          hasPreviousPage: result.page > 1
         }
-      ));
+      }, 'Payments retrieved successfully');
     } catch (error) {
       console.error('Get payments error:', error);
-      res.status(500).json(errorResponse('Failed to retrieve payments'));
+      ResponseUtil.error(res, 'Failed to retrieve payments', 500);
     }
   };
 
@@ -91,23 +86,21 @@ export class PaymentController {
    * Get payment by ID
    * GET /api/payments/:id
    */
-  getPaymentById = async (req: Request, res: Response): Promise<void> => {
+  getPaymentById = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const paymentId = req.params.id;
       const userId = req.user!.userId;
 
       const payment = await this.paymentService.getPaymentById(paymentId, userId);
 
-      res.status(200).json(successResponse(
-        'Payment retrieved successfully',
-        payment.toResponseObject()
-      ));
+      ResponseUtil.success(res, payment.toResponseObject(), 'Payment retrieved successfully');
     } catch (error) {
       console.error('Get payment by ID error:', error);
-      if (error.message.includes('not found')) {
-        res.status(404).json(errorResponse(error.message));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      if (errorMessage.includes('not found')) {
+        ResponseUtil.notFound(res, errorMessage);
       } else {
-        res.status(500).json(errorResponse('Failed to retrieve payment'));
+        ResponseUtil.error(res, 'Failed to retrieve payment', 500);
       }
     }
   };
@@ -116,12 +109,12 @@ export class PaymentController {
    * Create refund for a payment
    * POST /api/payments/:id/refund
    */
-  createRefund = async (req: Request, res: Response): Promise<void> => {
+  createRefund = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       // Check validation errors
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(400).json(errorResponse('Validation failed', errors.array()));
+        ResponseUtil.validationError(res, errors.array().map(err => err.msg), 'Validation failed');
         return;
       }
 
@@ -134,18 +127,16 @@ export class PaymentController {
 
       const refund = await this.paymentService.createRefund(createRefundDto, userId);
 
-      res.status(201).json(successResponse(
-        'Refund created successfully',
-        refund.toResponseObject()
-      ));
+      ResponseUtil.success(res, refund.toResponseObject(), 'Refund created successfully', 201);
     } catch (error) {
       console.error('Create refund error:', error);
-      if (error.message.includes('not found')) {
-        res.status(404).json(errorResponse(error.message));
-      } else if (error.message.includes('Unauthorized')) {
-        res.status(403).json(errorResponse(error.message));
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      if (errorMessage.includes('not found')) {
+        ResponseUtil.notFound(res, errorMessage);
+      } else if (errorMessage.includes('Unauthorized')) {
+        ResponseUtil.forbidden(res, errorMessage);
       } else {
-        res.status(400).json(errorResponse(error.message));
+        ResponseUtil.error(res, errorMessage, 400);
       }
     }
   };
@@ -154,7 +145,7 @@ export class PaymentController {
    * Handle Xendit webhook
    * POST /api/payments/webhook
    */
-  handleWebhook = async (req: Request, res: Response): Promise<void> => {
+  handleWebhook = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const webhookData: XenditWebhookDto = req.body;
 
@@ -163,8 +154,8 @@ export class PaymentController {
       res.status(200).json({ status: 'success' });
     } catch (error) {
       console.error('Webhook handling error:', error);
-      // Still return 200 to prevent Xendit from retrying
-      res.status(200).json({ status: 'error', message: error.message });
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      res.status(200).json({ status: 'error', message: errorMessage });
     }
   };
 
@@ -172,7 +163,7 @@ export class PaymentController {
    * Get payment statistics
    * GET /api/payments/stats
    */
-  getPaymentStats = async (req: Request, res: Response): Promise<void> => {
+  getPaymentStats = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const userId = req.user!.userId;
       
@@ -217,17 +208,14 @@ export class PaymentController {
         ? stats.totalAmount / stats.totalTransactions
         : 0;
 
-      res.status(200).json(successResponse(
-        'Payment statistics retrieved successfully',
-        {
-          ...stats,
-          successRate: Math.round(successRate * 100) / 100,
-          averageAmount: Math.round(averageAmount * 100) / 100
-        }
-      ));
+      ResponseUtil.success(res, {
+        ...stats,
+        successRate: Math.round(successRate * 100) / 100,
+        averageAmount: Math.round(averageAmount * 100) / 100
+      }, 'Payment statistics retrieved successfully');
     } catch (error) {
       console.error('Get payment stats error:', error);
-      res.status(500).json(errorResponse('Failed to retrieve payment statistics'));
+      ResponseUtil.error(res, 'Failed to retrieve payment statistics', 500);
     }
   };
 
@@ -235,7 +223,7 @@ export class PaymentController {
    * Get supported payment methods
    * GET /api/payments/methods
    */
-  getPaymentMethods = async (req: Request, res: Response): Promise<void> => {
+  getPaymentMethods = async (_req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const paymentMethods = {
         bankTransfer: {
@@ -285,13 +273,10 @@ export class PaymentController {
         }
       };
 
-      res.status(200).json(successResponse(
-        'Payment methods retrieved successfully',
-        paymentMethods
-      ));
+      ResponseUtil.success(res, paymentMethods, 'Payment methods retrieved successfully');
     } catch (error) {
       console.error('Get payment methods error:', error);
-      res.status(500).json(errorResponse('Failed to retrieve payment methods'));
+      ResponseUtil.error(res, 'Failed to retrieve payment methods', 500);
     }
   };
 }

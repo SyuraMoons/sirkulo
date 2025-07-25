@@ -237,7 +237,7 @@ export class CartService {
       listing: {
         id: listing.id,
         title: listing.title,
-        wasteType: listing.wasteType,
+        wasteType: listing.wasteType || '',
         unit: listing.unit,
         availableQuantity: Number(listing.quantity),
         status: listing.status,

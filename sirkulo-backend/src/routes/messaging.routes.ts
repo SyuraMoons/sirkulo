@@ -1,6 +1,6 @@
 import express from 'express';
 import { MessagingController } from '../controllers/messaging.controller';
-import { authenticateToken } from '../middleware/auth.middleware';
+import { authenticateToken } from '../middlewares/auth.middleware';
 import { body, param, query, validationResult } from 'express-validator';
 import { Request, Response, NextFunction } from 'express';
 
@@ -8,14 +8,15 @@ const router = express.Router();
 const messagingController = new MessagingController();
 
 // Validation middleware
-const handleValidationErrors = (req: Request, res: Response, next: NextFunction) => {
+const handleValidationErrors = (req: Request, res: Response, next: NextFunction): void => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(400).json({
+    res.status(400).json({
       success: false,
       message: 'Validation error',
       errors: errors.array(),
     });
+    return;
   }
   next();
 };

@@ -14,15 +14,6 @@ interface NotificationData {
 }
 
 /**
- * Device token interface
- */
-interface DeviceToken {
-  token: string;
-  platform: 'android' | 'ios' | 'web';
-  userId: string;
-}
-
-/**
  * Firebase Admin SDK service for push notifications
  */
 class FirebaseService {
@@ -198,7 +189,7 @@ class FirebaseService {
         tokens,
       };
 
-      const response = await admin.messaging().sendMulticast(message);
+      const response = await admin.messaging().sendEachForMulticast(message);
       
       console.log(`📱 Multicast notification sent - Success: ${response.successCount}, Failed: ${response.failureCount}`);
       

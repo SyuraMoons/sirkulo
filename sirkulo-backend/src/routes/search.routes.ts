@@ -11,6 +11,23 @@ import {
 } from '../types/search.dto';
 import { WasteType, ListingStatus } from '../types/enums';
 
+// Helper function to safely parse query parameters
+const parseNumber = (value: string | undefined): number | undefined => {
+  if (!value) return undefined;
+  const parsed = Number(value);
+  return isNaN(parsed) ? undefined : parsed;
+};
+
+const parseBoolean = (value: string | undefined): boolean | undefined => {
+  if (!value) return undefined;
+  return value === 'true';
+};
+
+const parseArray = (value: any): any[] | undefined => {
+  if (!value) return undefined;
+  return Array.isArray(value) ? value : [value];
+};
+
 const router = Router();
 
 /**
@@ -74,27 +91,27 @@ router.get('/listings',
       // Extract search parameters
       const searchParams: SearchListingsDto = {
         query: req.query.query as string,
-        wasteTypes: req.query.wasteTypes as WasteType[],
-        status: req.query.status as ListingStatus[],
-        minPrice: req.query.minPrice as number,
-        maxPrice: req.query.maxPrice as number,
-        minQuantity: req.query.minQuantity as number,
-        maxQuantity: req.query.maxQuantity as number,
+        wasteTypes: parseArray(req.query.wasteTypes) as WasteType[],
+        status: parseArray(req.query.status) as ListingStatus[],
+        minPrice: parseNumber(req.query.minPrice as string),
+        maxPrice: parseNumber(req.query.maxPrice as string),
+        minQuantity: parseNumber(req.query.minQuantity as string),
+        maxQuantity: parseNumber(req.query.maxQuantity as string),
         unit: req.query.unit as string,
-        isNegotiable: req.query.isNegotiable as boolean,
+        isNegotiable: parseBoolean(req.query.isNegotiable as string),
         location: req.query.location as string,
         city: req.query.city as string,
         state: req.query.state as string,
         country: req.query.country as string,
-        latitude: req.query.latitude as number,
-        longitude: req.query.longitude as number,
-        radiusKm: req.query.radiusKm as number,
+        latitude: parseNumber(req.query.latitude as string),
+        longitude: parseNumber(req.query.longitude as string),
+        radiusKm: parseNumber(req.query.radiusKm as string),
         createdAfter: req.query.createdAfter as string,
         createdBefore: req.query.createdBefore as string,
-        tags: req.query.tags as string[],
-        minRating: req.query.minRating as number,
-        hasImages: req.query.hasImages as boolean,
-        certified: req.query.certified as boolean,
+        tags: parseArray(req.query.tags) as string[],
+        minRating: parseNumber(req.query.minRating as string),
+        hasImages: parseBoolean(req.query.hasImages as string),
+        certified: parseBoolean(req.query.certified as string),
         sortBy: (req.query.sortBy as SortBy) || SortBy.RELEVANCE,
         limit: Number(req.query.limit) || 20,
         offset: Number(req.query.offset) || 0,
@@ -103,17 +120,17 @@ router.get('/listings',
 
       // Extract advanced filters
       const advancedFilters: AdvancedFilterDto = {
-        businessTypes: req.query.businessTypes as string[],
-        supplierIds: req.query.supplierIds as string[],
-        minBusinessRating: req.query.minBusinessRating as number,
-        verifiedSuppliers: req.query.verifiedSuppliers as boolean,
-        bulkAvailable: req.query.bulkAvailable as boolean,
-        minBulkQuantity: req.query.minBulkQuantity as number,
-        colors: req.query.colors as string[],
-        materials: req.query.materials as string[],
-        conditions: req.query.conditions as string[],
-        sustainabilityCertified: req.query.sustainabilityCertified as boolean,
-        certifications: req.query.certifications as string[],
+        businessTypes: parseArray(req.query.businessTypes) as string[],
+        supplierIds: parseArray(req.query.supplierIds) as string[],
+        minBusinessRating: parseNumber(req.query.minBusinessRating as string),
+        verifiedSuppliers: parseBoolean(req.query.verifiedSuppliers as string),
+        bulkAvailable: parseBoolean(req.query.bulkAvailable as string),
+        minBulkQuantity: parseNumber(req.query.minBulkQuantity as string),
+        colors: parseArray(req.query.colors) as string[],
+        materials: parseArray(req.query.materials) as string[],
+        conditions: parseArray(req.query.conditions) as string[],
+        sustainabilityCertified: parseBoolean(req.query.sustainabilityCertified as string),
+        certifications: parseArray(req.query.certifications) as string[],
       };
 
       // Get user ID if authenticated
@@ -126,13 +143,13 @@ router.get('/listings',
         userId
       );
 
-      res.json({
+      return res.json({
         status: 'success',
         data: searchResults,
       });
     } catch (error) {
       console.error('Search error:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Search operation failed',
       });
@@ -169,7 +186,7 @@ router.get('/suggestions',
 
       const suggestions = await SearchService.getSearchSuggestions(params);
 
-      res.json({
+      return res.json({
         status: 'success',
         data: {
           suggestions,
@@ -178,7 +195,7 @@ router.get('/suggestions',
       });
     } catch (error) {
       console.error('Suggestions error:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to get suggestions',
       });
@@ -255,7 +272,7 @@ router.post('/save',
  * GET /api/search/filters
  */
 router.get('/filters',
-  async (req: Request, res: Response) => {
+  async (_req: Request, res: Response) => {
     try {
       const filterOptions = {
         wasteTypes: Object.values(WasteType).map(type => ({
@@ -315,7 +332,7 @@ router.get('/filters',
  */
 router.get('/analytics',
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (_req: Request, res: Response) => {
     try {
       // This would typically require admin permissions
       const analytics = {

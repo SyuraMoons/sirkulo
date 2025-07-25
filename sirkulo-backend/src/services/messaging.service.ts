@@ -6,7 +6,7 @@ import { MessageReadStatus } from '../models/message-read-status.model';
 import { User } from '../models/user.model';
 import { Listing } from '../models/listing.model';
 import SocketService from '../config/socket';
-import { FirebaseService } from './firebase.service';
+import FirebaseService from './firebase.service';
 import {
   CreateConversationDto,
   SendMessageDto,
@@ -15,13 +15,10 @@ import {
   MessageSearchDto,
   MarkMessagesReadDto,
   ConversationResponseDto,
-  MessageResponseDto,
   PaginatedConversationsResponseDto,
-  PaginatedMessagesResponseDto,
   ConversationWithMessagesDto,
   MessageEventDto,
   TypingEventDto,
-  ConversationUpdateEventDto,
 } from '../types/messaging.dto';
 
 /**
@@ -34,7 +31,7 @@ export class MessagingService {
   private userRepository: Repository<User>;
   private listingRepository: Repository<Listing>;
   private socketService: typeof SocketService;
-  private firebaseService: FirebaseService;
+  private firebaseService: typeof FirebaseService;
 
   constructor() {
     this.conversationRepository = AppDataSource.getRepository(Conversation);
@@ -43,7 +40,7 @@ export class MessagingService {
     this.userRepository = AppDataSource.getRepository(User);
     this.listingRepository = AppDataSource.getRepository(Listing);
     this.socketService = SocketService;
-    this.firebaseService = new FirebaseService();
+    this.firebaseService = FirebaseService;
   }
 
   /**
@@ -377,10 +374,10 @@ export class MessagingService {
 
     const unreadCounts = new Map(readStatuses.map(rs => [rs.conversationId, rs.unreadCount]));
 
-    const data: ConversationResponseDto[] = conversations.map(conversation => ({
+    const data = conversations.map(conversation => ({
       ...conversation.toSummary(userId),
       unreadCount: unreadCounts.get(conversation.id) || 0,
-    }));
+    })) as ConversationResponseDto[];
 
     return {
       data,
@@ -466,14 +463,14 @@ export class MessagingService {
       where: { userId, conversationId }
     });
 
-    const conversationData: ConversationResponseDto = {
+    const conversationData = {
       ...conversation.toSummary(userId),
       unreadCount: readStatus?.unreadCount || 0,
-    };
+    } as ConversationResponseDto;
 
     return {
       conversation: conversationData,
-      messages: messages.map(message => message.toSummary()),
+      messages: messages.map(message => message.toSummary()) as any[],
       meta: {
         total,
         page,
@@ -561,10 +558,10 @@ export class MessagingService {
   /**
    * Send real-time notifications for new message
    */
-  private async sendRealTimeNotifications(message: Message, conversation: Conversation): Promise<void> {
+  private async sendRealTimeNotifications(message: Message, _conversation: Conversation): Promise<void> {
     const messageEvent: MessageEventDto = {
       conversationId: message.conversationId,
-      message: message.toSummary(),
+      message: message.toSummary() as any,
       recipientId: message.recipientId,
     };
 
@@ -580,10 +577,7 @@ export class MessagingService {
     if (!this.socketService.isUserOnline(message.recipientId)) {
       try {
         const senderName = message.sender?.fullName || 'Someone';
-        const notificationTitle = conversation.type === 'listing_inquiry' && conversation.listing
-          ? `Message about: ${conversation.listing.title}`
-          : `New message from ${senderName}`;
-
+        
         await this.firebaseService.sendChatNotification(
           '', // Will be resolved by device tokens
           senderName,

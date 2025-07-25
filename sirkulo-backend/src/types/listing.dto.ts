@@ -66,8 +66,9 @@ export class CreateListingDto {
   @IsString()
   description: string;
 
+  @IsOptional()
   @IsEnum(WasteType)
-  wasteType: WasteType;
+  wasteType: WasteType | null;
 
   @IsNumber()
   @Min(0.01)
@@ -131,7 +132,7 @@ export class UpdateListingDto {
 
   @IsOptional()
   @IsEnum(WasteType)
-  wasteType?: WasteType;
+  wasteType?: WasteType | null;
 
   @IsOptional()
   @IsNumber()
@@ -202,7 +203,7 @@ export class ListingSearchDto {
 
   @IsOptional()
   @IsEnum(WasteType)
-  wasteType?: WasteType;
+  wasteType?: WasteType | null;
 
   @IsOptional()
   @IsEnum(ListingStatus)
@@ -293,7 +294,7 @@ export interface ListingResponseDto {
   id: number;
   title: string;
   description: string;
-  wasteType: WasteType;
+  wasteType: WasteType | null;
   quantity: number;
   unit: string;
   pricePerUnit: number | null;
@@ -327,7 +328,7 @@ export interface ListingResponseDto {
 export interface ListingSummaryResponseDto {
   id: number;
   title: string;
-  wasteType: WasteType;
+  wasteType: WasteType | null;
   quantity: number;
   unit: string;
   pricePerUnit: number | null;

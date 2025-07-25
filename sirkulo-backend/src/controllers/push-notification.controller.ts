@@ -1,9 +1,10 @@
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { AppDataSource } from '../config/database';
 import { DeviceToken } from '../models/device-token.model';
-import { User } from '../models/user.model';
+
 import firebaseService from '../services/firebase.service';
 import { AuthenticatedRequest } from '../types';
+import { UserRole } from '../types/enums';
 
 /**
  * Push notification controller
@@ -16,7 +17,7 @@ export class PushNotificationController {
   async registerToken(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { token, platform, deviceInfo, appVersion } = req.body;
-      const userId = req.user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({ 
@@ -115,7 +116,7 @@ export class PushNotificationController {
   async unregisterToken(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { token } = req.body;
-      const userId = req.user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({ 
@@ -177,7 +178,7 @@ export class PushNotificationController {
   async sendTestNotification(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { title, body, data } = req.body;
-      const userId = req.user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({ 
@@ -251,7 +252,7 @@ export class PushNotificationController {
    */
   async getUserTokens(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({ 
@@ -298,7 +299,7 @@ export class PushNotificationController {
       const user = req.user;
 
       // Check if user is admin
-      if (!user?.hasRole('admin')) {
+      if (!user?.roles.includes(UserRole.ADMIN)) {
         res.status(403).json({
           success: false,
           message: 'Admin access required',
@@ -325,7 +326,7 @@ export class PushNotificationController {
         action: 'topic_notification',
       });
 
-      console.log(`📱 Topic notification sent to "${topic}" by admin ${user.id}`);
+      console.log(`📱 Topic notification sent to "${topic}" by admin ${user.userId}`);
 
       res.status(200).json({
         success: true,
@@ -352,7 +353,7 @@ export class PushNotificationController {
   async updatePreferences(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       const { topics } = req.body;
-      const userId = req.user?.id;
+      const userId = req.user?.userId;
 
       if (!userId) {
         res.status(401).json({ 

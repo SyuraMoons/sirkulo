@@ -1,6 +1,5 @@
-import { describe, beforeAll, afterAll, beforeEach, afterEach, it, expect, jest } from '@jest/globals';
+import { beforeAll, afterAll, beforeEach, jest } from '@jest/globals';
 import { createConnection, Connection } from 'typeorm';
-import { createClient } from 'redis';
 import type { RedisClientType } from 'redis';
 
 // Global test database connection
@@ -18,20 +17,20 @@ const TEST_DB_CONFIG = {
 
 // Mock Redis client
 export const mockRedisClient = {
-  get: jest.fn().mockResolvedValue(null),
-  set: jest.fn().mockResolvedValue('OK'),
-  del: jest.fn().mockResolvedValue(1),
-  exists: jest.fn().mockResolvedValue(0),
-  expire: jest.fn().mockResolvedValue(1),
-  ttl: jest.fn().mockResolvedValue(-1),
-  keys: jest.fn().mockResolvedValue([]),
-  flushall: jest.fn().mockResolvedValue('OK'),
-  quit: jest.fn().mockResolvedValue('OK'),
-  connect: jest.fn().mockResolvedValue(undefined),
-  disconnect: jest.fn().mockResolvedValue(undefined),
+  get: jest.fn<any>().mockResolvedValue(null),
+  set: jest.fn<any>().mockResolvedValue('OK'),
+  del: jest.fn<any>().mockResolvedValue(1),
+  exists: jest.fn<any>().mockResolvedValue(0),
+  expire: jest.fn<any>().mockResolvedValue(1),
+  ttl: jest.fn<any>().mockResolvedValue(-1),
+  keys: jest.fn<any>().mockResolvedValue([]),
+  flushall: jest.fn<any>().mockResolvedValue('OK'),
+  quit: jest.fn<any>().mockResolvedValue('OK'),
+  connect: jest.fn<any>().mockResolvedValue(undefined),
+  disconnect: jest.fn<any>().mockResolvedValue(undefined),
   isOpen: true,
   isReady: true,
-};
+} as any;
 
 // Test setup utilities
 export const setupTestDatabase = async () => {
@@ -58,8 +57,8 @@ export const cleanupTestRedis = async () => {
   if (testRedisClient) {
     // Reset all mocks
     Object.values(mockRedisClient).forEach(mock => {
-      if (typeof mock === 'function' && 'mockReset' in mock) {
-        mock.mockReset();
+      if (typeof mock === 'function' && mock && 'mockReset' in mock) {
+        (mock as any).mockReset();
       }
     });
     testRedisClient = null;
@@ -123,28 +122,28 @@ jest.mock('firebase-admin', () => ({
     cert: jest.fn().mockReturnValue({}),
   },
   messaging: jest.fn().mockReturnValue({
-    send: jest.fn().mockResolvedValue('message-id'),
-    sendMulticast: jest.fn().mockResolvedValue({
+    send: jest.fn<any>().mockResolvedValue('message-id'),
+    sendMulticast: jest.fn<any>().mockResolvedValue({
       successCount: 1,
       failureCount: 0,
       responses: [{ success: true }],
     }),
-    subscribeToTopic: jest.fn().mockResolvedValue(undefined),
-    unsubscribeFromTopic: jest.fn().mockResolvedValue(undefined),
+    subscribeToTopic: jest.fn<any>().mockResolvedValue(undefined),
+    unsubscribeFromTopic: jest.fn<any>().mockResolvedValue(undefined),
   }),
-}));
+} as any));
 
 // Nodemailer mock
 jest.mock('nodemailer', () => ({
   createTransporter: jest.fn().mockReturnValue({
-    sendMail: jest.fn().mockResolvedValue({
+    sendMail: jest.fn<any>().mockResolvedValue({
       messageId: 'test-message-id',
       accepted: ['test@example.com'],
       rejected: [],
     }),
-    verify: jest.fn().mockResolvedValue(true),
+    verify: jest.fn<any>().mockResolvedValue(true),
   }),
-}));
+} as any));
 
 // Global test setup
 beforeAll(async () => {

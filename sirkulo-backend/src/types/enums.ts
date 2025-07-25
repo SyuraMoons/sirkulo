@@ -37,6 +37,9 @@ export enum WasteType {
  * Listing categories
  */
 export enum ListingCategory {
+  WASTE = 'waste',
+  PROJECT = 'project',
+  CRAFTS = 'crafts',
   TEXTILES = 'textiles',
   ELECTRONICS = 'electronics',
   PLASTICS = 'plastics',
@@ -124,4 +127,53 @@ export enum PaymentStatus {
   COMPLETED = 'completed',
   FAILED = 'failed',
   REFUNDED = 'refunded',
+}
+
+/**
+ * Project difficulty levels
+ */
+export enum ProjectDifficulty {
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+  EXPERT = 'expert',
+}
+
+/**
+ * Project volunteer requirements
+ */
+export enum VolunteerRequirement {
+  NO_EXPERIENCE = 'no_experience',
+  BASIC_SKILLS = 'basic_skills',
+  SPECIALIZED_SKILLS = 'specialized_skills',
+  CERTIFICATION_REQUIRED = 'certification_required',
+}
+
+/**
+ * Craft material types (for upcycled products)
+ */
+export enum CraftMaterial {
+  RECYCLED_PLASTIC = 'recycled_plastic',
+  UPCYCLED_FABRIC = 'upcycled_fabric',
+  RECLAIMED_WOOD = 'reclaimed_wood',
+  RECYCLED_METAL = 'recycled_metal',
+  REPURPOSED_GLASS = 'repurposed_glass',
+  MIXED_MATERIALS = 'mixed_materials',
+  OTHER = 'other',
+}
+
+/**
+ * Craft categories
+ */
+export enum CraftCategory {
+  ARTWORK = 'artwork',
+  FURNITURE = 'furniture',
+  ACCESSORIES = 'accessories',
+  HOME_DECOR = 'home_decor',
+  JEWELRY = 'jewelry',
+  BAGS_PURSES = 'bags_purses',
+  CLOTHING = 'clothing',
+  TOYS = 'toys',
+  FUNCTIONAL_ITEMS = 'functional_items',
+  OTHER = 'other',
 }

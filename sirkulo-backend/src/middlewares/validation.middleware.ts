@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { validate, ValidationError } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { ResponseUtil } from '../utils/response.util';
+import { validationResult } from 'express-validator';
 
 /**
  * Validation middleware factory
@@ -62,4 +63,20 @@ export const customValidation = (
       return;
     }
   };
+};
+
+/**
+ * Express-validator middleware to handle validation results
+ * Works with express-validator validation chains
+ */
+export const validateRequest = (req: Request, res: Response, next: NextFunction): void => {
+  const errors = validationResult(req);
+  
+  if (!errors.isEmpty()) {
+    const errorMessages = errors.array().map(error => error.msg);
+    ResponseUtil.validationError(res, errorMessages);
+    return;
+  }
+  
+  next();
 };

@@ -1,5 +1,4 @@
 import { IsString, IsNumber, IsOptional, IsEnum, IsArray, IsBoolean, Min, Max } from 'class-validator';
-import { Type } from 'class-transformer';
 
 /**
  * DTO for creating a new conversation

@@ -4,13 +4,6 @@ import { authenticateToken } from '../middlewares/auth.middleware';
 import NotificationService from '../services/notification.service';
 import SocketService from '../config/socket';
 import {
-  SendNotificationDto,
-  BulkNotificationDto,
-  RoleNotificationDto,
-  RegisterDeviceTokenDto,
-  NotificationPreferencesDto,
-  MarkNotificationsReadDto,
-  GetNotificationsDto,
   NotificationType
 } from '../types/notification.dto';
 
@@ -40,7 +33,7 @@ router.get('/',
       }
 
       const userId = (req as any).user.id;
-      const { limit = 50, offset = 0, unreadOnly = false, type } = req.query;
+      const { limit = 50, offset = 0 } = req.query;
 
       const notifications = await NotificationService.getUserNotifications(
         userId,
@@ -48,7 +41,7 @@ router.get('/',
         Number(offset)
       );
 
-      res.json({
+      return res.json({
         status: 'success',
         data: {
           notifications,
@@ -61,7 +54,7 @@ router.get('/',
       });
     } catch (error) {
       console.error('Error getting notifications:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to get notifications',
       });
@@ -109,13 +102,13 @@ router.post('/send',
         options
       );
 
-      res.json({
+      return res.json({
         status: 'success',
         message: 'Notification sent successfully',
       });
     } catch (error) {
       console.error('Error sending notification:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to send notification',
       });
@@ -158,14 +151,14 @@ router.post('/bulk',
         data
       );
 
-      res.json({
+      return res.json({
         status: 'success',
         message: 'Bulk notification sent',
         data: result,
       });
     } catch (error) {
       console.error('Error sending bulk notification:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to send bulk notification',
       });
@@ -207,13 +200,13 @@ router.post('/role',
         data
       );
 
-      res.json({
+      return res.json({
         status: 'success',
         message: `Role-based notification sent to all ${role}s`,
       });
     } catch (error) {
       console.error('Error sending role notification:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to send role notification',
       });
@@ -247,13 +240,13 @@ router.put('/read',
 
       await NotificationService.markNotificationsAsRead(userId, notificationIds);
 
-      res.json({
+      return res.json({
         status: 'success',
         message: 'Notifications marked as read',
       });
     } catch (error) {
       console.error('Error marking notifications as read:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to mark notifications as read',
       });
@@ -287,13 +280,13 @@ router.post('/device-token',
 
       await NotificationService.registerDeviceToken(userId, token, platform);
 
-      res.json({
+      return res.json({
         status: 'success',
         message: 'Device token registered successfully',
       });
     } catch (error) {
       console.error('Error registering device token:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to register device token',
       });
@@ -327,13 +320,13 @@ router.get('/preferences',
         promotionalOffers: false,
       };
 
-      res.json({
+      return res.json({
         status: 'success',
         data: preferences,
       });
     } catch (error) {
       console.error('Error getting notification preferences:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to get notification preferences',
       });
@@ -376,13 +369,13 @@ router.put('/preferences',
 
       await NotificationService.updateNotificationPreferences(userId, preferences);
 
-      res.json({
+      return res.json({
         status: 'success',
         message: 'Notification preferences updated successfully',
       });
     } catch (error) {
       console.error('Error updating notification preferences:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to update notification preferences',
       });
@@ -396,13 +389,13 @@ router.put('/preferences',
  */
 router.get('/stats',
   authenticateToken,
-  async (req: Request, res: Response) => {
+  async (_req: Request, res: Response) => {
     try {
       const socketService = SocketService;
       const connectedUserCount = socketService.getConnectedUserCount();
       const connectedUsers = socketService.getConnectedUsers();
 
-      res.json({
+      return res.json({
         status: 'success',
         data: {
           connectedUserCount,
@@ -413,7 +406,7 @@ router.get('/stats',
       });
     } catch (error) {
       console.error('Error getting notification stats:', error);
-      res.status(500).json({
+      return res.status(500).json({
         status: 'error',
         message: 'Failed to get notification stats',
       });

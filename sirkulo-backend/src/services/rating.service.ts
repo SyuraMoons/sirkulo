@@ -2,7 +2,6 @@ import { Repository } from 'typeorm';
 import { AppDataSource } from '../config/database';
 import { Rating } from '../models/rating.model';
 import { Listing } from '../models/listing.model';
-import { User } from '../models/user.model';
 import { 
   CreateRatingDto, 
   UpdateRatingDto, 
@@ -17,12 +16,10 @@ import {
 export class RatingService {
   private ratingRepository: Repository<Rating>;
   private listingRepository: Repository<Listing>;
-  private userRepository: Repository<User>;
 
   constructor() {
     this.ratingRepository = AppDataSource.getRepository(Rating);
     this.listingRepository = AppDataSource.getRepository(Listing);
-    this.userRepository = AppDataSource.getRepository(User);
   }
 
   /**
@@ -168,7 +165,21 @@ export class RatingService {
     const stats = await this.getListingRatingStats(listingId);
 
     return {
-      data: ratings.map(rating => rating.toSummary()),
+      data: ratings
+        .filter(rating => rating.user) // Filter out ratings with null users
+        .map(rating => ({
+          id: rating.id,
+          rating: rating.rating,
+          comment: rating.comment,
+          createdAt: rating.createdAt,
+          updatedAt: rating.updatedAt,
+          user: {
+            id: rating.user.id,
+            firstName: rating.user.firstName || '',
+            lastName: rating.user.lastName || '',
+            fullName: rating.user.fullName,
+          },
+        })),
       meta: {
         total,
         page,
@@ -251,13 +262,25 @@ export class RatingService {
     const [ratings, total] = await queryBuilder.getManyAndCount();
 
     return {
-      data: ratings.map(rating => ({
-        ...rating.toSummary(),
-        listing: rating.listing ? {
-          id: rating.listing.id,
-          title: rating.listing.title,
-        } : null,
-      })),
+      data: ratings
+        .filter(rating => rating.user) // Filter out ratings with null users
+        .map(rating => ({
+          id: rating.id,
+          rating: rating.rating,
+          comment: rating.comment,
+          createdAt: rating.createdAt,
+          updatedAt: rating.updatedAt,
+          user: {
+            id: rating.user.id,
+            firstName: rating.user.firstName || '',
+            lastName: rating.user.lastName || '',
+            fullName: rating.user.fullName,
+          },
+          listing: rating.listing ? {
+            id: rating.listing.id,
+            title: rating.listing.title,
+          } : null,
+        })),
       meta: {
         total,
         page,

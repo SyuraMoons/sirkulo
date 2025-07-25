@@ -63,19 +63,19 @@ export class MessagingSocketHandler {
       socket.on('messaging:leave_conversation', this.handleLeaveConversation.bind(this, socket));
 
       // Handle typing indicators
-      socket.on('messaging:typing', this.handleTyping.bind(this, socket, io));
+      socket.on('messaging:typing', this.handleTyping.bind(this, socket));
 
       // Handle real-time message sending
       socket.on('messaging:send_message', this.handleSendMessage.bind(this, socket, io));
 
       // Handle message read receipts
-      socket.on('messaging:mark_read', this.handleMarkRead.bind(this, socket, io));
+      socket.on('messaging:mark_read', this.handleMarkRead.bind(this, socket));
 
       // Handle user status updates
-      socket.on('messaging:update_status', this.handleUpdateStatus.bind(this, socket, io));
+      socket.on('messaging:update_status', this.handleUpdateStatus.bind(this, socket));
 
       // Handle disconnection
-      socket.on('disconnect', this.handleDisconnect.bind(this, socket, io));
+      socket.on('disconnect', this.handleDisconnect.bind(this, socket));
     });
   }
 
@@ -90,7 +90,7 @@ export class MessagingSocketHandler {
         return next(new Error('Authentication token required'));
       }
 
-      const decoded = jwt.verify(token, config.jwtSecret) as { userId: number };
+      const decoded = jwt.verify(token, config.jwt.secret) as { userId: number };
       socket.userId = decoded.userId;
 
       next();
@@ -113,7 +113,7 @@ export class MessagingSocketHandler {
       }
 
       // Verify user is participant in conversation
-      const conversation = await this.messagingService.getConversation(conversationId, socket.userId);
+      const conversation = await this.messagingService.getConversationById(socket.userId, conversationId);
       
       if (!conversation) {
         socket.emit('messaging:error', { message: 'Conversation not found or access denied' });
@@ -134,7 +134,7 @@ export class MessagingSocketHandler {
       // Send confirmation to user
       socket.emit('messaging:joined_conversation', {
         conversationId,
-        participants: conversation.participants,
+        participants: [conversation.participant1, conversation.participant2],
       });
 
       console.log(`👥 User ${socket.userId} joined conversation ${conversationId}`);
@@ -175,7 +175,7 @@ export class MessagingSocketHandler {
   /**
    * Handle typing indicators
    */
-  private async handleTyping(socket: AuthenticatedSocket, io: SocketIOServer, data: TypingData): Promise<void> {
+  private async handleTyping(socket: AuthenticatedSocket, data: TypingData): Promise<void> {
     try {
       const { conversationId, isTyping } = data;
 
@@ -185,7 +185,7 @@ export class MessagingSocketHandler {
       }
 
       // Verify user is participant in conversation
-      const conversation = await this.messagingService.getConversation(conversationId, socket.userId);
+      const conversation = await this.messagingService.getConversationById(socket.userId, conversationId);
       
       if (!conversation) {
         socket.emit('messaging:error', { message: 'Conversation not found or access denied' });
@@ -228,11 +228,10 @@ export class MessagingSocketHandler {
       }
 
       // Send message through service
-      const message = await this.messagingService.sendMessage({
+      const message = await this.messagingService.sendMessage(socket.userId, {
         conversationId,
-        senderId: socket.userId,
-        content,
-        type,
+        content: content || '',
+        messageType: type,
         attachments,
       });
 
@@ -244,10 +243,10 @@ export class MessagingSocketHandler {
       });
 
       // Send push notifications to offline users
-      const conversation = await this.messagingService.getConversation(conversationId, socket.userId);
+      const conversation = await this.messagingService.getConversationById(socket.userId, conversationId);
       if (conversation) {
-        const offlineParticipants = conversation.participants.filter(
-          p => p.id !== socket.userId && !this.isUserOnline(io, p.id)
+        const offlineParticipants = [conversation.participant1, conversation.participant2].filter(
+          (p: any) => p.id !== socket.userId && !this.isUserOnline(io, p.id)
         );
 
         for (const participant of offlineParticipants) {
@@ -258,8 +257,8 @@ export class MessagingSocketHandler {
             message: {
               id: message.id,
               content: message.content,
-              senderName: message.sender.name,
-              type: message.type,
+              senderName: message.sender.fullName,
+              messageType: message.messageType,
             },
           });
         }
@@ -275,7 +274,7 @@ export class MessagingSocketHandler {
   /**
    * Handle marking messages as read
    */
-  private async handleMarkRead(socket: AuthenticatedSocket, io: SocketIOServer, data: { conversationId: number; messageIds?: number[] }): Promise<void> {
+  private async handleMarkRead(socket: AuthenticatedSocket, data: { conversationId: number; messageIds?: number[] }): Promise<void> {
     try {
       const { conversationId, messageIds } = data;
 
@@ -285,11 +284,9 @@ export class MessagingSocketHandler {
       }
 
       // Mark messages as read
-      await this.messagingService.markMessagesAsRead({
+      await this.messagingService.markMessagesAsRead(socket.userId, {
         conversationId,
-        userId: socket.userId,
-        messageIds,
-        markAllAsRead: !messageIds,
+        lastMessageId: messageIds?.[messageIds.length - 1],
       });
 
       // Broadcast read receipt to other participants
@@ -302,7 +299,10 @@ export class MessagingSocketHandler {
       });
 
       // Update unread count for user
-      const unreadCount = await this.messagingService.getUnreadCount(socket.userId);
+      const readStatus = await this.messagingService['messageReadStatusRepository'].findOne({
+        where: { userId: socket.userId, conversationId }
+      });
+      const unreadCount = readStatus?.unreadCount || 0;
       socket.emit('messaging:unread_count_updated', { count: unreadCount });
 
       console.log(`📖 User ${socket.userId} marked messages as read in conversation ${conversationId}`);
@@ -315,7 +315,7 @@ export class MessagingSocketHandler {
   /**
    * Handle user status updates
    */
-  private handleUpdateStatus(socket: AuthenticatedSocket, io: SocketIOServer, data: { status: 'online' | 'away' | 'busy' }): void {
+  private handleUpdateStatus(socket: AuthenticatedSocket, data: { status: 'online' | 'away' | 'busy' }): void {
     try {
       const { status } = data;
 
@@ -342,7 +342,7 @@ export class MessagingSocketHandler {
   /**
    * Handle user disconnection
    */
-  private handleDisconnect(socket: AuthenticatedSocket, io: SocketIOServer): void {
+  private handleDisconnect(socket: AuthenticatedSocket): void {
     try {
       if (socket.userId) {
         // Broadcast offline status to all conversations

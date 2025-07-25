@@ -1,5 +1,6 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import { AuditService } from '../services/audit.service';
+import { AuthenticatedRequest } from '../types/auth.dto';
 
 /**
  * Audit middleware for logging HTTP requests and user actions
@@ -14,7 +15,7 @@ export class AuditMiddleware {
   /**
    * Log all HTTP requests
    */
-  logRequest = (req: Request, res: Response, next: NextFunction) => {
+  logRequest = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const startTime = Date.now();
     
     // Capture original response methods
@@ -77,7 +78,7 @@ export class AuditMiddleware {
    * Log authentication events
    */
   logAuthEvent = (action: string) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       const userId = req.user?.userId;
       const ipAddress = req.ip || req.connection.remoteAddress;
       const userAgent = req.get('User-Agent');
@@ -93,7 +94,7 @@ export class AuditMiddleware {
         }
       );
 
-      next();
+      return next();
     };
   };
 
@@ -101,7 +102,7 @@ export class AuditMiddleware {
    * Log data modification events
    */
   logDataChange = (resource: string, action: string) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
       const originalSend = res.send;
       const originalJson = res.json;
 
@@ -141,7 +142,7 @@ export class AuditMiddleware {
         }
       });
 
-      next();
+      return next();
     };
   };
 
@@ -149,7 +150,7 @@ export class AuditMiddleware {
    * Log security events
    */
   logSecurityEvent = (action: string, metadata?: Record<string, any>) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
       const ipAddress = req.ip || req.connection.remoteAddress;
       const userId = req.user?.userId;
 
@@ -165,7 +166,7 @@ export class AuditMiddleware {
         }
       );
 
-      next();
+      return next();
     };
   };
 }

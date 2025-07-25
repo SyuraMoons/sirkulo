@@ -17,6 +17,7 @@ import { Conversation } from './conversation.model';
 @Entity('messages')
 @Index(['conversationId', 'createdAt'])
 @Index(['senderId'])
+@Index(['recipientId'])
 export class Message {
   @PrimaryGeneratedColumn()
   id: number;
@@ -66,7 +67,6 @@ export class Message {
   sender: User;
 
   @Column()
-  @Index()
   senderId: number;
 
   @ManyToOne(() => User, { eager: false })
@@ -74,7 +74,6 @@ export class Message {
   recipient: User;
 
   @Column()
-  @Index()
   recipientId: number;
 
   @ManyToOne(() => Conversation, conversation => conversation.messages, { eager: false })
@@ -82,7 +81,6 @@ export class Message {
   conversation: Conversation;
 
   @Column()
-  @Index()
   conversationId: number;
 
   @CreateDateColumn()

@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { PaymentController } from '../controllers/payment.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
+import { authenticateToken } from '../middlewares/auth.middleware';
 import { body, param } from 'express-validator';
 import { XenditPaymentMethod, XenditBankCode, XenditEwalletType } from '../types/payment.dto';
 
@@ -102,7 +102,7 @@ const validatePaymentId = [
 // Create payment for an order
 router.post(
   '/',
-  authMiddleware,
+  authenticateToken,
   validateCreatePayment,
   paymentController.createPayment
 );
@@ -110,14 +110,14 @@ router.post(
 // Get payments with filtering and pagination
 router.get(
   '/',
-  authMiddleware,
+  authenticateToken,
   paymentController.getPayments
 );
 
 // Get payment statistics
 router.get(
   '/stats',
-  authMiddleware,
+  authenticateToken,
   paymentController.getPaymentStats
 );
 
@@ -136,7 +136,7 @@ router.post(
 // Get payment by ID
 router.get(
   '/:id',
-  authMiddleware,
+  authenticateToken,
   validatePaymentId,
   paymentController.getPaymentById
 );
@@ -144,7 +144,7 @@ router.get(
 // Create refund for a payment
 router.post(
   '/:id/refund',
-  authMiddleware,
+  authenticateToken,
   validatePaymentId,
   validateCreateRefund,
   paymentController.createRefund

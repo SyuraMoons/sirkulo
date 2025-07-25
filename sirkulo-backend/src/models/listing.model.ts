@@ -11,10 +11,19 @@ import {
 } from 'typeorm';
 import { User } from './user.model';
 import { Image } from './image.model';
-import { WasteType, ListingStatus } from '../types';
+import { 
+  WasteType, 
+  ListingStatus, 
+  ListingCategory, 
+  ProjectDifficulty, 
+  VolunteerRequirement, 
+  CraftMaterial, 
+  CraftCategory 
+} from '../types';
 
 /**
- * Listing entity representing waste materials posted by businesses
+ * Listing entity representing all types of listings in the Sirkulo platform
+ * Supports waste materials, recycling projects, and upcycled crafts
  */
 @Entity('listings')
 export class Listing {
@@ -29,9 +38,17 @@ export class Listing {
 
   @Column({
     type: 'enum',
-    enum: WasteType,
+    enum: ListingCategory,
+    default: ListingCategory.WASTE,
   })
-  wasteType: WasteType;
+  category: ListingCategory;
+
+  @Column({
+    type: 'enum',
+    enum: WasteType,
+    nullable: true,
+  })
+  wasteType: WasteType | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   quantity: number;
@@ -86,6 +103,86 @@ export class Listing {
 
   @Column({ type: 'text', nullable: true })
   pickupInstructions: string | null;
+
+  // Project-specific fields
+  @Column({
+    type: 'enum',
+    enum: ProjectDifficulty,
+    nullable: true,
+  })
+  projectDifficulty: ProjectDifficulty | null;
+
+  @Column({
+    type: 'enum',
+    enum: VolunteerRequirement,
+    nullable: true,
+  })
+  volunteerRequirement: VolunteerRequirement | null;
+
+  @Column({ type: 'integer', nullable: true })
+  volunteersNeeded: number | null;
+
+  @Column({ type: 'integer', default: 0 })
+  volunteersApplied: number;
+
+  @Column({ type: 'timestamp', nullable: true })
+  projectStartDate: Date | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  projectEndDate: Date | null;
+
+  @Column({ type: 'text', nullable: true })
+  projectRequirements: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  expectedOutcome: string | null;
+
+  @Column({ type: 'jsonb', nullable: true })
+  projectLocation: {
+    latitude: number;
+    longitude: number;
+    address: string;
+    city: string;
+    state: string;
+    country: string;
+    isRemote: boolean;
+  } | null;
+
+  // Crafts-specific fields
+  @Column({
+    type: 'enum',
+    enum: CraftMaterial,
+    nullable: true,
+  })
+  craftMaterial: CraftMaterial | null;
+
+  @Column({
+    type: 'enum',
+    enum: CraftCategory,
+    nullable: true,
+  })
+  craftCategory: CraftCategory | null;
+
+  @Column({ type: 'text', nullable: true })
+  craftingTechnique: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  dimensions: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  careInstructions: string | null;
+
+  @Column({ type: 'boolean', default: false })
+  isCustomizable: boolean;
+
+  @Column({ type: 'integer', nullable: true })
+  estimatedCraftingTime: number | null; // in hours
+
+  @Column({ type: 'text', nullable: true })
+  artistName: string | null;
+
+  @Column({ type: 'text', nullable: true })
+  artistBio: string | null;
 
   @Column({ type: 'boolean', default: true })
   isActive: boolean;
@@ -152,9 +249,10 @@ export class Listing {
    * Get listing summary for list views
    */
   toSummary() {
-    return {
+    const baseData = {
       id: this.id,
       title: this.title,
+      category: this.category,
       wasteType: this.wasteType,
       quantity: this.quantity,
       unit: this.unit,
@@ -178,6 +276,36 @@ export class Listing {
         businessProfile: this.business.businessProfile,
       } : null,
     };
+
+    // Add category-specific fields
+    if (this.category === ListingCategory.PROJECT) {
+      return {
+        ...baseData,
+        projectDifficulty: this.projectDifficulty,
+        volunteerRequirement: this.volunteerRequirement,
+        volunteersNeeded: this.volunteersNeeded,
+        volunteersApplied: this.volunteersApplied,
+        projectStartDate: this.projectStartDate,
+        projectEndDate: this.projectEndDate,
+        projectLocation: this.projectLocation,
+        expectedOutcome: this.expectedOutcome,
+      };
+    }
+
+    if (this.category === ListingCategory.CRAFTS) {
+      return {
+        ...baseData,
+        craftMaterial: this.craftMaterial,
+        craftCategory: this.craftCategory,
+        craftingTechnique: this.craftingTechnique,
+        dimensions: this.dimensions,
+        isCustomizable: this.isCustomizable,
+        artistName: this.artistName,
+        estimatedCraftingTime: this.estimatedCraftingTime,
+      };
+    }
+
+    return baseData;
   }
 
   /**
@@ -221,5 +349,108 @@ export class Listing {
   updateRatingAggregates(averageRating: number, totalRatings: number): void {
     this.averageRating = averageRating;
     this.totalRatings = totalRatings;
+  }
+
+  /**
+   * Check if listing is a project
+   */
+  isProject(): boolean {
+    return this.category === ListingCategory.PROJECT;
+  }
+
+  /**
+   * Check if listing is a craft
+   */
+  isCraft(): boolean {
+    return this.category === ListingCategory.CRAFTS;
+  }
+
+  /**
+   * Check if listing is a waste listing
+   */
+  isWaste(): boolean {
+    return this.category === ListingCategory.WASTE;
+  }
+
+  /**
+   * Check if project is accepting volunteers
+   */
+  isAcceptingVolunteers(): boolean {
+    if (!this.isProject()) return false;
+    
+    if (!this.isActive || this.status !== ListingStatus.ACTIVE) {
+      return false;
+    }
+
+    if (this.volunteersNeeded && this.volunteersApplied >= this.volunteersNeeded) {
+      return false;
+    }
+
+    const now = new Date();
+    if (this.projectStartDate && this.projectStartDate <= now) {
+      return false; // Project has already started
+    }
+
+    return true;
+  }
+
+  /**
+   * Apply for project volunteer position
+   */
+  applyForVolunteer(): void {
+    if (this.isProject() && this.isAcceptingVolunteers()) {
+      this.volunteersApplied += 1;
+    }
+  }
+
+  /**
+   * Check if craft is available for purchase
+   */
+  isCraftAvailableForPurchase(): boolean {
+    if (!this.isCraft()) return false;
+    return this.isAvailableForPurchase();
+  }
+
+  /**
+   * Get target audience for the listing
+   */
+  getTargetAudience(): string[] {
+    if (this.isProject()) {
+      return ['recycler']; // Projects are only for recyclers
+    }
+    
+    if (this.isCraft()) {
+      return ['user', 'recycler']; // Crafts are for both regular users and recyclers
+    }
+    
+    return ['user', 'recycler', 'business']; // Waste listings are for all
+  }
+
+  /**
+   * Get listing type specific validation
+   */
+  validateListingType(): string[] {
+    const errors: string[] = [];
+
+    if (this.isProject()) {
+      if (!this.projectDifficulty) errors.push('Project difficulty is required');
+      if (!this.volunteerRequirement) errors.push('Volunteer requirement is required');
+      if (!this.volunteersNeeded || this.volunteersNeeded <= 0) errors.push('Number of volunteers needed must be greater than 0');
+      if (!this.projectStartDate) errors.push('Project start date is required');
+      if (!this.expectedOutcome) errors.push('Expected outcome is required');
+    }
+
+    if (this.isCraft()) {
+      if (!this.craftMaterial) errors.push('Craft material is required');
+      if (!this.craftCategory) errors.push('Craft category is required');
+      if (!this.pricePerUnit || this.pricePerUnit <= 0) errors.push('Price is required for craft listings');
+    }
+
+    if (this.isWaste()) {
+      if (!this.wasteType) errors.push('Waste type is required for waste listings');
+      if (!this.quantity || this.quantity <= 0) errors.push('Quantity must be greater than 0');
+    }
+
+    return errors;
   }
 }
