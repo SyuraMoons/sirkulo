@@ -1,7 +1,7 @@
 # 🌱 Sirkulo - Circular Economy Marketplace
 
-<div align="center" style="background-color:#1e1e1e;padding:20px;border-radius:12px;">
-  <img src="assets/images/sirkulo.png" alt="Sirkulo Logo" width="120" />
+<div align="center" padding:20px;border-radius:12px;">
+  <img src="assets/images/sirkulo-green.png" alt="Sirkulo Logo" width="120" />
 </div>
   
   **Transform waste into valuable resources through sustainable commerce**
