@@ -10,6 +10,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { router } from 'expo-router';
 
 import { CRAFT_CATEGORIES, MOCK_CRAFTS, CraftItem } from '@/src/constants/crafts';
 import { useCart } from '@/src/context/CartContext';
@@ -31,7 +32,11 @@ export default function CraftsSection() {
   };
 
   const renderCraftItem = ({ item }: { item: CraftItem }) => (
-    <View style={[styles.card, showAll && styles.cardGrid]}>
+    <TouchableOpacity 
+      style={[styles.card, showAll && styles.cardGrid]}
+      onPress={() => router.push(`/product/${item.id}`)}
+      activeOpacity={0.7}
+    >
       <View style={styles.cardImageWrapper}>
         <Image source={item.image} style={styles.cardImage} resizeMode="cover" />
       </View>
@@ -63,7 +68,10 @@ export default function CraftsSection() {
       <View style={styles.cardFooterRow}>
         <TouchableOpacity
           style={[styles.addBtn, isItemInCart(item.id) && styles.addBtnInCart]}
-          onPress={() => handleAddToCart(item)}
+          onPress={(e) => {
+            e.stopPropagation();
+            handleAddToCart(item);
+          }}
         >
           <FontAwesome name="shopping-cart" size={16} color="#fff" />
           <Text style={styles.addBtnText}>
@@ -71,7 +79,7 @@ export default function CraftsSection() {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
