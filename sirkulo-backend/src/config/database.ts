@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
   database: config.database.database,
   synchronize: config.database.synchronize,
   logging: config.nodeEnv === 'development',
-  entities: [__dirname + '/../models/*.{ts,js}'],
+  entities: [__dirname + '/../models/*.{ts,js}', __dirname + '/../entities/*.{ts,js}'],
   migrations: [__dirname + '/../migrations/*.{ts,js}'],
   subscribers: [__dirname + '/../subscribers/*.{ts,js}'],
 });

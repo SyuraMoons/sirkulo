@@ -111,6 +111,9 @@ export class User {
   @OneToMany('DeviceToken', 'user')
   deviceTokens: any[];
 
+  @OneToMany('AIConversation', 'user')
+  aiConversations: any[];
+
   @CreateDateColumn()
   createdAt: Date;
 

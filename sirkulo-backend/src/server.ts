@@ -21,6 +21,7 @@ import ratingRoutes from './routes/rating.routes';
 import messagingRoutes from './routes/messaging.routes';
 import projectListingRoutes from './routes/project-listing.routes';
 import craftsListingRoutes from './routes/crafts-listing.routes';
+import { aiChatRoutes } from './routes/ai-chat.routes';
 
 /**
  * Sirkulo Backend Server with Real-time Notifications
@@ -106,6 +107,7 @@ class Server {
     this.app.use('/api/messaging', messagingRoutes);
     this.app.use('/api/projects', projectListingRoutes);
     this.app.use('/api/crafts', craftsListingRoutes);
+    this.app.use('/api/ai', aiChatRoutes);
 
     // 404 handler
     this.app.use('*', (req: express.Request, res: express.Response) => {

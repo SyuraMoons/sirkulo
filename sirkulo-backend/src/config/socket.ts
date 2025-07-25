@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import config from './index';
 import { getRedisClient } from './redis';
 import { MessagingSocketHandler } from '../handlers/messaging.socket.handler';
+import { AIChatSocketHandler } from '../sockets/ai-chat.socket';
 
 /**
  * Socket.IO Server Configuration
@@ -21,9 +22,11 @@ export class SocketService {
   private connectedUsers: Map<number, string> = new Map(); // userId -> socketId
   private userSockets: Map<string, AuthenticatedSocket> = new Map(); // socketId -> socket
   private messagingHandler: MessagingSocketHandler;
+  private aiChatHandler: AIChatSocketHandler;
 
   private constructor() {
     this.messagingHandler = new MessagingSocketHandler();
+    this.aiChatHandler = new AIChatSocketHandler();
   }
 
   public static getInstance(): SocketService {
@@ -52,6 +55,9 @@ export class SocketService {
     
     // Initialize messaging handlers
     this.messagingHandler.initializeHandlers(this.io);
+    
+    // Initialize AI chat handlers
+    this.aiChatHandler.initialize(this.io);
 
     console.log('✅ Socket.IO server initialized');
   }
