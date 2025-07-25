@@ -1,8 +1,4 @@
 
-## Get started
-
-1. Install dependencies
-=======
 # 🌱 Sirkulo - Circular Economy Marketplace
 
 <div align="center" padding:20px;border-radius:12px;">
