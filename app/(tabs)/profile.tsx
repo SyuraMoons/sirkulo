@@ -236,8 +236,12 @@ export default function ProfileScreen() {
             <View style={styles.statsCard}>
               <FontAwesome name="line-chart" size={24} color="#386B5F" />
               <View style={styles.statsTextContainer}>
-                <Text style={styles.statsNumber}>$1,850</Text>
-                <Text style={styles.statsTitle}>Total Spent</Text>
+                <Text style={styles.statsNumber} numberOfLines={1}>
+                  $1,850
+                </Text>
+                <Text style={styles.statsTitle} numberOfLines={1}>
+                  Total Spent
+                </Text>
               </View>
             </View>
 

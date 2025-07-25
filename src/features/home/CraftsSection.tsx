@@ -45,7 +45,7 @@ export default function CraftsSection() {
       time: '10:35',
     },
   ]);
-  const { addItem, isItemInCart, getItemQuantity } = useCart();
+  const { addItem, isItemInCart } = useCart();
 
   const filteredCrafts =
     category === 'All' ? MOCK_CRAFTS : MOCK_CRAFTS.filter(item => item.category === category);
@@ -125,10 +125,12 @@ export default function CraftsSection() {
             handleAddToCart(item);
           }}
         >
-          <FontAwesome name="shopping-cart" size={16} color="#fff" />
-          <Text style={styles.addBtnText}>
-            {isItemInCart(item.id) ? `Added (${getItemQuantity(item.id)})` : 'Add'}
-          </Text>
+          <FontAwesome
+            name={isItemInCart(item.id) ? 'check' : 'shopping-cart'}
+            size={14}
+            color="#fff"
+          />
+          <Text style={styles.addBtnText}>{isItemInCart(item.id) ? 'Added' : 'Add'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.chatBtn}
@@ -327,10 +329,12 @@ const styles = StyleSheet.create({
   },
   gridContainer: {
     flex: 1,
+    paddingHorizontal: 2,
   },
   gridRow: {
     justifyContent: 'space-between',
     paddingHorizontal: 4,
+    marginBottom: 8,
   },
   card: {
     backgroundColor: '#fff',
@@ -345,11 +349,13 @@ const styles = StyleSheet.create({
     elevation: 2,
     borderWidth: 1,
     borderColor: '#E6F3EC',
+    overflow: 'hidden',
   },
   cardGrid: {
     width: '48%',
     marginRight: 0,
     marginBottom: 12,
+    maxWidth: '48%',
   },
   cardImageWrapper: {
     backgroundColor: '#F5F6F8',
@@ -427,6 +433,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 4,
+    justifyContent: 'space-between',
   },
   addBtn: {
     flexDirection: 'row',
@@ -435,15 +442,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 6,
+    flex: 1,
+    maxWidth: '75%',
+    justifyContent: 'center',
+    minHeight: 32,
   },
   addBtnInCart: {
-    backgroundColor: '#2D5A4F',
+    backgroundColor: '#4CAF50',
   },
   addBtnText: {
     color: '#fff',
-    fontWeight: '700',
-    fontSize: 15,
-    marginLeft: 6,
+    fontWeight: '600',
+    fontSize: 14,
+    marginLeft: 4,
+    flexShrink: 1,
+    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,

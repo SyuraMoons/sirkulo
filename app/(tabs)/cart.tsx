@@ -173,6 +173,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     borderWidth: 1,
     borderColor: '#E6F3EC',
+    overflow: 'hidden',
   },
   itemImageWrapper: {
     width: 80,
@@ -190,6 +191,8 @@ const styles = StyleSheet.create({
   itemDetails: {
     flex: 1,
     justifyContent: 'space-between',
+    marginRight: 8,
+    minWidth: 0,
   },
   itemName: {
     fontSize: 16,
@@ -215,6 +218,8 @@ const styles = StyleSheet.create({
   itemActions: {
     alignItems: 'center',
     justifyContent: 'space-between',
+    minWidth: 80,
+    flexShrink: 0,
   },
   quantityControls: {
     flexDirection: 'row',

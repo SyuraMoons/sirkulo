@@ -92,7 +92,7 @@ export default function ProductDetailScreen() {
 
   const handleShare = () => {
     // TODO: Implement share functionality
-    console.log('Share product:', product.name);
+    // TODO: Implement share functionality
   };
 
   const handleFavorite = () => {
@@ -517,6 +517,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 8,
     padding: 4,
+    zIndex: 1000,
   },
   addToCartBtn: {
     flexDirection: 'row',
@@ -526,6 +527,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 24,
+    minHeight: 56,
   },
   addToCartBtnInCart: {
     backgroundColor: '#2D5A4F',
@@ -535,5 +537,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     marginLeft: 8,
+    textAlign: 'center',
+    flexShrink: 1,
   },
 });
