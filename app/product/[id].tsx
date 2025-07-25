@@ -328,6 +328,12 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 12,
   },
+  productName: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#222',
+    marginBottom: 8,
+  },
   ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
