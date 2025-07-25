@@ -33,7 +33,7 @@ export default function CraftsSection() {
   const renderCraftItem = ({ item }: { item: CraftItem }) => (
     <View style={[styles.card, showAll && styles.cardGrid]}>
       <View style={styles.cardImageWrapper}>
-        <Image source={item.image} style={styles.cardImage} resizeMode="contain" />
+        <Image source={item.image} style={styles.cardImage} resizeMode="cover" />
       </View>
       <Text style={styles.cardTitle}>{item.name}</Text>
       <View style={styles.categoryRow}>
@@ -208,11 +208,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 8,
-    height: 80,
+    height: 100,
+    overflow: 'hidden',
   },
   cardImage: {
-    width: 70,
-    height: 70,
+    width: '100%',
+    height: '100%',
     borderRadius: 8,
   },
   cardTitle: {

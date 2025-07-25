@@ -3,7 +3,22 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, TextInput } from 
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
-const CHATS = [
+interface Message {
+  id: number;
+  text: string;
+  sent: boolean;
+  time: string;
+}
+
+interface Chat {
+  id: string;
+  name: string;
+  lastMessage: string;
+  time: string;
+  online: boolean;
+}
+
+const CHATS: Chat[] = [
   {
     id: '1',
     name: 'Budi Santoso',
@@ -27,7 +42,7 @@ const CHATS = [
   },
 ];
 
-const MOCK_MESSAGES = {
+const MOCK_MESSAGES: Record<string, Message[]> = {
   '1': [
     { id: 1, text: 'Apakah botol kaca masih tersedia?', sent: false, time: '10:30' },
     { id: 2, text: 'Ya, masih tersedia', sent: true, time: '10:32' },
@@ -39,12 +54,12 @@ export default function ChatScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
   const [newMessage, setNewMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState((MOCK_MESSAGES as any)[id as string] || []);
+  const [chatMessages, setChatMessages] = useState<Message[]>(MOCK_MESSAGES[id as string] || []);
   const chat = CHATS.find(c => c.id === id);
 
   const sendMessage = () => {
     if (newMessage.trim()) {
-      const newMsg = {
+      const newMsg: Message = {
         id: chatMessages.length + 1,
         text: newMessage,
         sent: true,
@@ -73,7 +88,7 @@ export default function ChatScreen() {
       </View>
 
       <ScrollView style={styles.messagesList}>
-        {chatMessages.map((message: any) => (
+        {chatMessages.map((message: Message) => (
           <View
             key={message.id}
             style={[

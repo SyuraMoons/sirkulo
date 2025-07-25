@@ -12,7 +12,7 @@ export interface CraftItem {
   stock: number;
   seller: string;
   details: string;
-  image: any;
+  image: number;
 }
 
 export const MOCK_CRAFTS: CraftItem[] = [
@@ -26,7 +26,7 @@ export const MOCK_CRAFTS: CraftItem[] = [
     stock: 23,
     seller: 'EcoFurni',
     details: 'plastic',
-    image: require('@/assets/images/icon.png'),
+    image: require('@/assets/images/plastic-chair.jpg'),
   },
   {
     id: '2',
@@ -38,7 +38,7 @@ export const MOCK_CRAFTS: CraftItem[] = [
     stock: 12,
     seller: 'KayuLama Studio',
     details: 'Wood',
-    image: require('@/assets/images/icon.png'),
+    image: require('@/assets/images/WoodChair.jpg'),
   },
   {
     id: '3',
@@ -50,7 +50,7 @@ export const MOCK_CRAFTS: CraftItem[] = [
     stock: 45,
     seller: 'TanamBaik',
     details: 'Plastic',
-    image: require('@/assets/images/icon.png'),
+    image: require('@/assets/images/PlantPot.jpg'),
   },
   {
     id: '4',
@@ -62,7 +62,7 @@ export const MOCK_CRAFTS: CraftItem[] = [
     stock: 60,
     seller: 'EarthCycle Organics',
     details: 'Organic',
-    image: require('@/assets/images/icon.png'),
+    image: require('@/assets/images/Fertilizer.jpg'),
   },
   {
     id: '5',
@@ -74,6 +74,6 @@ export const MOCK_CRAFTS: CraftItem[] = [
     stock: 35,
     seller: 'LarvaFarm',
     details: 'Organic',
-    image: require('@/assets/images/icon.png'),
+    image: require('@/assets/images/Manggot.jpg'),
   },
 ];

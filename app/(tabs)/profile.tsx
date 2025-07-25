@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useUserMode } from '@/src/contexts/UserModeContext';
+import RecyclerProfile from '@/src/features/recycler/RecyclerProfile';
+import BusinessProfile from '@/src/features/business/BusinessProfile';
 
 const PURCHASES = [
   {
@@ -55,7 +58,19 @@ const ACHIEVEMENTS = [
 
 export default function ProfileScreen() {
   const [activeTab, setActiveTab] = useState('ringkasan');
+  const { mode } = useUserMode();
 
+  // If user is a recycler, show RecyclerProfile
+  if (mode === 'Recycler') {
+    return <RecyclerProfile />;
+  }
+
+  // If user is a business, show BusinessProfile
+  if (mode === 'Business') {
+    return <BusinessProfile />;
+  }
+
+  // Otherwise show the default customer profile
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -127,7 +142,7 @@ export default function ProfileScreen() {
               <View key={achievement.id} style={styles.achievementItem}>
                 <View style={styles.achievementHeader}>
                   <View style={styles.achievementIcon}>
-                    <FontAwesome name={achievement.icon as any} size={24} color="#386B5F" />
+                    <FontAwesome name={achievement.icon as 'star'} size={24} color="#386B5F" />
                   </View>
                   <View style={styles.achievementInfo}>
                     <Text style={styles.achievementTitle}>{achievement.title}</Text>
