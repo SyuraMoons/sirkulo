@@ -1,4 +1,4 @@
-export const USER_MODES = ['Customer', 'Recycler', 'Business'] as const;
+export const USER_MODES = ['Basic', 'Recycler', 'Business'] as const;
 
 export type UserMode = (typeof USER_MODES)[number];
 

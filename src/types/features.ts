@@ -247,7 +247,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  mode: 'Customer' | 'Recycler' | 'Business';
+  mode: 'Basic' | 'Recycler' | 'Business';
   profile: {
     avatar?: string;
     bio?: string;

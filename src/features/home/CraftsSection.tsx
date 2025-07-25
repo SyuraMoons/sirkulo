@@ -78,17 +78,23 @@ export default function CraftsSection() {
   const renderCraftItem = ({ item }: { item: CraftItem }) => (
     <TouchableOpacity
       style={[styles.card, showAll && styles.cardGrid]}
-      onPress={() => router.push(`/product/${item.id}` as any)}
+      onPress={() => router.push(`/product/${item.id}` as `/product/${string}`)}
       activeOpacity={0.7}
     >
       <View style={styles.cardImageWrapper}>
         <Image source={item.image} style={styles.cardImage} resizeMode="cover" />
       </View>
-      <Text style={styles.cardTitle}>{item.name}</Text>
+      <Text style={styles.cardTitle} numberOfLines={2} ellipsizeMode="tail">
+        {item.name}
+      </Text>
       <View style={styles.categoryRow}>
-        <Text style={styles.cardSub}>{item.category}</Text>
+        <Text style={styles.cardSub} numberOfLines={1} ellipsizeMode="tail">
+          {item.category}
+        </Text>
         <View style={styles.labelBadge}>
-          <Text style={styles.labelText}>{item.details}</Text>
+          <Text style={styles.labelText} numberOfLines={1} ellipsizeMode="tail">
+            {item.details}
+          </Text>
         </View>
       </View>
       <View style={styles.ratingRow}>
@@ -105,10 +111,12 @@ export default function CraftsSection() {
           {item.rating.toFixed(1)} ({item.ratingCount})
         </Text>
       </View>
-      <Text style={styles.cardInfo}>
+      <Text style={styles.cardInfo} numberOfLines={1} ellipsizeMode="tail">
         Stock: {item.stock} | <Text style={{ fontWeight: 'bold' }}>{item.price}</Text>
       </Text>
-      <Text style={styles.cardSeller}>Seller: {item.seller}</Text>
+      <Text style={styles.cardSeller} numberOfLines={1} ellipsizeMode="tail">
+        Seller: {item.seller}
+      </Text>
       <View style={styles.cardFooterRow}>
         <TouchableOpacity
           style={[styles.addBtn, isItemInCart(item.id) && styles.addBtnInCart]}
@@ -143,22 +151,36 @@ export default function CraftsSection() {
           <Text style={styles.categoryButtonText}>{category}</Text>
           <FontAwesome name="chevron-down" size={16} color="#386B5F" style={{ marginLeft: 4 }} />
         </TouchableOpacity>
-        <Pressable style={styles.seeAllBtn} onPress={() => setShowAll(!showAll)}>
-          <Text style={styles.seeAllText}>{showAll ? 'Show Less' : 'See All'}</Text>
+        <Pressable
+          style={[styles.seeAllBtn, showAll && styles.seeAllBtnActive]}
+          onPress={() => setShowAll(!showAll)}
+        >
+          <Text style={[styles.seeAllText, showAll && styles.seeAllTextActive]}>
+            {showAll ? 'Show Less' : `See All (${filteredCrafts.length})`}
+          </Text>
+          <FontAwesome
+            name={showAll ? 'chevron-up' : 'chevron-down'}
+            size={12}
+            color={showAll ? '#fff' : '#386B5F'}
+            style={{ marginLeft: 4 }}
+          />
         </Pressable>
       </View>
 
       {showAll ? (
         // Grid layout when showing all items
-        <FlatList
-          data={displayedCrafts}
-          keyExtractor={item => item.id}
-          numColumns={2}
-          columnWrapperStyle={styles.gridRow}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingVertical: 8 }}
-          renderItem={renderCraftItem}
-        />
+        <View style={styles.gridContainer}>
+          <FlatList
+            data={displayedCrafts}
+            keyExtractor={item => item.id}
+            numColumns={2}
+            columnWrapperStyle={styles.gridRow}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingVertical: 8 }}
+            renderItem={renderCraftItem}
+            scrollEnabled={false} // Disable scroll to integrate with parent scroll
+          />
+        </View>
       ) : (
         // Horizontal scroll when showing limited items
         <FlatList
@@ -285,12 +307,26 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   seeAllBtn: {
-    padding: 4,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E6F3EC',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  seeAllBtnActive: {
+    backgroundColor: '#386B5F',
   },
   seeAllText: {
     color: '#386B5F',
     fontWeight: '600',
-    fontSize: 15,
+    fontSize: 14,
+  },
+  seeAllTextActive: {
+    color: '#fff',
+  },
+  gridContainer: {
+    flex: 1,
   },
   gridRow: {
     justifyContent: 'space-between',
@@ -340,11 +376,14 @@ const styles = StyleSheet.create({
     color: '#386B5F',
     marginBottom: 2,
     marginRight: 6,
+    flex: 1,
+    flexShrink: 1,
   },
   categoryRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 2,
+    flexWrap: 'wrap',
   },
   labelBadge: {
     backgroundColor: '#E6F3EC',

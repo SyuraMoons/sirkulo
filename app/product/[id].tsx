@@ -7,11 +7,12 @@ import {
   Image,
   TouchableOpacity,
   Dimensions,
+  StatusBar,
 } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useCart } from '@/src/context/CartContext';
-import { MOCK_CRAFTS, CraftItem } from '@/src/constants/crafts';
+import { MOCK_CRAFTS } from '@/src/constants/crafts';
 
 const { width } = Dimensions.get('window');
 
@@ -19,6 +20,7 @@ export default function ProductDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { addItem, isItemInCart, getItemQuantity } = useCart();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isFavorite, setIsFavorite] = useState(false);
 
   // Find the product by ID
   const product = MOCK_CRAFTS.find(item => item.id === id);
@@ -88,6 +90,15 @@ export default function ProductDetailScreen() {
     addItem(product);
   };
 
+  const handleShare = () => {
+    // TODO: Implement share functionality
+    console.log('Share product:', product.name);
+  };
+
+  const handleFavorite = () => {
+    setIsFavorite(!isFavorite);
+  };
+
   const renderStars = (rating: number) => {
     return Array.from({ length: 5 }).map((_, i) => (
       <FontAwesome
@@ -101,130 +112,145 @@ export default function ProductDetailScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
+    <>
+      <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
+
+      {/* Custom Header */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
           <FontAwesome name="arrow-left" size={20} color="#386B5F" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Product Details</Text>
-        <TouchableOpacity style={styles.shareBtn}>
-          <FontAwesome name="share-alt" size={20} color="#386B5F" />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.shareBtn} onPress={handleShare}>
+            <FontAwesome name="share-alt" size={20} color="#386B5F" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.favoriteBtn} onPress={handleFavorite}>
+            <FontAwesome
+              name={isFavorite ? 'heart' : 'heart-o'}
+              size={20}
+              color={isFavorite ? '#E74C3C' : '#386B5F'}
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
-      {/* Product Images */}
-      <View style={styles.imageSection}>
-        <Image source={productDetails.images[selectedImageIndex]} style={styles.mainImage} />
-        <View style={styles.imageIndicators}>
-          {productDetails.images.map((_, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.indicator, selectedImageIndex === index && styles.activeIndicator]}
-              onPress={() => setSelectedImageIndex(index)}
-            />
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        {/* Product Images */}
+        <View style={styles.imageSection}>
+          <Image source={productDetails.images[selectedImageIndex]} style={styles.mainImage} />
+          <View style={styles.imageIndicators}>
+            {productDetails.images.map((_, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.indicator, selectedImageIndex === index && styles.activeIndicator]}
+                onPress={() => setSelectedImageIndex(index)}
+              />
+            ))}
+          </View>
+        </View>
+
+        {/* Product Info */}
+        <View style={styles.productInfo}>
+          <View style={styles.categoryBadge}>
+            <Text style={styles.categoryText}>{product.category}</Text>
+          </View>
+
+          <View style={styles.ratingRow}>
+            {renderStars(product.rating)}
+            <Text style={styles.ratingText}>
+              {product.rating} ({product.ratingCount} reviews)
+            </Text>
+          </View>
+
+          <View style={styles.priceRow}>
+            <Text style={styles.price}>{product.price}</Text>
+            <Text style={styles.stock}>Stock: {product.stock} available</Text>
+          </View>
+
+          <View style={styles.sellerRow}>
+            <FontAwesome name="shopping-bag" size={16} color="#386B5F" />
+            <Text style={styles.sellerText}>Sold by {product.seller}</Text>
+            <View style={styles.verifiedBadge}>
+              <FontAwesome name="check-circle" size={14} color="#4CAF50" />
+              <Text style={styles.verifiedText}>Verified</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Description */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Description</Text>
+          <Text style={styles.description}>{productDetails.description}</Text>
+        </View>
+
+        {/* Specifications */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Specifications</Text>
+          {productDetails.specifications.map((spec, index) => (
+            <View key={index} style={styles.specRow}>
+              <Text style={styles.specLabel}>{spec.label}</Text>
+              <Text style={styles.specValue}>{spec.value}</Text>
+            </View>
           ))}
         </View>
-      </View>
 
-      {/* Product Info */}
-      <View style={styles.productInfo}>
-        <View style={styles.categoryBadge}>
-          <Text style={styles.categoryText}>{product.category}</Text>
-        </View>
-
-        <View style={styles.ratingRow}>
-          {renderStars(product.rating)}
-          <Text style={styles.ratingText}>
-            {product.rating} ({product.ratingCount} reviews)
-          </Text>
-        </View>
-
-        <View style={styles.priceRow}>
-          <Text style={styles.price}>{product.price}</Text>
-          <Text style={styles.stock}>Stock: {product.stock} available</Text>
-        </View>
-
-        <View style={styles.sellerRow}>
-          <FontAwesome name="shopping-bag" size={16} color="#386B5F" />
-          <Text style={styles.sellerText}>Sold by {product.seller}</Text>
-          <View style={styles.verifiedBadge}>
-            <FontAwesome name="check-circle" size={14} color="#4CAF50" />
-            <Text style={styles.verifiedText}>Verified</Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Description */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Description</Text>
-        <Text style={styles.description}>{productDetails.description}</Text>
-      </View>
-
-      {/* Specifications */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Specifications</Text>
-        {productDetails.specifications.map((spec, index) => (
-          <View key={index} style={styles.specRow}>
-            <Text style={styles.specLabel}>{spec.label}</Text>
-            <Text style={styles.specValue}>{spec.value}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Features */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Key Features</Text>
-        {productDetails.features.map((feature, index) => (
-          <View key={index} style={styles.featureRow}>
-            <FontAwesome name="check" size={14} color="#4CAF50" />
-            <Text style={styles.featureText}>{feature}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Sustainability Impact */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>🌱 Environmental Impact</Text>
-        {productDetails.sustainability.map((impact, index) => (
-          <View key={index} style={styles.impactRow}>
-            <FontAwesome name="leaf" size={14} color="#4CAF50" />
-            <Text style={styles.impactText}>{impact}</Text>
-          </View>
-        ))}
-      </View>
-
-      {/* Reviews */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Customer Reviews</Text>
-        {productDetails.reviews.map(review => (
-          <View key={review.id} style={styles.reviewCard}>
-            <View style={styles.reviewHeader}>
-              <Text style={styles.reviewerName}>{review.name}</Text>
-              <Text style={styles.reviewDate}>{review.date}</Text>
+        {/* Features */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Key Features</Text>
+          {productDetails.features.map((feature, index) => (
+            <View key={index} style={styles.featureRow}>
+              <FontAwesome name="check" size={14} color="#4CAF50" />
+              <Text style={styles.featureText}>{feature}</Text>
             </View>
-            <View style={styles.reviewRating}>{renderStars(review.rating)}</View>
-            <Text style={styles.reviewComment}>{review.comment}</Text>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
 
-      {/* Bottom spacing */}
-      <View style={{ height: 100 }} />
+        {/* Sustainability Impact */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>🌱 Environmental Impact</Text>
+          {productDetails.sustainability.map((impact, index) => (
+            <View key={index} style={styles.impactRow}>
+              <FontAwesome name="leaf" size={14} color="#4CAF50" />
+              <Text style={styles.impactText}>{impact}</Text>
+            </View>
+          ))}
+        </View>
 
-      {/* Floating Add to Cart Button */}
-      <View style={styles.floatingButton}>
-        <TouchableOpacity
-          style={[styles.addToCartBtn, isItemInCart(product.id) && styles.addToCartBtnInCart]}
-          onPress={handleAddToCart}
-        >
-          <FontAwesome name="shopping-cart" size={20} color="#fff" />
-          <Text style={styles.addToCartText}>
-            {isItemInCart(product.id) ? `In Cart (${getItemQuantity(product.id)})` : 'Add to Cart'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+        {/* Reviews */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Customer Reviews</Text>
+          {productDetails.reviews.map(review => (
+            <View key={review.id} style={styles.reviewCard}>
+              <View style={styles.reviewHeader}>
+                <Text style={styles.reviewerName}>{review.name}</Text>
+                <Text style={styles.reviewDate}>{review.date}</Text>
+              </View>
+              <View style={styles.reviewRating}>{renderStars(review.rating)}</View>
+              <Text style={styles.reviewComment}>{review.comment}</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Bottom spacing */}
+        <View style={{ height: 100 }} />
+
+        {/* Floating Add to Cart Button */}
+        <View style={styles.floatingButton}>
+          <TouchableOpacity
+            style={[styles.addToCartBtn, isItemInCart(product.id) && styles.addToCartBtnInCart]}
+            onPress={handleAddToCart}
+          >
+            <FontAwesome name="shopping-cart" size={20} color="#fff" />
+            <Text style={styles.addToCartText}>
+              {isItemInCart(product.id)
+                ? `In Cart (${getItemQuantity(product.id)})`
+                : 'Add to Cart'}
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </>
   );
 }
 
@@ -264,6 +290,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#E6E6E6',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   backBtn: {
     padding: 8,
@@ -274,8 +305,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#222',
+    flex: 1,
+    textAlign: 'center',
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   shareBtn: {
+    padding: 8,
+    backgroundColor: '#E6F3EC',
+    borderRadius: 12,
+    marginRight: 8,
+  },
+  favoriteBtn: {
     padding: 8,
     backgroundColor: '#E6F3EC',
     borderRadius: 12,

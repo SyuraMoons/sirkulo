@@ -200,7 +200,7 @@ export default function TabOneScreen() {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <HomeHeader mode={mode} setMode={setMode} />
 
-      {mode === 'Customer' && (
+      {mode === 'Basic' && (
         <>
           {/* Search Bar */}
           <View style={styles.searchRow}>

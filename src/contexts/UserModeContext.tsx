@@ -13,7 +13,7 @@ interface UserModeProviderProps {
 }
 
 export function UserModeProvider({ children }: UserModeProviderProps) {
-  const [mode, setMode] = useState<UserMode>('Customer');
+  const [mode, setMode] = useState<UserMode>('Basic');
 
   return <UserModeContext.Provider value={{ mode, setMode }}>{children}</UserModeContext.Provider>;
 }

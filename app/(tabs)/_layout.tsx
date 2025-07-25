@@ -46,6 +46,7 @@ function TabsContent() {
         headerShown: useClientOnlyValue(false, true),
       }}
     >
+      {/* Home Tab - Always visible */}
       <Tabs.Screen
         name="index"
         options={{
@@ -54,25 +55,27 @@ function TabsContent() {
         }}
       />
 
-      {/* Conditional tab based on user mode */}
-      {mode === 'Business' ? (
-        <Tabs.Screen
-          name="business-management"
-          options={{
-            title: 'Manage',
-            tabBarIcon: ({ color }) => <BusinessManagementTabBarIcon color={color} />,
-          }}
-        />
-      ) : (
-        <Tabs.Screen
-          name="cart"
-          options={{
-            title: 'Cart',
-            tabBarIcon: ({ color }) => <CartTabBarIcon color={color} />,
-          }}
-        />
-      )}
+      {/* Cart Tab - Visible in Basic and Recycler modes, hidden in Business mode */}
+      <Tabs.Screen
+        name="cart"
+        options={{
+          title: 'Cart',
+          tabBarIcon: ({ color }) => <CartTabBarIcon color={color} />,
+          href: mode === 'Business' ? null : '/cart',
+        }}
+      />
 
+      {/* Business Management Tab - Visible only in Business mode */}
+      <Tabs.Screen
+        name="business-management"
+        options={{
+          title: 'Manage',
+          tabBarIcon: ({ color }) => <BusinessManagementTabBarIcon color={color} />,
+          href: mode === 'Business' ? '/business-management' : null,
+        }}
+      />
+
+      {/* Messages Tab - Always visible */}
       <Tabs.Screen
         name="messages"
         options={{
@@ -80,6 +83,8 @@ function TabsContent() {
           tabBarIcon: ({ color }) => <TabBarIcon name="comment-o" color={color} />,
         }}
       />
+
+      {/* Profile Tab - Always visible */}
       <Tabs.Screen
         name="profile"
         options={{
