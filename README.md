@@ -164,7 +164,6 @@ sirkulo/
    ```
 
 2. **Install dependencies**
->>>>>>> dev
 
    ```bash
    npm install
@@ -280,7 +279,7 @@ This project uses two main branches:
 6. **Open a Pull Request**
    - Target the `dev` branch (not `main`).
    - Fill out the PR template, link issues if applicable, and request review.
-=======
+
 3. **Start the development server**
 
    ```bash
@@ -457,8 +456,3 @@ file for details.
 
 ---
 
-<div align="center">
-  <p><strong>Made with ❤️ for a sustainable future</strong></p>
-  <p>© 2024 Sirkulo. All rights reserved.</p>
-</div>
->>>>>>> dev
